@@ -154,20 +154,6 @@ export const routes: Routes = [
                 (m) => m.BranchListComponent,
               ),
           },
-          {
-            path: 'create',
-            loadComponent: () =>
-              import('./branches/branch-list/branch-list.component').then(
-                (m) => m.BranchListComponent,
-              ),
-          },
-          {
-            path: 'edit/:id',
-            loadComponent: () =>
-              import('./branches/branch-list/branch-list.component').then(
-                (m) => m.BranchListComponent,
-              ),
-          },
         ],
       },
       // Brand Routes (Admin only)

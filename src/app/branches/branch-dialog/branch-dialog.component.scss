@@ -1,0 +1,50 @@
+h2 {
+  color: #333;
+  margin: 0;
+}
+
+mat-dialog-content {
+  padding: 1rem 0;
+  min-width: 500px;
+  max-height: 70vh;
+  overflow-y: auto;
+
+  form {
+    .form-row {
+      margin-bottom: 1rem;
+
+      &.full-width {
+        width: 100%;
+      }
+
+      mat-form-field {
+        width: 100%;
+      }
+    }
+  }
+}
+
+mat-dialog-actions {
+  padding: 1rem 0 0;
+  gap: 0.5rem;
+
+  button {
+    min-width: 100px;
+
+    mat-icon {
+      margin-right: 0.5rem;
+    }
+
+    mat-spinner {
+      display: inline-block;
+      margin-right: 0.5rem;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  mat-dialog-content {
+    min-width: auto;
+    width: 90vw;
+  }
+}

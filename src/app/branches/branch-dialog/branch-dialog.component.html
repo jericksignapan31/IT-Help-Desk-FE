@@ -1,0 +1,70 @@
+<h2 mat-dialog-title>{{ isEditMode ? "Edit Branch" : "Add New Branch" }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="branchForm" (ngSubmit)="onSubmit()">
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Branch Name</mat-label>
+        <input
+          matInput
+          formControlName="branch_name"
+          placeholder="Enter branch name"
+          required
+        />
+        <mat-icon matPrefix>business</mat-icon>
+        <mat-error *ngIf="branchForm.get('branch_name')?.invalid">
+          {{ getErrorMessage("branch_name") }}
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Location</mat-label>
+        <input
+          matInput
+          formControlName="location"
+          placeholder="Enter location"
+          required
+        />
+        <mat-icon matPrefix>location_on</mat-icon>
+        <mat-error *ngIf="branchForm.get('location')?.invalid">
+          {{ getErrorMessage("location") }}
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Contact Number</mat-label>
+        <input
+          matInput
+          formControlName="contact_number"
+          placeholder="+63-2-1234-5678"
+          type="tel"
+        />
+        <mat-icon matPrefix>phone</mat-icon>
+        <mat-error *ngIf="branchForm.get('contact_number')?.invalid">
+          {{ getErrorMessage("contact_number") }}
+        </mat-error>
+      </mat-form-field>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="onCancel()" [disabled]="isSaving">
+    Cancel
+  </button>
+  <button
+    mat-raised-button
+    color="primary"
+    type="button"
+    (click)="onSubmit()"
+    [disabled]="branchForm.invalid || isSaving"
+  >
+    <mat-spinner *ngIf="isSaving" diameter="20"></mat-spinner>
+    <mat-icon *ngIf="!isSaving">save</mat-icon>
+    {{ isSaving ? "Saving..." : isEditMode ? "Update" : "Create" }}
+  </button>
+</mat-dialog-actions>

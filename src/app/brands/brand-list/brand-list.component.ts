@@ -13,6 +13,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { BrandService } from '../../services/brand.service';
 import { Brand } from '../../models/brand.model';
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
+import { BrandDialogComponent } from '../brand-dialog/brand-dialog.component';
 
 @Component({
   selector: 'app-brand-list',
@@ -73,11 +74,34 @@ export class BrandListComponent implements OnInit {
   }
 
   createBrand(): void {
-    this.router.navigate(['/brands/create']);
+    const dialogRef = this.dialog.open(BrandDialogComponent, {
+      width: '600px',
+      data: {
+        isEditMode: false,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.loadBrands();
+      }
+    });
   }
 
   editBrand(brand: Brand): void {
-    this.router.navigate(['/brands/edit', brand.id]);
+    const dialogRef = this.dialog.open(BrandDialogComponent, {
+      width: '600px',
+      data: {
+        brand: brand,
+        isEditMode: true,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.loadBrands();
+      }
+    });
   }
 
   deleteBrand(brand: Brand): void {
