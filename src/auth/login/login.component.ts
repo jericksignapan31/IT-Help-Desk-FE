@@ -51,26 +51,27 @@ export class LoginComponent {
     this.error = '';
 
     // Auto login - no credentials needed for testing
-    const mockResponse = {
-      access_token: 'mock-token-' + Date.now(),
-      user: {
-        id: 1,
-        username: 'admin',
-        email: 'admin@example.com',
-        role: 'admin' as any,
-        employeeId: 1,
-        isActive: true,
-        createdAt: new Date(),
-      },
+    const mockUser = {
+      id: 1,
+      username: 'admin',
+      email: 'admin@example.com',
+      role: 'admin' as any,
+      employeeId: 1,
+      isActive: true,
+      createdAt: new Date(),
     };
 
+    const mockToken = 'mock-token-' + Date.now();
+
     // Store in localStorage
-    localStorage.setItem('access_token', mockResponse.access_token);
-    localStorage.setItem('currentUser', JSON.stringify(mockResponse.user));
+    localStorage.setItem('access_token', mockToken);
+    localStorage.setItem('currentUser', JSON.stringify(mockUser));
+
+    console.log('Login successful, redirecting to dashboard...');
 
     // Redirect to dashboard
     setTimeout(() => {
       window.location.href = '/dashboard';
-    }, 200);
+    }, 100);
   }
 }

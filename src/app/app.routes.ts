@@ -5,28 +5,32 @@ import { UserRole } from './models/user.model';
 
 export const routes: Routes = [
   {
+    path: '',
+    redirectTo: '/login',
+    pathMatch: 'full',
+  },
+  {
     path: 'login',
     loadComponent: () =>
       import('../auth/login/login.component').then((m) => m.LoginComponent),
   },
   {
-    path: '',
+    path: 'test',
+    loadComponent: () =>
+      import('./test/test.component').then((m) => m.TestComponent),
+  },
+  {
+    path: 'dashboard',
+    loadComponent: () =>
+      import('./dashboard/dashboard.component').then(
+        (m) => m.DashboardComponent,
+      ),
+  },
+  {
+    path: 'layout',
     loadComponent: () =>
       import('./layout/layout.component').then((m) => m.LayoutComponent),
-    canActivate: [authGuard],
     children: [
-      {
-        path: '',
-        redirectTo: 'dashboard',
-        pathMatch: 'full',
-      },
-      {
-        path: 'dashboard',
-        loadComponent: () =>
-          import('./dashboard/dashboard.component').then(
-            (m) => m.DashboardComponent,
-          ),
-      },
       // Ticket Routes
       {
         path: 'tickets',
@@ -213,6 +217,6 @@ export const routes: Routes = [
   },
   {
     path: '**',
-    redirectTo: 'dashboard',
+    redirectTo: '/login',
   },
 ];

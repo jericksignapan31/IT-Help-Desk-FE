@@ -4,8 +4,10 @@ import {
   AfterViewInit,
   ViewChild,
   ElementRef,
+  Inject,
+  PLATFORM_ID,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -39,6 +41,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   loading = true;
   statusChart: Chart | null = null;
   priorityChart: Chart | null = null;
+  isBrowser: boolean;
 
   displayedColumns: string[] = [
     'ticket_number',
@@ -48,7 +51,12 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     'created_at',
   ];
 
-  constructor(private dashboardService: DashboardService) {}
+  constructor(
+    private dashboardService: DashboardService,
+    @Inject(PLATFORM_ID) platformId: object,
+  ) {
+    this.isBrowser = isPlatformBrowser(platformId);
+  }
 
   ngOnInit(): void {
     this.loadDashboardStats();
@@ -106,7 +114,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   }
 
   initializeCharts(): void {
-    if (!this.stats) return;
+    // Only initialize charts in browser
+    if (!this.isBrowser || !this.stats) return;
 
     // Destroy existing charts
     if (this.statusChart) {
