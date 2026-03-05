@@ -179,22 +179,22 @@ export const routes: Routes = [
           {
             path: '',
             loadComponent: () =>
-              import('./branches/branch-list/branch-list.component').then(
-                (m) => m.BranchListComponent,
+              import('./brands/brand-list/brand-list.component').then(
+                (m) => m.BrandListComponent,
               ),
           },
           {
             path: 'create',
             loadComponent: () =>
-              import('./branches/branch-list/branch-list.component').then(
-                (m) => m.BranchListComponent,
+              import('./brands/brand-form/brand-form.component').then(
+                (m) => m.BrandFormComponent,
               ),
           },
           {
             path: 'edit/:id',
             loadComponent: () =>
-              import('./branches/branch-list/branch-list.component').then(
-                (m) => m.BranchListComponent,
+              import('./brands/brand-form/brand-form.component').then(
+                (m) => m.BrandFormComponent,
               ),
           },
         ],
@@ -208,8 +208,8 @@ export const routes: Routes = [
           {
             path: '',
             loadComponent: () =>
-              import('./branches/branch-list/branch-list.component').then(
-                (m) => m.BranchListComponent,
+              import('./departments/department-list/department-list.component').then(
+                (m) => m.DepartmentListComponent,
               ),
           },
         ],
@@ -223,8 +223,8 @@ export const routes: Routes = [
           {
             path: '',
             loadComponent: () =>
-              import('./branches/branch-list/branch-list.component').then(
-                (m) => m.BranchListComponent,
+              import('./repair-logs/repair-log-list/repair-log-list.component').then(
+                (m) => m.RepairLogListComponent,
               ),
           },
         ],
@@ -238,8 +238,8 @@ export const routes: Routes = [
           {
             path: '',
             loadComponent: () =>
-              import('./branches/branch-list/branch-list.component').then(
-                (m) => m.BranchListComponent,
+              import('./user-accounts/user-account-list/user-account-list.component').then(
+                (m) => m.UserAccountListComponent,
               ),
           },
         ],

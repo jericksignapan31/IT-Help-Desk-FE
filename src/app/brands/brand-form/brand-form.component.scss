@@ -1,0 +1,91 @@
+.brand-form-container {
+  max-width: 800px;
+
+  .header {
+    margin-bottom: 1.5rem;
+
+    h1 {
+      margin: 0;
+      color: black;
+    }
+  }
+
+  mat-card {
+    mat-card-content {
+      padding: 2rem;
+    }
+  }
+
+  .loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 3rem;
+  }
+
+  form {
+    .form-row {
+      margin-bottom: 1rem;
+
+      &.full-width {
+        width: 100%;
+      }
+
+      &.form-row-split {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+
+      mat-form-field {
+        width: 100%;
+      }
+
+      mat-slide-toggle {
+        margin-top: 1rem;
+      }
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+      margin-top: 2rem;
+      padding-top: 1rem;
+      border-top: 1px solid #e0e0e0;
+
+      button {
+        min-width: 120px;
+
+        mat-icon {
+          margin-right: 0.5rem;
+        }
+
+        mat-spinner {
+          display: inline-block;
+          margin-right: 0.5rem;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .brand-form-container {
+    .form-row.form-row-split {
+      grid-template-columns: 1fr;
+    }
+
+    mat-card mat-card-content {
+      padding: 1rem;
+    }
+
+    .form-actions {
+      flex-direction: column;
+
+      button {
+        width: 100%;
+      }
+    }
+  }
+}

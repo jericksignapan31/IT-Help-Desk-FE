@@ -1,0 +1,136 @@
+<div class="brand-form-container">
+  <div class="header">
+    <h1>{{ isEditMode ? "Edit Brand" : "Create New Brand" }}</h1>
+  </div>
+
+  <mat-card>
+    <mat-card-content>
+      <div *ngIf="isLoading" class="loading-container">
+        <mat-spinner></mat-spinner>
+      </div>
+
+      <form *ngIf="!isLoading" [formGroup]="brandForm" (ngSubmit)="onSubmit()">
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Brand Name</mat-label>
+            <input
+              matInput
+              formControlName="name"
+              placeholder="Enter brand name"
+              required
+            />
+            <mat-icon matPrefix>label</mat-icon>
+            <mat-error *ngIf="brandForm.get('name')?.invalid">
+              {{ getErrorMessage("name") }}
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Manufacturer</mat-label>
+            <input
+              matInput
+              formControlName="manufacturer"
+              placeholder="Enter manufacturer name"
+            />
+            <mat-icon matPrefix>business</mat-icon>
+            <mat-error *ngIf="brandForm.get('manufacturer')?.invalid">
+              {{ getErrorMessage("manufacturer") }}
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Description</mat-label>
+            <textarea
+              matInput
+              formControlName="description"
+              placeholder="Enter brand description"
+              rows="3"
+            ></textarea>
+            <mat-icon matPrefix>description</mat-icon>
+            <mat-error *ngIf="brandForm.get('description')?.invalid">
+              {{ getErrorMessage("description") }}
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Website URL</mat-label>
+            <input
+              matInput
+              formControlName="website_url"
+              placeholder="https://example.com"
+              type="url"
+            />
+            <mat-icon matPrefix>link</mat-icon>
+            <mat-error *ngIf="brandForm.get('website_url')?.invalid">
+              {{ getErrorMessage("website_url") }}
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row form-row-split">
+          <mat-form-field appearance="outline">
+            <mat-label>Support Email</mat-label>
+            <input
+              matInput
+              formControlName="support_email"
+              placeholder="support@example.com"
+              type="email"
+            />
+            <mat-icon matPrefix>email</mat-icon>
+            <mat-error *ngIf="brandForm.get('support_email')?.invalid">
+              {{ getErrorMessage("support_email") }}
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Support Phone</mat-label>
+            <input
+              matInput
+              formControlName="support_phone"
+              placeholder="+1 (555) 123-4567"
+              type="tel"
+            />
+            <mat-icon matPrefix>phone</mat-icon>
+            <mat-error *ngIf="brandForm.get('support_phone')?.invalid">
+              {{ getErrorMessage("support_phone") }}
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-slide-toggle formControlName="is_active" color="primary">
+            Active
+          </mat-slide-toggle>
+        </div>
+
+        <div class="form-actions">
+          <button
+            mat-raised-button
+            type="button"
+            (click)="cancel()"
+            [disabled]="isSaving"
+          >
+            <mat-icon>cancel</mat-icon>
+            Cancel
+          </button>
+          <button
+            mat-raised-button
+            color="primary"
+            type="submit"
+            [disabled]="brandForm.invalid || isSaving"
+          >
+            <mat-spinner *ngIf="isSaving" diameter="20"></mat-spinner>
+            <mat-icon *ngIf="!isSaving">save</mat-icon>
+            {{ isSaving ? "Saving..." : isEditMode ? "Update" : "Create" }}
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

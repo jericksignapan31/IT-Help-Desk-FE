@@ -1,0 +1,137 @@
+<div class="user-account-list-container">
+  <div class="header">
+    <h1>User Accounts</h1>
+    <button mat-raised-button color="primary" (click)="createUserAccount()">
+      <mat-icon>add</mat-icon>
+      Add User Account
+    </button>
+  </div>
+
+  <mat-card>
+    <mat-card-content>
+      <div *ngIf="isLoading" class="loading-container">
+        <mat-spinner></mat-spinner>
+      </div>
+
+      <div *ngIf="!isLoading && userAccounts.length === 0" class="empty-state">
+        <mat-icon>account_circle</mat-icon>
+        <h2>No user accounts found</h2>
+        <p>Get started by adding your first user account</p>
+        <button mat-raised-button color="primary" (click)="createUserAccount()">
+          <mat-icon>add</mat-icon>
+          Add User Account
+        </button>
+      </div>
+
+      <div
+        *ngIf="!isLoading && userAccounts.length > 0"
+        class="table-container"
+      >
+        <table
+          mat-table
+          [dataSource]="userAccounts"
+          class="user-accounts-table"
+        >
+          <!-- Username Column -->
+          <ng-container matColumnDef="username">
+            <th mat-header-cell *matHeaderCellDef>Username</th>
+            <td mat-cell *matCellDef="let user">
+              <strong>{{ user.username }}</strong>
+            </td>
+          </ng-container>
+
+          <!-- Email Column -->
+          <ng-container matColumnDef="email">
+            <th mat-header-cell *matHeaderCellDef>Email</th>
+            <td mat-cell *matCellDef="let user">
+              <a [href]="'mailto:' + user.email">{{ user.email }}</a>
+            </td>
+          </ng-container>
+
+          <!-- Employee Column -->
+          <ng-container matColumnDef="employee">
+            <th mat-header-cell *matHeaderCellDef>Employee</th>
+            <td mat-cell *matCellDef="let user">
+              {{
+                user.employee?.first_name && user.employee?.last_name
+                  ? user.employee.first_name + " " + user.employee.last_name
+                  : "N/A"
+              }}
+            </td>
+          </ng-container>
+
+          <!-- Role Column -->
+          <ng-container matColumnDef="role">
+            <th mat-header-cell *matHeaderCellDef>Role</th>
+            <td mat-cell *matCellDef="let user">
+              <mat-chip [ngClass]="getRoleBadgeClass(user.role)">
+                {{ user.role | titlecase }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Last Login Column -->
+          <ng-container matColumnDef="last_login">
+            <th mat-header-cell *matHeaderCellDef>Last Login</th>
+            <td mat-cell *matCellDef="let user">
+              {{
+                user.last_login
+                  ? (user.last_login | date: "MMM d, y h:mm a")
+                  : "Never"
+              }}
+            </td>
+          </ng-container>
+
+          <!-- Status Column -->
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let user">
+              <mat-chip
+                [class.status-active]="user.is_active"
+                [class.status-inactive]="!user.is_active"
+              >
+                {{ user.is_active ? "Active" : "Inactive" }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let user">
+              <button
+                mat-icon-button
+                color="primary"
+                (click)="editUserAccount(user)"
+                matTooltip="Edit"
+              >
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                [color]="user.is_active ? 'warn' : 'accent'"
+                (click)="toggleStatus(user)"
+                [matTooltip]="user.is_active ? 'Deactivate' : 'Activate'"
+              >
+                <mat-icon>{{
+                  user.is_active ? "toggle_on" : "toggle_off"
+                }}</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                color="warn"
+                (click)="deleteUserAccount(user)"
+                matTooltip="Delete"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
