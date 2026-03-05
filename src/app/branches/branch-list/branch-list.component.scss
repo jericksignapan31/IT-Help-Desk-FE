@@ -1,0 +1,42 @@
+.branch-list-container {
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+
+    h1 {
+      margin: 0;
+    }
+
+    button mat-icon {
+      margin-right: 0.5rem;
+    }
+  }
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+.branch-table {
+  width: 100%;
+}
+
+.no-data {
+  text-align: center;
+  padding: 3rem;
+  color: #999;
+
+  mat-icon {
+    font-size: 4rem;
+    width: 4rem;
+    height: 4rem;
+    margin-bottom: 1rem;
+  }
+
+  p {
+    font-size: 1.1rem;
+    margin: 0;
+  }
+}

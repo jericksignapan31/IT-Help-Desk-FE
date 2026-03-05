@@ -1,0 +1,117 @@
+.sidenav-container {
+  height: 100vh;
+}
+
+.sidenav {
+  width: 250px;
+  background-color: #263238;
+  color: white;
+
+  .sidenav-header {
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+    .app-icon {
+      font-size: 2rem;
+      width: 2rem;
+      height: 2rem;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+  }
+
+  ::ng-deep {
+    .mat-mdc-list-item {
+      color: rgba(255, 255, 255, 0.7);
+      margin: 0.25rem 0.5rem;
+      border-radius: 8px;
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+        color: white;
+      }
+
+      &.active-link {
+        background-color: rgba(102, 126, 234, 0.2);
+        color: white;
+
+        .mat-icon {
+          color: #667eea;
+        }
+      }
+
+      .mat-icon {
+        color: rgba(255, 255, 255, 0.7);
+      }
+    }
+  }
+}
+
+.toolbar {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+
+  .spacer {
+    flex: 1 1 auto;
+  }
+
+  .user-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    .username {
+      font-weight: 500;
+    }
+
+    .role-badge {
+      font-size: 0.75rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: 12px;
+      font-weight: 500;
+
+      &.role-admin {
+        background-color: #f44336;
+        color: white;
+      }
+
+      &.role-technician {
+        background-color: #ff9800;
+        color: white;
+      }
+
+      &.role-user {
+        background-color: #4caf50;
+        color: white;
+      }
+    }
+  }
+}
+
+.content {
+  padding: 1.5rem;
+  background-color: #f5f5f5;
+  min-height: calc(100vh - 64px);
+}
+
+@media (max-width: 768px) {
+  .sidenav {
+    width: 200px;
+  }
+
+  .user-button .username {
+    display: none;
+  }
+
+  .content {
+    padding: 1rem;
+  }
+}
