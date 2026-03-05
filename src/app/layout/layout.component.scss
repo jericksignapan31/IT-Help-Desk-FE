@@ -1,12 +1,21 @@
 .sidenav-container {
   height: 100vh;
+
+  ::ng-deep {
+    .mat-drawer-content {
+      transition: margin-left 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+    }
+
+    .mat-drawer {
+      transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+    }
+  }
 }
 
 .sidenav {
   width: 250px;
   background-color: #263238;
   color: white;
-  transition: width 0.3s ease-in-out !important;
 
   .sidenav-header {
     padding: 1.5rem;
