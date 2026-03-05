@@ -1,9 +1,9 @@
 export interface User {
-  id: number;
+  id: number | string; // Support both number and UUID string
   username: string;
   email: string;
   role: UserRole;
-  employee_id?: number;
+  employee_id?: number | string; // Support both number and UUID string
   is_active: boolean;
   created_at: string;
   updated_at: string;

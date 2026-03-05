@@ -81,7 +81,21 @@ export class LoginComponent {
     // Real API authentication
     this.authService.login(this.loginForm.value).subscribe({
       next: (response) => {
-        console.log('Login successful:', response);
+        console.log('🎉 LOGIN SUCCESSFUL!');
+        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        console.log('📝 User Information:');
+        console.log('   ID:', response.user?.id || 'N/A');
+        console.log('   Username:', response.user?.username || 'N/A');
+        console.log('   Email:', response.user?.email || 'N/A');
+        console.log('   Role:', response.user?.role?.toUpperCase() || 'N/A');
+        console.log('   Employee ID:', response.user?.employee_id || 'N/A');
+        console.log('   Active:', response.user?.is_active ? '✅' : '❌');
+        console.log('   Created:', response.user?.created_at || 'N/A');
+        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        console.log('🔑 Access Token:', response.access_token || 'N/A');
+        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        console.log('Full Response Object:', response);
+        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
         this.loading = false;
         // Navigate to dashboard
         this.router.navigate(['/dashboard']);

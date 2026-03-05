@@ -40,17 +40,36 @@ export class AuthService {
   }
 
   login(credentials: LoginRequest): Observable<LoginResponse> {
-    return this.http
-      .post<LoginResponse>(`${this.API_URL}/auth/login`, credentials)
-      .pipe(
-        tap((response) => {
-          if (this.isBrowser) {
-            localStorage.setItem('access_token', response.access_token);
-            localStorage.setItem('currentUser', JSON.stringify(response.user));
-          }
-          this.currentUserSubject.next(response.user);
-        }),
-      );
+    return this.http.post<any>(`${this.API_URL}/auth/login`, credentials).pipe(
+      tap((response: any) => {
+        // Transform backend response to match frontend User model
+        const backendUser = response.user;
+        const transformedUser: User = {
+          id: backendUser?.user_id || backendUser?.id || '',
+          username: backendUser?.username || '',
+          email: backendUser?.employee?.email || backendUser?.email || '',
+          role: (backendUser?.employee?.role ||
+            backendUser?.role ||
+            'user') as UserRole,
+          employee_id:
+            backendUser?.employee?.employee_id ||
+            backendUser?.employee_id ||
+            '',
+          is_active: backendUser?.is_active !== false, // default to true
+          created_at: backendUser?.created_at || new Date().toISOString(),
+          updated_at: backendUser?.updated_at || new Date().toISOString(),
+        };
+
+        console.log('🔄 Backend User:', backendUser);
+        console.log('✅ Transformed User:', transformedUser);
+
+        if (this.isBrowser) {
+          localStorage.setItem('access_token', response.access_token);
+          localStorage.setItem('currentUser', JSON.stringify(transformedUser));
+        }
+        this.currentUserSubject.next(transformedUser);
+      }),
+    );
   }
 
   logout(): void {
@@ -89,5 +108,81 @@ export class AuthService {
 
   isUser(): boolean {
     return this.hasRole([UserRole.USER]);
+  }
+
+  /**
+   * Get current logged-in user (synchronous)
+   * Use this when you need immediate access to user data
+   */
+  getCurrentUser(): User | null {
+    return this.currentUserValue;
+  }
+
+  /**
+   * Get current user as Observable
+   * Use this when you want to subscribe to user changes
+   */
+  getCurrentUser$(): Observable<User | null> {
+    return this.currentUser;
+  }
+
+  /**
+   * Get formatted user info for display
+   */
+  getUserInfo(): {
+    id: number | string | undefined;
+    username: string;
+    email: string;
+    role: string;
+    employeeId: number | string | undefined;
+    isActive: boolean;
+  } | null {
+    const user = this.currentUserValue;
+    if (!user) return null;
+
+    return {
+      id: user.id,
+      username: user.username || 'N/A',
+      email: user.email || 'N/A',
+      role: user.role?.toUpperCase() || 'N/A',
+      employeeId: user.employee_id,
+      isActive: user.is_active || false,
+    };
+  }
+
+  /**
+   * Refresh user profile from server
+   */
+  refreshUserProfile(): Observable<User> {
+    return this.getProfile().pipe(
+      tap((user) => {
+        if (this.isBrowser) {
+          localStorage.setItem('currentUser', JSON.stringify(user));
+        }
+        this.currentUserSubject.next(user);
+      }),
+    );
+  }
+
+  /**
+   * Check if user has specific role
+   */
+  hasSpecificRole(role: UserRole): boolean {
+    return this.currentUserValue?.role === role;
+  }
+
+  /**
+   * Get user's role
+   */
+  getUserRole(): UserRole | null {
+    return this.currentUserValue?.role || null;
+  }
+
+  /**
+   * Get user's display name
+   */
+  getUserDisplayName(): string {
+    const user = this.currentUserValue;
+    return user?.username || 'Guest';
   }
 }

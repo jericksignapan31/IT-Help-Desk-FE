@@ -170,6 +170,35 @@ export const routes: Routes = [
           },
         ],
       },
+      // Brand Routes (Admin only)
+      {
+        path: 'brands',
+        canActivate: [roleGuard],
+        data: { roles: [UserRole.ADMIN] },
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./branches/branch-list/branch-list.component').then(
+                (m) => m.BranchListComponent,
+              ),
+          },
+          {
+            path: 'create',
+            loadComponent: () =>
+              import('./branches/branch-list/branch-list.component').then(
+                (m) => m.BranchListComponent,
+              ),
+          },
+          {
+            path: 'edit/:id',
+            loadComponent: () =>
+              import('./branches/branch-list/branch-list.component').then(
+                (m) => m.BranchListComponent,
+              ),
+          },
+        ],
+      },
       // Department Routes (Admin only)
       {
         path: 'departments',

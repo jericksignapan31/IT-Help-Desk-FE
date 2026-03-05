@@ -15,6 +15,7 @@ import { MatTableModule } from '@angular/material/table';
 import { RouterModule } from '@angular/router';
 import { DashboardService } from '../services/dashboard.service';
 import { DashboardStats } from '../models/dashboard.model';
+import { AuthService } from '../services/auth.service';
 import { Chart, registerables } from 'chart.js';
 
 Chart.register(...registerables);
@@ -53,12 +54,23 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   constructor(
     private dashboardService: DashboardService,
+    private authService: AuthService,
     @Inject(PLATFORM_ID) platformId: object,
   ) {
     this.isBrowser = isPlatformBrowser(platformId);
   }
 
   ngOnInit(): void {
+    // Log current user information
+    const currentUser = this.authService.currentUserValue;
+    if (currentUser) {
+      console.log('📊 Dashboard - Current User:');
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      console.log('   Username:', currentUser.username || 'N/A');
+      console.log('   Role:', currentUser.role?.toUpperCase() || 'N/A');
+      console.log('   Email:', currentUser.email || 'N/A');
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    }
     this.loadDashboardStats();
   }
 
