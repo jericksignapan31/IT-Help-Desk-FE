@@ -41,20 +41,24 @@ export class LoginComponent {
     private router: Router,
   ) {
     this.loginForm = this.fb.group({
-      username: [''],
-      password: [''],
+      username: ['', Validators.required],
+      password: ['', Validators.required],
     });
   }
 
   onSubmit(): void {
+    if (this.loginForm.invalid) {
+      return;
+    }
+
     this.loading = true;
     this.error = '';
 
-    // Auto login - no credentials needed for testing
+    // Auto login with any credentials for testing
     const mockUser = {
       id: 1,
-      username: 'admin',
-      email: 'admin@example.com',
+      username: this.loginForm.value.username,
+      email: `${this.loginForm.value.username}@example.com`,
       role: 'admin' as any,
       employeeId: 1,
       isActive: true,
