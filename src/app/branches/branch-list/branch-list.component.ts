@@ -7,12 +7,11 @@ import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { BranchService } from '../../services/branch.service';
 import { Branch } from '../../models/branch.model';
-import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
 import { BranchDialogComponent } from '../branch-dialog/branch-dialog.component';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-branch-list',
@@ -26,7 +25,6 @@ import { BranchDialogComponent } from '../branch-dialog/branch-dialog.component'
     MatChipsModule,
     MatTooltipModule,
     MatProgressSpinnerModule,
-    MatSnackBarModule,
     MatDialogModule,
   ],
   templateUrl: './branch-list.component.html',
@@ -45,7 +43,6 @@ export class BranchListComponent implements OnInit {
 
   constructor(
     private branchService: BranchService,
-    private snackBar: MatSnackBar,
     private dialog: MatDialog,
   ) {}
 
@@ -62,8 +59,10 @@ export class BranchListComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error loading branches:', error);
-        this.snackBar.open('Failed to load branches', 'Close', {
-          duration: 3000,
+        Swal.fire({
+          icon: 'error',
+          title: 'Error!',
+          text: 'Failed to load branches',
         });
         this.isLoading = false;
       },
@@ -102,55 +101,86 @@ export class BranchListComponent implements OnInit {
   }
 
   deleteBranch(branch: Branch): void {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '400px',
-      data: {
-        title: 'Delete Branch',
-        message: `Are you sure you want to delete "${branch.branch_name}"? This action cannot be undone.`,
-        confirmText: 'Delete',
-        cancelText: 'Cancel',
-      },
-    });
+    console.log('Delete button clicked for branch:', branch);
+    console.log('Branch ID:', branch.branch_id);
+    console.log('Branch object:', JSON.stringify(branch, null, 2));
 
-    dialogRef.afterClosed().subscribe((confirmed) => {
-      if (confirmed && branch.id) {
-        this.branchService.deleteBranch(branch.id).subscribe({
-          next: () => {
-            this.snackBar.open('Branch deleted successfully', 'Close', {
-              duration: 3000,
+    Swal.fire({
+      title: 'Delete Branch',
+      text: `Are you sure you want to delete "${branch.branch_name}"? This action cannot be undone.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Delete',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      console.log('SweetAlert result:', result);
+      console.log('Is confirmed:', result.isConfirmed);
+      console.log('Has branch.branch_id:', !!branch.branch_id);
+
+      if (result.isConfirmed && branch.branch_id) {
+        console.log('Calling deleteBranch API with ID:', branch.branch_id);
+        console.log(
+          'API URL will be:',
+          `${this.branchService['API_URL']}/${branch.branch_id}`,
+        );
+
+        this.branchService.deleteBranch(branch.branch_id).subscribe({
+          next: (response) => {
+            console.log('Delete SUCCESS - Response:', response);
+            Swal.fire({
+              icon: 'success',
+              title: 'Deleted!',
+              text: 'Branch deleted successfully',
+              timer: 2000,
+              showConfirmButton: false,
             });
             this.loadBranches();
           },
           error: (error) => {
-            console.error('Error deleting branch:', error);
-            this.snackBar.open('Failed to delete branch', 'Close', {
-              duration: 3000,
+            console.error('Delete FAILED - Full error:', error);
+            console.error('Error status:', error.status);
+            console.error('Error message:', error.message);
+            console.error('Error body:', error.error);
+            Swal.fire({
+              icon: 'error',
+              title: 'Error!',
+              text: `Failed to delete branch: ${error.error?.message || error.message || 'Unknown error'}`,
             });
           },
         });
+      } else {
+        console.log('Delete cancelled or no branch ID');
       }
     });
   }
 
   toggleStatus(branch: Branch): void {
-    if (!branch.id) return;
+    if (!branch.branch_id) return;
 
     const newStatus = branch.status === 'active' ? 'inactive' : 'active';
-    this.branchService.toggleBranchStatus(branch.id, newStatus).subscribe({
-      next: () => {
-        this.snackBar.open(
-          `Branch ${newStatus === 'active' ? 'activated' : 'deactivated'} successfully`,
-          'Close',
-          { duration: 3000 },
-        );
-        this.loadBranches();
-      },
-      error: (error) => {
-        console.error('Error updating branch status:', error);
-        this.snackBar.open('Failed to update branch status', 'Close', {
-          duration: 3000,
-        });
-      },
-    });
+    this.branchService
+      .toggleBranchStatus(branch.branch_id, newStatus)
+      .subscribe({
+        next: () => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: `Branch ${newStatus === 'active' ? 'activated' : 'deactivated'} successfully`,
+            timer: 2000,
+            showConfirmButton: false,
+          });
+          this.loadBranches();
+        },
+        error: (error) => {
+          console.error('Error updating branch status:', error);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error!',
+            text: 'Failed to update branch status',
+          });
+        },
+      });
   }
 }

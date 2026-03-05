@@ -17,8 +17,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { BrandService } from '../../services/brand.service';
+import Swal from 'sweetalert2';
 import {
   Brand,
   BrandCreateRequest,
@@ -43,7 +43,6 @@ export interface BrandDialogData {
     MatIconModule,
     MatSlideToggleModule,
     MatProgressSpinnerModule,
-    MatSnackBarModule,
   ],
   templateUrl: './brand-dialog.component.html',
   styleUrls: ['./brand-dialog.component.scss'],
@@ -56,7 +55,6 @@ export class BrandDialogComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private brandService: BrandService,
-    private snackBar: MatSnackBar,
     public dialogRef: MatDialogRef<BrandDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: BrandDialogData,
   ) {
@@ -100,20 +98,22 @@ export class BrandDialogComponent implements OnInit {
 
     operation.subscribe({
       next: (result) => {
-        this.snackBar.open(
-          `Brand ${this.isEditMode ? 'updated' : 'created'} successfully`,
-          'Close',
-          { duration: 3000 },
-        );
+        Swal.fire({
+          icon: 'success',
+          title: 'Success!',
+          text: `Brand ${this.isEditMode ? 'updated' : 'created'} successfully`,
+          timer: 2000,
+          showConfirmButton: false,
+        });
         this.dialogRef.close(result);
       },
       error: (error) => {
         console.error('Error saving brand:', error);
-        this.snackBar.open(
-          `Failed to ${this.isEditMode ? 'update' : 'create'} brand`,
-          'Close',
-          { duration: 3000 },
-        );
+        Swal.fire({
+          icon: 'error',
+          title: 'Error!',
+          text: `Failed to ${this.isEditMode ? 'update' : 'create'} brand`,
+        });
         this.isSaving = false;
       },
     });

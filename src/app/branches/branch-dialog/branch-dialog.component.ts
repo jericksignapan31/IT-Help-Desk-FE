@@ -17,8 +17,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { BranchService } from '../../services/branch.service';
+import Swal from 'sweetalert2';
 import {
   Branch,
   BranchCreateRequest,
@@ -43,7 +43,6 @@ export interface BranchDialogData {
     MatIconModule,
     MatSelectModule,
     MatProgressSpinnerModule,
-    MatSnackBarModule,
   ],
   templateUrl: './branch-dialog.component.html',
   styleUrls: ['./branch-dialog.component.scss'],
@@ -56,7 +55,6 @@ export class BranchDialogComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private branchService: BranchService,
-    private snackBar: MatSnackBar,
     public dialogRef: MatDialogRef<BranchDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: BranchDialogData,
   ) {
@@ -85,29 +83,31 @@ export class BranchDialogComponent implements OnInit {
     const branchData = this.branchForm.value;
 
     const operation =
-      this.isEditMode && this.data.branch?.id
+      this.isEditMode && this.data.branch?.branch_id
         ? this.branchService.updateBranch(
-            this.data.branch.id,
+            this.data.branch.branch_id,
             branchData as BranchUpdateRequest,
           )
         : this.branchService.createBranch(branchData as BranchCreateRequest);
 
     operation.subscribe({
       next: (result) => {
-        this.snackBar.open(
-          `Branch ${this.isEditMode ? 'updated' : 'created'} successfully`,
-          'Close',
-          { duration: 3000 },
-        );
+        Swal.fire({
+          icon: 'success',
+          title: 'Success!',
+          text: `Branch ${this.isEditMode ? 'updated' : 'created'} successfully`,
+          timer: 2000,
+          showConfirmButton: false,
+        });
         this.dialogRef.close(result);
       },
       error: (error) => {
         console.error('Error saving branch:', error);
-        this.snackBar.open(
-          `Failed to ${this.isEditMode ? 'update' : 'create'} branch`,
-          'Close',
-          { duration: 3000 },
-        );
+        Swal.fire({
+          icon: 'error',
+          title: 'Error!',
+          text: `Failed to ${this.isEditMode ? 'update' : 'create'} branch`,
+        });
         this.isSaving = false;
       },
     });

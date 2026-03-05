@@ -8,12 +8,11 @@ import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { BrandService } from '../../services/brand.service';
 import { Brand } from '../../models/brand.model';
-import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
 import { BrandDialogComponent } from '../brand-dialog/brand-dialog.component';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-brand-list',
@@ -27,7 +26,6 @@ import { BrandDialogComponent } from '../brand-dialog/brand-dialog.component';
     MatChipsModule,
     MatTooltipModule,
     MatProgressSpinnerModule,
-    MatSnackBarModule,
     MatDialogModule,
   ],
   templateUrl: './brand-list.component.html',
@@ -48,7 +46,6 @@ export class BrandListComponent implements OnInit {
   constructor(
     private brandService: BrandService,
     private router: Router,
-    private snackBar: MatSnackBar,
     private dialog: MatDialog,
   ) {}
 
@@ -65,8 +62,10 @@ export class BrandListComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error loading brands:', error);
-        this.snackBar.open('Failed to load brands', 'Close', {
-          duration: 3000,
+        Swal.fire({
+          icon: 'error',
+          title: 'Error!',
+          text: 'Failed to load brands',
         });
         this.isLoading = false;
       },
@@ -105,29 +104,34 @@ export class BrandListComponent implements OnInit {
   }
 
   deleteBrand(brand: Brand): void {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '400px',
-      data: {
-        title: 'Delete Brand',
-        message: `Are you sure you want to delete "${brand.name}"? This action cannot be undone.`,
-        confirmText: 'Delete',
-        cancelText: 'Cancel',
-      },
-    });
-
-    dialogRef.afterClosed().subscribe((confirmed) => {
-      if (confirmed && brand.id) {
+    Swal.fire({
+      title: 'Delete Brand',
+      text: `Are you sure you want to delete "${brand.name}"? This action cannot be undone.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Delete',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed && brand.id) {
         this.brandService.deleteBrand(brand.id).subscribe({
           next: () => {
-            this.snackBar.open('Brand deleted successfully', 'Close', {
-              duration: 3000,
+            Swal.fire({
+              icon: 'success',
+              title: 'Deleted!',
+              text: 'Brand deleted successfully',
+              timer: 2000,
+              showConfirmButton: false,
             });
             this.loadBrands();
           },
           error: (error) => {
             console.error('Error deleting brand:', error);
-            this.snackBar.open('Failed to delete brand', 'Close', {
-              duration: 3000,
+            Swal.fire({
+              icon: 'error',
+              title: 'Error!',
+              text: 'Failed to delete brand',
             });
           },
         });
@@ -141,17 +145,21 @@ export class BrandListComponent implements OnInit {
     const newStatus = !brand.is_active;
     this.brandService.toggleBrandStatus(brand.id, newStatus).subscribe({
       next: () => {
-        this.snackBar.open(
-          `Brand ${newStatus ? 'activated' : 'deactivated'} successfully`,
-          'Close',
-          { duration: 3000 },
-        );
+        Swal.fire({
+          icon: 'success',
+          title: 'Success!',
+          text: `Brand ${newStatus ? 'activated' : 'deactivated'} successfully`,
+          timer: 2000,
+          showConfirmButton: false,
+        });
         this.loadBrands();
       },
       error: (error) => {
         console.error('Error updating brand status:', error);
-        this.snackBar.open('Failed to update brand status', 'Close', {
-          duration: 3000,
+        Swal.fire({
+          icon: 'error',
+          title: 'Error!',
+          text: 'Failed to update brand status',
         });
       },
     });
