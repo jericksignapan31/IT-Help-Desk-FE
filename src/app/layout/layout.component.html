@@ -1,5 +1,5 @@
 <mat-sidenav-container class="sidenav-container">
-  <mat-sidenav #sidenav mode="side" opened class="sidenav">
+  <mat-sidenav #sidenav mode="side" [opened]="isSidenavOpen" class="sidenav">
     <div class="sidenav-header">
       <img src="/logo.png" alt="Logo" class="app-logo" />
       <h2>IT Help Desk</h2>
@@ -20,8 +20,12 @@
 
   <mat-sidenav-content>
     <mat-toolbar color="primary" class="toolbar">
-      <button mat-icon-button (click)="sidenav.toggle()">
-        <mat-icon>menu</mat-icon>
+      <button
+        mat-icon-button
+        (click)="toggleSidenav()"
+        matTooltip="Toggle Sidebar"
+      >
+        <mat-icon>{{ isSidenavOpen ? "menu_open" : "menu" }}</mat-icon>
       </button>
       <span class="spacer"></span>
 

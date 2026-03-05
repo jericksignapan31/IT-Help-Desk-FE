@@ -7,6 +7,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { AuthService } from '../services/auth.service';
 import { User, UserRole } from '../models/user.model';
 
@@ -29,12 +30,14 @@ interface MenuItem {
     MatIconModule,
     MatButtonModule,
     MatMenuModule,
+    MatTooltipModule,
   ],
   templateUrl: './layout.component.html',
   styleUrls: ['./layout.component.scss'],
 })
 export class LayoutComponent {
   currentUser: User | null = null;
+  isSidenavOpen = true;
   menuItems: MenuItem[] = [
     { label: 'Dashboard', icon: 'dashboard', route: '/dashboard' },
     {
@@ -119,5 +122,9 @@ export class LayoutComponent {
 
   getRoleLabel(): string {
     return this.currentUser?.role || '';
+  }
+
+  toggleSidenav(): void {
+    this.isSidenavOpen = !this.isSidenavOpen;
   }
 }
