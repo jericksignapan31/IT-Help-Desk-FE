@@ -3,7 +3,20 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: url("/login-background.png") no-repeat center center;
+  background-size: cover;
+  position: relative;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 0;
+  }
 }
 
 .login-card {
@@ -11,6 +24,8 @@
   max-width: 400px;
   padding: 0rem 1rem;
   margin: 0rem 1rem;
+  position: relative;
+  z-index: 1;
 }
 
 .login-header {
