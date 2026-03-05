@@ -4,13 +4,13 @@
   align-items: center;
   min-height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 20px;
 }
 
 .login-card {
   width: 100%;
   max-width: 400px;
-  padding: 2rem;
+  padding: 0rem 1rem;
+  margin: 0rem 1rem;
 }
 
 .login-header {
@@ -24,6 +24,14 @@
     height: 4rem;
     color: #667eea;
     margin: 0 auto 1rem;
+  }
+
+  .login-logo {
+    width: 12rem;
+    height: 12rem;
+    object-fit: contain;
+    margin: 0 auto 1rem;
+    display: block;
   }
 
   h1 {
