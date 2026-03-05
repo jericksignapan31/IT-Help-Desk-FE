@@ -12,6 +12,13 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import {
+  trigger,
+  state,
+  style,
+  transition,
+  animate,
+} from '@angular/animations';
 import { AuthService } from '../../app/services/auth.service';
 
 @Component({
@@ -28,6 +35,23 @@ import { AuthService } from '../../app/services/auth.service';
   ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
+  animations: [
+    trigger('errorAnimation', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(-10px)' }),
+        animate(
+          '200ms ease-out',
+          style({ opacity: 1, transform: 'translateY(0)' }),
+        ),
+      ]),
+      transition(':leave', [
+        animate(
+          '150ms ease-in',
+          style({ opacity: 0, transform: 'translateY(-10px)' }),
+        ),
+      ]),
+    ]),
+  ],
 })
 export class LoginComponent {
   loginForm: FormGroup;
@@ -54,28 +78,35 @@ export class LoginComponent {
     this.loading = true;
     this.error = '';
 
-    // Auto login with any credentials for testing
-    const mockUser = {
-      id: 1,
-      username: this.loginForm.value.username,
-      email: `${this.loginForm.value.username}@example.com`,
-      role: 'admin' as any,
-      employeeId: 1,
-      isActive: true,
-      createdAt: new Date(),
-    };
+    // Real API authentication
+    this.authService.login(this.loginForm.value).subscribe({
+      next: (response) => {
+        console.log('Login successful:', response);
+        this.loading = false;
+        // Navigate to dashboard
+        this.router.navigate(['/dashboard']);
+      },
+      error: (err) => {
+        console.error('Login failed:', err);
+        this.loading = false;
 
-    const mockToken = 'mock-token-' + Date.now();
-
-    // Store in localStorage
-    localStorage.setItem('access_token', mockToken);
-    localStorage.setItem('currentUser', JSON.stringify(mockUser));
-
-    console.log('Login successful, redirecting to dashboard...');
-
-    // Redirect to dashboard
-    setTimeout(() => {
-      window.location.href = '/dashboard';
-    }, 100);
+        // Handle different error types
+        if (err.status === 0) {
+          this.error =
+            'Cannot connect to server. Please check your connection.';
+        } else if (err.status === 401) {
+          this.error = 'Invalid username or password. Please try again.';
+        } else if (err.status === 403) {
+          this.error = 'Access denied. Your account may be disabled.';
+        } else if (err.status === 500) {
+          this.error = 'Server error. Please try again later.';
+        } else {
+          this.error =
+            err.error?.message ||
+            err.message ||
+            'Login failed. Please try again.';
+        }
+      },
+    });
   }
 }
