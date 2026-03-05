@@ -32,7 +32,7 @@ export class BranchService {
     id: number | string,
     branch: BranchUpdateRequest,
   ): Observable<Branch> {
-    return this.http.put<Branch>(`${this.API_URL}/${id}`, branch);
+    return this.http.patch<Branch>(`${this.API_URL}/${id}`, branch);
   }
 
   deleteBranch(id: number | string): Observable<void> {
