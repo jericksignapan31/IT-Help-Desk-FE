@@ -1,22 +1,23 @@
 export interface Department {
-  id?: number | string;
-  name: string;
+  department_id?: number | string;
+  department_name: string;
   description?: string;
   head_employee_id?: number | string;
   branch_id?: number | string;
   branch?: any;
   head?: any;
-  is_active?: boolean;
+  employees?: any[];
+  status?: string;
   created_at?: string;
   updated_at?: string;
 }
 
 export interface DepartmentCreateRequest {
-  name: string;
+  department_name: string;
   description?: string;
   head_employee_id?: number | string;
   branch_id?: number | string;
-  is_active?: boolean;
+  status?: string;
 }
 
 export interface DepartmentUpdateRequest extends Partial<DepartmentCreateRequest> {}

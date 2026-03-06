@@ -157,13 +157,31 @@ export class BranchListComponent implements OnInit {
   }
 
   toggleStatus(branch: Branch): void {
-    if (!branch.branch_id) return;
+    if (!branch.branch_id) {
+      console.log('No branch_id found:', branch);
+      return;
+    }
 
+    console.log('Toggle status for branch:', branch);
+    console.log('Current status:', branch.status);
+
+    const oldStatus = branch.status;
     const newStatus = branch.status === 'active' ? 'inactive' : 'active';
+
+    // Optimistic UI update - change status immediately
+    branch.status = newStatus;
+    console.log('Updated UI to new status:', newStatus);
+    console.log('Calling API with branch_id:', branch.branch_id);
+
     this.branchService
       .toggleBranchStatus(branch.branch_id, newStatus)
       .subscribe({
-        next: () => {
+        next: (response) => {
+          console.log('Toggle status SUCCESS:', response);
+          // Update with response data to ensure sync with backend
+          if (response.status) {
+            branch.status = response.status;
+          }
           Swal.fire({
             icon: 'success',
             title: 'Success!',
@@ -171,14 +189,21 @@ export class BranchListComponent implements OnInit {
             timer: 2000,
             showConfirmButton: false,
           });
-          this.loadBranches();
         },
         error: (error) => {
-          console.error('Error updating branch status:', error);
+          console.error('Toggle status FAILED - Full error:', error);
+          console.error('Error status:', error.status);
+          console.error('Error message:', error.message);
+          console.error('Error body:', error.error);
+
+          // Revert status on error
+          branch.status = oldStatus;
+          console.log('Reverted status back to:', oldStatus);
+
           Swal.fire({
             icon: 'error',
             title: 'Error!',
-            text: 'Failed to update branch status',
+            text: `Failed to update branch status: ${error.error?.message || error.message || 'Unknown error'}`,
           });
         },
       });

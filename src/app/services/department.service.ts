@@ -34,7 +34,7 @@ export class DepartmentService {
     id: number | string,
     department: DepartmentUpdateRequest,
   ): Observable<Department> {
-    return this.http.put<Department>(`${this.API_URL}/${id}`, department);
+    return this.http.patch<Department>(`${this.API_URL}/${id}`, department);
   }
 
   deleteDepartment(id: number | string): Observable<void> {
@@ -43,10 +43,14 @@ export class DepartmentService {
 
   toggleDepartmentStatus(
     id: number | string,
-    isActive: boolean,
+    status: string,
   ): Observable<Department> {
+    console.log(
+      `Calling PATCH ${this.API_URL}/${id}/status with status:`,
+      status,
+    );
     return this.http.patch<Department>(`${this.API_URL}/${id}/status`, {
-      is_active: isActive,
+      status,
     });
   }
 }

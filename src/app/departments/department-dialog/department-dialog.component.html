@@ -1,0 +1,56 @@
+<h2 mat-dialog-title>
+  {{ isEditMode ? "Edit Department" : "Add New Department" }}
+</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="departmentForm" (ngSubmit)="onSubmit()">
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Department Name</mat-label>
+        <input
+          matInput
+          formControlName="department_name"
+          placeholder="Enter department name"
+          required
+        />
+        <mat-icon matPrefix>business</mat-icon>
+        <mat-error *ngIf="departmentForm.get('department_name')?.invalid">
+          {{ getErrorMessage("department_name") }}
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Description</mat-label>
+        <textarea
+          matInput
+          formControlName="description"
+          placeholder="Enter department description"
+          rows="3"
+        ></textarea>
+        <mat-icon matPrefix>description</mat-icon>
+        <mat-error *ngIf="departmentForm.get('description')?.invalid">
+          {{ getErrorMessage("description") }}
+        </mat-error>
+      </mat-form-field>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="onCancel()" [disabled]="isSaving">
+    Cancel
+  </button>
+  <button
+    mat-raised-button
+    color="primary"
+    type="button"
+    (click)="onSubmit()"
+    [disabled]="departmentForm.invalid || isSaving"
+  >
+    <mat-spinner *ngIf="isSaving" diameter="20"></mat-spinner>
+    <mat-icon *ngIf="!isSaving">save</mat-icon>
+    {{ isSaving ? "Saving..." : isEditMode ? "Update" : "Create" }}
+  </button>
+</mat-dialog-actions>

@@ -40,6 +40,10 @@ export class BranchService {
   }
 
   toggleBranchStatus(id: number | string, status: string): Observable<Branch> {
+    console.log(
+      `Calling PATCH ${this.API_URL}/${id}/status with status:`,
+      status,
+    );
     return this.http.patch<Branch>(`${this.API_URL}/${id}/status`, {
       status,
     });
