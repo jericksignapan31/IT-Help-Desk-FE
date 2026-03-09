@@ -119,6 +119,22 @@
 
     <div class="form-row">
       <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Role</mat-label>
+        <mat-select formControlName="role" placeholder="Select role" required>
+          <mat-option value="employee">Employee</mat-option>
+          <mat-option value="supervisor">Supervisor</mat-option>
+          <mat-option value="it">IT</mat-option>
+          <mat-option value="admin">Admin</mat-option>
+        </mat-select>
+        <mat-icon matPrefix>security</mat-icon>
+        <mat-error *ngIf="employeeForm.get('role')?.invalid">
+          {{ getErrorMessage("role") }}
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="full-width">
         <mat-label>Branch</mat-label>
         <mat-select formControlName="branch_id" placeholder="Select branch">
           <mat-option [value]="null">None</mat-option>

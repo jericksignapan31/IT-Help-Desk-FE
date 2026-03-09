@@ -75,7 +75,7 @@ export class EmployeeDialogComponent implements OnInit {
       ],
       contact_number: ['', Validators.maxLength(20)],
       position: ['', [Validators.required, Validators.maxLength(100)]],
-      role: ['employee'],
+      role: ['employee', Validators.required],
       branch_id: [''],
       department_id: [''],
     });
@@ -85,6 +85,8 @@ export class EmployeeDialogComponent implements OnInit {
     this.loadBranchesAndDepartments();
     if (this.isEditMode && this.data.employee) {
       this.employeeForm.patchValue(this.data.employee);
+      // Disable employee_id in edit mode since it shouldn't be changed
+      this.employeeForm.get('employee_id')?.disable();
     }
   }
 
@@ -133,16 +135,39 @@ export class EmployeeDialogComponent implements OnInit {
     }
 
     this.isSaving = true;
-    const employeeData = this.employeeForm.value;
+    let employeeData = this.employeeForm.value;
 
     console.log('Saving employee - Edit Mode:', this.isEditMode);
     console.log('Employee ID:', this.data.employee?.employee_id);
-    console.log('Employee Data:', employeeData);
+    console.log('Employee Data (raw):', employeeData);
+
+    // In edit mode, remove employee_id from the data being sent
+    // because employee_id is usually immutable and shouldn't be updated
+    if (this.isEditMode) {
+      const { employee_id, ...updateData } = employeeData;
+      console.log('Employee Data (for update, without ID):', updateData);
+      employeeData = updateData;
+    }
+
+    console.log('Employee Data (final):', employeeData);
+
+    // Check if token exists
+    const token = localStorage.getItem('access_token');
+    console.log('🔐 Token exists:', !!token);
+    if (!token) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Not Authenticated',
+        text: 'You are not logged in. Please login again.',
+      });
+      this.isSaving = false;
+      return;
+    }
 
     const operation =
       this.isEditMode && this.data.employee?.employee_id
         ? this.employeeService.updateEmployee(
-            this.data.employee.employee_id as number,
+            this.data.employee.employee_id,
             employeeData as EmployeeUpdateRequest,
           )
         : this.employeeService.createEmployee(
@@ -166,10 +191,27 @@ export class EmployeeDialogComponent implements OnInit {
         console.error('Error status:', error.status);
         console.error('Error message:', error.message);
         console.error('Error body:', error.error);
+
+        // Log detailed validation errors if available
+        if (error.error?.message && Array.isArray(error.error.message)) {
+          console.error('Validation errors:', error.error.message);
+        }
+
+        let errorMessage = 'Unknown error';
+        if (error.error?.message) {
+          if (Array.isArray(error.error.message)) {
+            errorMessage = error.error.message.join(', ');
+          } else {
+            errorMessage = error.error.message;
+          }
+        } else if (error.message) {
+          errorMessage = error.message;
+        }
+
         Swal.fire({
           icon: 'error',
           title: 'Error!',
-          text: `Failed to ${this.isEditMode ? 'update' : 'create'} employee: ${error.error?.message || error.message || 'Unknown error'}`,
+          text: `Failed to ${this.isEditMode ? 'update' : 'create'} employee: ${errorMessage}`,
         });
         this.isSaving = false;
       },

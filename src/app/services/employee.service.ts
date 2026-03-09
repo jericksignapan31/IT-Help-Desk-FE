@@ -38,9 +38,10 @@ export class EmployeeService {
   }
 
   updateEmployee(
-    id: number,
+    id: number | string,
     employee: Partial<Employee>,
   ): Observable<Employee> {
+    console.log('🔄 updateEmployee called with ID:', id, 'Data:', employee);
     return this.http.patch<Employee>(
       `${this.API_URL}/employees/${id}`,
       employee,

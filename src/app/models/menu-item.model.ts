@@ -57,10 +57,11 @@ export const MENU_ITEMS: MenuItem[] = [
     route: '/repair-logs',
     roles: [UserRole.ADMIN, UserRole.TECHNICIAN],
   },
+
   {
-    label: 'User Accounts',
-    icon: 'account_circle',
-    route: '/user-accounts',
+    label: 'User Credentials',
+    icon: 'vpn_key',
+    route: '/user-credentials',
     roles: [UserRole.ADMIN],
   },
 ];

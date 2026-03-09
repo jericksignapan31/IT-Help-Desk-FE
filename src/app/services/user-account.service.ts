@@ -65,4 +65,15 @@ export class UserAccountService {
   rejectAccount(id: number): Observable<void> {
     return this.http.delete<void>(`${this.API_URL}/user-accounts/${id}`);
   }
+
+  getUserCredentials(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.API_URL}/user-accounts/credentials`);
+  }
+
+  resetPassword(userId: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(
+      `${this.API_URL}/user-accounts/${userId}/reset-password`,
+      {},
+    );
+  }
 }

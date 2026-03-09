@@ -235,6 +235,16 @@ export const routes: Routes = [
           },
         ],
       },
+      // User Credentials Route (Admin only)
+      {
+        path: 'user-credentials',
+        canActivate: [roleGuard],
+        data: { roles: [UserRole.ADMIN] },
+        loadComponent: () =>
+          import('./user-accounts/user-credentials/user-credentials.component').then(
+            (m) => m.UserCredentialsComponent,
+          ),
+      },
       // Profile Route (All authenticated users)
       {
         path: 'profile',
