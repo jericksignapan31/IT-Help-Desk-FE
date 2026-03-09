@@ -70,6 +70,21 @@
           <span *ngIf="!loading">Sign In</span>
           <span *ngIf="loading">Signing in...</span>
         </button>
+
+        <!-- Signup Link -->
+        <div class="signup-link">
+          <p>
+            Don't have an account?
+            <button
+              mat-button
+              color="primary"
+              type="button"
+              (click)="navigateToSignup()"
+            >
+              Create Account
+            </button>
+          </p>
+        </div>
       </form>
     </mat-card-content>
   </mat-card>

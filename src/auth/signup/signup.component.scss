@@ -1,11 +1,12 @@
-.login-container {
+.signup-container {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
+  padding: 2rem 0;
   background: url("/login-background.png") no-repeat center center;
   background-size: cover;
-  position: relat5ive;
+  position: relative;
 
   &::before {
     content: "";
@@ -19,33 +20,25 @@
   }
 }
 
-.login-card {
+.signup-card {
   width: 100%;
-  max-width: 400px;
-  padding: 0rem 1rem;
-  margin: 0rem 1rem;
+  max-width: 950px;
+  padding: 1.5rem;
+  margin: 1rem;
   position: relative;
   z-index: 1;
 }
 
-.login-header {
+.signup-header {
   text-align: center;
   width: 100%;
   padding-bottom: 1rem;
 
-  .login-icon {
-    font-size: 4rem;
-    width: 4rem;
-    height: 4rem;
-    color: #667eea;
-    margin: 0 auto 1rem;
-  }
-
-  .login-logo {
-    width: 12rem;
-    height: 12rem;
+  .signup-logo {
+    width: 8rem;
+    height: 8rem;
     object-fit: contain;
-    margin: 0 auto 1rem;
+    margin: 0 auto 0.5rem;
     display: block;
   }
 
@@ -61,6 +54,17 @@
     color: #666;
     font-size: 0.95rem;
   }
+
+  .info-note {
+    margin: 0.75rem 0 0;
+    padding: 0.5rem 1rem;
+    background-color: #e3f2fd;
+    color: #1565c0;
+    font-size: 0.875rem;
+    border-radius: 4px;
+    display: inline-block;
+    font-weight: 500;
+  }
 }
 
 .full-width {
@@ -68,7 +72,24 @@
   margin-bottom: 1rem;
 }
 
-.login-button {
+.form-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}
+
+.form-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.signup-button {
   margin-top: 1rem;
   height: 48px;
   font-size: 1rem;
@@ -99,32 +120,18 @@
   }
 
   .close-button {
-    width: 32px;
-    height: 32px;
-    margin: -8px -8px -8px 0;
-    flex-shrink: 0;
+    width: 2rem;
+    height: 2rem;
 
     mat-icon {
       font-size: 1rem;
       width: 1rem;
       height: 1rem;
     }
-
-    &:hover {
-      background-color: rgba(198, 40, 40, 0.1);
-    }
   }
 }
 
-::ng-deep {
-  .mat-mdc-form-field {
-    .mat-mdc-text-field-wrapper {
-      background-color: #f5f5f5;
-    }
-  }
-}
-
-.signup-link {
+.login-link {
   text-align: center;
   margin-top: 1rem;
 

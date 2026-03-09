@@ -1,34 +1,34 @@
 export interface Employee {
-  id: number;
+  employee_id?: number | string;
   first_name: string;
   last_name: string;
+  middle_name?: string;
   email: string;
-  phone?: string;
+  contact_number?: string;
   position: string;
-  department_id: number;
-  branch_id: number;
+  role?: string;
+  department_id?: number | string;
+  branch_id?: number | string;
   hire_date?: string;
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
-  department?: Department;
-  branch?: Branch;
+  employment_status?: boolean;
+  created_at?: string;
+  updated_at?: string;
+  department?: any;
+  branch?: any;
 }
 
-export interface Department {
-  id: number;
-  name: string;
-  description?: string;
-  created_at: string;
-  updated_at: string;
+export interface EmployeeCreateRequest {
+  employee_id: string;
+  first_name: string;
+  last_name: string;
+  middle_name?: string;
+  email: string;
+  contact_number?: string;
+  position: string;
+  role?: string;
+  department_id?: number | string;
+  branch_id?: number | string;
+  employment_status?: boolean;
 }
 
-export interface Branch {
-  id: number;
-  name: string;
-  address?: string;
-  phone?: string;
-  email?: string;
-  created_at: string;
-  updated_at: string;
-}
+export interface EmployeeUpdateRequest extends Partial<EmployeeCreateRequest> {}

@@ -6,6 +6,8 @@ import { Router } from '@angular/router';
 import {
   LoginRequest,
   LoginResponse,
+  RegisterRequest,
+  RegisterResponse,
   User,
   UserRole,
 } from '../models/user.model';
@@ -42,8 +44,19 @@ export class AuthService {
   login(credentials: LoginRequest): Observable<LoginResponse> {
     return this.http.post<any>(`${this.API_URL}/auth/login`, credentials).pipe(
       tap((response: any) => {
-        // Transform backend response to match frontend User model
+        // Check if user is verified
         const backendUser = response.user;
+        if (backendUser?.is_verified === false) {
+          throw {
+            status: 403,
+            error: {
+              message:
+                'Your account is pending admin approval. Please wait for verification.',
+            },
+          };
+        }
+
+        // Transform backend response to match frontend User model
         const transformedUser: User = {
           id: backendUser?.user_id || backendUser?.id || '',
           username: backendUser?.username || '',
@@ -56,6 +69,7 @@ export class AuthService {
             backendUser?.employee_id ||
             '',
           is_active: backendUser?.is_active !== false, // default to true
+          is_verified: backendUser?.is_verified !== false, // default to true
           created_at: backendUser?.created_at || new Date().toISOString(),
           updated_at: backendUser?.updated_at || new Date().toISOString(),
         };
@@ -69,6 +83,13 @@ export class AuthService {
         }
         this.currentUserSubject.next(transformedUser);
       }),
+    );
+  }
+
+  register(data: RegisterRequest): Observable<RegisterResponse> {
+    return this.http.post<RegisterResponse>(
+      `${this.API_URL}/auth/signup`,
+      data,
     );
   }
 

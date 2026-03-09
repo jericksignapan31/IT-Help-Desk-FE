@@ -102,6 +102,16 @@
         color: white;
       }
 
+      &.status-verified {
+        background-color: #4caf50;
+        color: white;
+      }
+
+      &.status-pending {
+        background-color: #ff9800;
+        color: white;
+      }
+
       &.role-admin {
         background-color: #f44336;
         color: white;

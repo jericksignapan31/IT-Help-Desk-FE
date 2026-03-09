@@ -19,7 +19,7 @@ import { EmployeeService } from '../../services/employee.service';
 import { AuthService } from '../../services/auth.service';
 import { TicketCategory, TicketPriority } from '../../models/ticket.model';
 import { Asset } from '../../models/asset.model';
-import { Branch } from '../../models/employee.model';
+import { Branch } from '../../models/branch.model';
 
 @Component({
   selector: 'app-ticket-form',

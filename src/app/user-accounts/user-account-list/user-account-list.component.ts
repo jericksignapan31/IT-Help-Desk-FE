@@ -13,6 +13,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { UserAccountService } from '../../services/user-account.service';
 import { UserAccount } from '../../models/user.model';
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-user-account-list',
@@ -39,7 +40,7 @@ export class UserAccountListComponent implements OnInit {
     'email',
     'employee',
     'role',
-    'last_login',
+    'verification',
     'status',
     'actions',
   ];
@@ -145,5 +146,81 @@ export class UserAccountListComponent implements OnInit {
       default:
         return 'role-user';
     }
+  }
+
+  approveAccount(userAccount: UserAccount): void {
+    if (!userAccount.id) return;
+
+    Swal.fire({
+      title: 'Approve Account',
+      text: `Approve account for "${userAccount.username}"? They will be able to log in.`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Approve',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed && userAccount.id) {
+        this.userAccountService.approveAccount(userAccount.id).subscribe({
+          next: () => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Approved!',
+              text: 'Account has been approved successfully',
+              timer: 2000,
+              showConfirmButton: false,
+            });
+            this.loadUserAccounts();
+          },
+          error: (error) => {
+            console.error('Error approving account:', error);
+            Swal.fire({
+              icon: 'error',
+              title: 'Error!',
+              text: 'Failed to approve account',
+            });
+          },
+        });
+      }
+    });
+  }
+
+  rejectAccount(userAccount: UserAccount): void {
+    if (!userAccount.id) return;
+
+    Swal.fire({
+      title: 'Reject Account',
+      text: `Reject and delete account for "${userAccount.username}"? This action cannot be undone.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Reject',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed && userAccount.id) {
+        this.userAccountService.rejectAccount(userAccount.id).subscribe({
+          next: () => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Rejected!',
+              text: 'Account has been rejected and deleted',
+              timer: 2000,
+              showConfirmButton: false,
+            });
+            this.loadUserAccounts();
+          },
+          error: (error) => {
+            console.error('Error rejecting account:', error);
+            Swal.fire({
+              icon: 'error',
+              title: 'Error!',
+              text: 'Failed to reject account',
+            });
+          },
+        });
+      }
+    });
   }
 }

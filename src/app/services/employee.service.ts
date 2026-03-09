@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Employee, Department, Branch } from '../models/employee.model';
+import { Employee } from '../models/employee.model';
+import { Branch } from '../models/branch.model';
+import { Department } from '../models/department.model';
 import { environment } from '../../environments/environment';
 
 @Injectable({
@@ -47,6 +49,15 @@ export class EmployeeService {
 
   deleteEmployee(id: number): Observable<void> {
     return this.http.delete<void>(`${this.API_URL}/employees/${id}`);
+  }
+
+  toggleEmployeeStatus(
+    id: string | number,
+    employment_status: boolean,
+  ): Observable<Employee> {
+    return this.http.patch<Employee>(`${this.API_URL}/employees/${id}/status`, {
+      employment_status,
+    });
   }
 
   // Departments

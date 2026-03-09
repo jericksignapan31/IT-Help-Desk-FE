@@ -54,4 +54,15 @@ export class UserAccountService {
       is_active: false,
     });
   }
+
+  approveAccount(id: number): Observable<UserAccount> {
+    return this.http.patch<UserAccount>(
+      `${this.API_URL}/user-accounts/${id}/verify`,
+      { is_verified: true },
+    );
+  }
+
+  rejectAccount(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.API_URL}/user-accounts/${id}`);
+  }
 }

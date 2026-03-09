@@ -1,0 +1,178 @@
+<h2 mat-dialog-title>
+  {{ isEditMode ? "Edit Employee" : "Add New Employee" }}
+</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="employeeForm" (ngSubmit)="onSubmit()">
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Employee ID</mat-label>
+        <input
+          matInput
+          formControlName="employee_id"
+          placeholder="e.g., EMP001"
+          required
+          [readonly]="isEditMode"
+        />
+        <mat-icon matPrefix>badge</mat-icon>
+        <mat-error *ngIf="employeeForm.get('employee_id')?.invalid">
+          {{ getErrorMessage("employee_id") }}
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>First Name</mat-label>
+        <input
+          matInput
+          formControlName="first_name"
+          placeholder="Enter first name"
+          required
+        />
+        <mat-icon matPrefix>person</mat-icon>
+        <mat-error *ngIf="employeeForm.get('first_name')?.invalid">
+          {{ getErrorMessage("first_name") }}
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Last Name</mat-label>
+        <input
+          matInput
+          formControlName="last_name"
+          placeholder="Enter last name"
+          required
+        />
+        <mat-icon matPrefix>person</mat-icon>
+        <mat-error *ngIf="employeeForm.get('last_name')?.invalid">
+          {{ getErrorMessage("last_name") }}
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Middle Name</mat-label>
+        <input
+          matInput
+          formControlName="middle_name"
+          placeholder="Enter middle name (optional)"
+        />
+        <mat-icon matPrefix>person</mat-icon>
+        <mat-error *ngIf="employeeForm.get('middle_name')?.invalid">
+          {{ getErrorMessage("middle_name") }}
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Email</mat-label>
+        <input
+          matInput
+          formControlName="email"
+          placeholder="employee@example.com"
+          type="email"
+          required
+        />
+        <mat-icon matPrefix>email</mat-icon>
+        <mat-error *ngIf="employeeForm.get('email')?.invalid">
+          {{ getErrorMessage("email") }}
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Contact Number</mat-label>
+        <input
+          matInput
+          formControlName="contact_number"
+          placeholder="09123456789"
+          type="tel"
+        />
+        <mat-icon matPrefix>phone</mat-icon>
+        <mat-error *ngIf="employeeForm.get('contact_number')?.invalid">
+          {{ getErrorMessage("contact_number") }}
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Position</mat-label>
+        <input
+          matInput
+          formControlName="position"
+          placeholder="Enter position"
+          required
+        />
+        <mat-icon matPrefix>work</mat-icon>
+        <mat-error *ngIf="employeeForm.get('position')?.invalid">
+          {{ getErrorMessage("position") }}
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Branch</mat-label>
+        <mat-select formControlName="branch_id" placeholder="Select branch">
+          <mat-option [value]="null">None</mat-option>
+          <mat-option
+            *ngFor="let branch of branches"
+            [value]="branch.branch_id"
+          >
+            {{ branch.branch_name }}
+          </mat-option>
+        </mat-select>
+        <mat-icon matPrefix>business</mat-icon>
+        <mat-error *ngIf="employeeForm.get('branch_id')?.invalid">
+          {{ getErrorMessage("branch_id") }}
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Department</mat-label>
+        <mat-select
+          formControlName="department_id"
+          placeholder="Select department"
+        >
+          <mat-option [value]="null">None</mat-option>
+          <mat-option
+            *ngFor="let department of departments"
+            [value]="department.department_id"
+          >
+            {{ department.department_name }}
+          </mat-option>
+        </mat-select>
+        <mat-icon matPrefix>apartment</mat-icon>
+        <mat-error *ngIf="employeeForm.get('department_id')?.invalid">
+          {{ getErrorMessage("department_id") }}
+        </mat-error>
+      </mat-form-field>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="onCancel()" [disabled]="isSaving">
+    Cancel
+  </button>
+  <button
+    mat-raised-button
+    color="primary"
+    type="button"
+    (click)="onSubmit()"
+    [disabled]="employeeForm.invalid || isSaving"
+  >
+    <mat-spinner *ngIf="isSaving" diameter="20"></mat-spinner>
+    <mat-icon *ngIf="!isSaving">save</mat-icon>
+    {{ isSaving ? "Saving..." : isEditMode ? "Update" : "Create" }}
+  </button>
+</mat-dialog-actions>
