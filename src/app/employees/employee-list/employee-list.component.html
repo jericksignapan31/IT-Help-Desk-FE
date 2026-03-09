@@ -8,15 +8,30 @@
   </div>
 
   <mat-card class="search-card">
-    <mat-form-field appearance="outline" class="search-field">
-      <mat-label>Search</mat-label>
-      <input
-        matInput
-        [(ngModel)]="searchText"
-        placeholder="Search by name, email..."
-      />
-      <mat-icon matPrefix>search</mat-icon>
-    </mat-form-field>
+    <div class="filter-container">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Search</mat-label>
+        <input
+          matInput
+          [(ngModel)]="searchText"
+          placeholder="Search by name, email..."
+        />
+        <mat-icon matPrefix>search</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Filter by Status</mat-label>
+        <mat-select
+          [(ngModel)]="statusFilter"
+          (selectionChange)="applyFilter()"
+        >
+          <mat-option value="all">All Employees</mat-option>
+          <mat-option value="active">Active</mat-option>
+          <mat-option value="pending">Pending Verification</mat-option>
+        </mat-select>
+        <mat-icon matPrefix>filter_list</mat-icon>
+      </mat-form-field>
+    </div>
   </mat-card>
 
   <mat-card>
@@ -29,7 +44,7 @@
 
       <table
         mat-table
-        [dataSource]="employees"
+        [dataSource]="filteredEmployees"
         class="employee-table"
         *ngIf="!loading"
       >
@@ -69,6 +84,19 @@
           <td mat-cell *matCellDef="let employee">{{ employee.position }}</td>
         </ng-container>
 
+        <!-- Verification Column -->
+        <ng-container matColumnDef="verification">
+          <th mat-header-cell *matHeaderCellDef>Verification</th>
+          <td mat-cell *matCellDef="let employee">
+            <mat-chip
+              [class.status-verified]="employee.is_verified !== false"
+              [class.status-pending]="employee.is_verified === false"
+            >
+              {{ employee.is_verified === false ? "Pending" : "Verified" }}
+            </mat-chip>
+          </td>
+        </ng-container>
+
         <!-- Status Column -->
         <ng-container matColumnDef="status">
           <th mat-header-cell *matHeaderCellDef>Status</th>
@@ -86,34 +114,49 @@
         <ng-container matColumnDef="actions">
           <th mat-header-cell *matHeaderCellDef>Actions</th>
           <td mat-cell *matCellDef="let employee">
-            <button
-              mat-icon-button
-              (click)="editEmployee(employee)"
-              matTooltip="Edit"
-              color="primary"
-            >
-              <mat-icon>edit</mat-icon>
-            </button>
-            <button
-              mat-icon-button
-              (click)="toggleStatus(employee)"
-              [matTooltip]="
-                employee.employment_status ? 'Deactivate' : 'Activate'
-              "
-              [color]="employee.employment_status ? 'accent' : 'warn'"
-            >
-              <mat-icon>{{
-                employee.employment_status ? "toggle_on" : "toggle_off"
-              }}</mat-icon>
-            </button>
-            <button
-              mat-icon-button
-              (click)="deleteEmployee(employee)"
-              matTooltip="Delete"
-              color="warn"
-            >
-              <mat-icon>delete</mat-icon>
-            </button>
+            <!-- Show Verify button for pending employees -->
+            <ng-container *ngIf="employee.is_verified === false">
+              <button
+                mat-icon-button
+                color="primary"
+                (click)="verifyEmployee(employee)"
+                matTooltip="Verify Employee"
+              >
+                <mat-icon>check_circle</mat-icon>
+              </button>
+            </ng-container>
+
+            <!-- Show regular actions for verified employees -->
+            <ng-container *ngIf="employee.is_verified !== false">
+              <button
+                mat-icon-button
+                (click)="editEmployee(employee)"
+                matTooltip="Edit"
+                color="primary"
+              >
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                (click)="toggleStatus(employee)"
+                [matTooltip]="
+                  employee.employment_status ? 'Deactivate' : 'Activate'
+                "
+                [color]="employee.employment_status ? 'accent' : 'warn'"
+              >
+                <mat-icon>{{
+                  employee.employment_status ? "toggle_on" : "toggle_off"
+                }}</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                (click)="deleteEmployee(employee)"
+                matTooltip="Delete"
+                color="warn"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </ng-container>
           </td>
         </ng-container>
 
@@ -126,7 +169,7 @@
       </table>
 
       <!-- Empty State -->
-      <div *ngIf="employees.length === 0 && !loading" class="no-data">
+      <div *ngIf="filteredEmployees.length === 0 && !loading" class="no-data">
         <mat-icon>people</mat-icon>
         <p>No employees found</p>
         <button mat-raised-button color="primary" (click)="createEmployee()">

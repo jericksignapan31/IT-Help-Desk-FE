@@ -60,6 +60,12 @@ export class EmployeeService {
     });
   }
 
+  verifyEmployee(id: string | number): Observable<Employee> {
+    return this.http.patch<Employee>(`${this.API_URL}/employees/${id}/verify`, {
+      is_verified: true,
+    });
+  }
+
   // Departments
   getDepartments(): Observable<Department[]> {
     return this.http.get<Department[]>(`${this.API_URL}/departments`);

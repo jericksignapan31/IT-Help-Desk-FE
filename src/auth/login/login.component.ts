@@ -90,13 +90,37 @@ export class LoginComponent {
         console.log('   Role:', response.user?.role?.toUpperCase() || 'N/A');
         console.log('   Employee ID:', response.user?.employee_id || 'N/A');
         console.log('   Active:', response.user?.is_active ? '✅' : '❌');
+        console.log('   Verified:', response.user?.is_verified ? '✅' : '❌');
         console.log('   Created:', response.user?.created_at || 'N/A');
         console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
         console.log('🔑 Access Token:', response.access_token || 'N/A');
         console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
         console.log('Full Response Object:', response);
         console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        console.log('🔍 Verification Check:');
+        console.log('   is_verified:', response.user?.is_verified);
+        console.log('   is_active:', response.user?.is_active);
+        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+
         this.loading = false;
+
+        // Check if account is not verified by admin
+        if (response.user?.is_verified === false) {
+          this.error =
+            'Your account is not verified by admin. Please wait for admin approval.';
+          console.log('❌ Login blocked: Account not verified');
+          return;
+        }
+
+        // Check if account is deactivated
+        if (response.user?.is_active === false) {
+          this.error =
+            'Your account has been deactivated by admin. Please contact support.';
+          console.log('❌ Login blocked: Account deactivated');
+          return;
+        }
+
+        console.log('✅ All checks passed. Navigating to dashboard...');
         // Navigate to dashboard
         this.router.navigate(['/dashboard']);
       },
@@ -109,9 +133,19 @@ export class LoginComponent {
           this.error =
             'Cannot connect to server. Please check your connection.';
         } else if (err.status === 401) {
-          this.error = 'Invalid username or password. Please try again.';
+          // Check if backend provides specific error message
+          if (err.error?.message === 'Account is not active') {
+            this.error =
+              'Your account is not verified by admin. Please wait for admin approval.';
+          } else if (err.error?.message) {
+            this.error = err.error.message;
+          } else {
+            this.error = 'Invalid username or password. Please try again.';
+          }
         } else if (err.status === 403) {
-          this.error = 'Access denied. Your account may be disabled.';
+          this.error =
+            err.error?.message ||
+            'Access denied. Your account may be disabled.';
         } else if (err.status === 500) {
           this.error = 'Server error. Please try again later.';
         } else {

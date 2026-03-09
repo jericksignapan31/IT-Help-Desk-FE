@@ -35,8 +35,6 @@ export class DepartmentListComponent implements OnInit {
   displayedColumns: string[] = [
     'department_name',
     'description',
-    'branch',
-    'head',
     'status',
     'actions',
   ];

@@ -3,8 +3,6 @@ export interface Department {
   department_name: string;
   description?: string;
   head_employee_id?: number | string;
-  branch_id?: number | string;
-  branch?: any;
   head?: any;
   employees?: any[];
   status?: string;
@@ -16,7 +14,6 @@ export interface DepartmentCreateRequest {
   department_name: string;
   description?: string;
   head_employee_id?: number | string;
-  branch_id?: number | string;
   status?: string;
 }
 

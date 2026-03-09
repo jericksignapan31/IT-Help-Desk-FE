@@ -11,6 +11,7 @@ export interface Employee {
   branch_id?: number | string;
   hire_date?: string;
   employment_status?: boolean;
+  is_verified?: boolean;
   created_at?: string;
   updated_at?: string;
   department?: any;
