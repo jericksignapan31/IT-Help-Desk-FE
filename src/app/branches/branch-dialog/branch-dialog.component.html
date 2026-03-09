@@ -5,13 +5,13 @@
     <div class="form-row">
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Branch Name</mat-label>
+        <mat-icon matPrefix>business</mat-icon>
         <input
           matInput
           formControlName="branch_name"
           placeholder="Enter branch name"
           required
         />
-        <mat-icon matPrefix>business</mat-icon>
         <mat-error *ngIf="branchForm.get('branch_name')?.invalid">
           {{ getErrorMessage("branch_name") }}
         </mat-error>
@@ -21,13 +21,13 @@
     <div class="form-row">
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Location</mat-label>
+        <mat-icon matPrefix>location_on</mat-icon>
         <input
           matInput
           formControlName="location"
           placeholder="Enter location"
           required
         />
-        <mat-icon matPrefix>location_on</mat-icon>
         <mat-error *ngIf="branchForm.get('location')?.invalid">
           {{ getErrorMessage("location") }}
         </mat-error>
@@ -37,13 +37,13 @@
     <div class="form-row">
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Contact Number</mat-label>
+        <mat-icon matPrefix>phone</mat-icon>
         <input
           matInput
           formControlName="contact_number"
           placeholder="+63-2-1234-5678"
           type="tel"
         />
-        <mat-icon matPrefix>phone</mat-icon>
         <mat-error *ngIf="branchForm.get('contact_number')?.invalid">
           {{ getErrorMessage("contact_number") }}
         </mat-error>

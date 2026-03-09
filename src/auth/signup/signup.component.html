@@ -20,13 +20,13 @@
             <!-- Employee ID -->
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Employee ID</mat-label>
+              <mat-icon matPrefix>badge</mat-icon>
               <input
                 matInput
                 formControlName="employee_id"
                 placeholder="e.g., EMP001"
                 autocomplete="off"
               />
-              <mat-icon matPrefix>badge</mat-icon>
               <mat-error *ngIf="signupForm.get('employee_id')?.invalid">
                 {{ getErrorMessage("employee_id") }}
               </mat-error>
@@ -35,13 +35,13 @@
             <!-- First Name -->
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>First Name</mat-label>
+              <mat-icon matPrefix>person_outline</mat-icon>
               <input
                 matInput
                 formControlName="first_name"
                 placeholder="Enter first name"
                 autocomplete="given-name"
               />
-              <mat-icon matPrefix>person_outline</mat-icon>
               <mat-error *ngIf="signupForm.get('first_name')?.invalid">
                 {{ getErrorMessage("first_name") }}
               </mat-error>
@@ -50,13 +50,13 @@
             <!-- Last Name -->
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Last Name</mat-label>
+              <mat-icon matPrefix>person_outline</mat-icon>
               <input
                 matInput
                 formControlName="last_name"
                 placeholder="Enter last name"
                 autocomplete="family-name"
               />
-              <mat-icon matPrefix>person_outline</mat-icon>
               <mat-error *ngIf="signupForm.get('last_name')?.invalid">
                 {{ getErrorMessage("last_name") }}
               </mat-error>
@@ -65,18 +65,19 @@
             <!-- Middle Name -->
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Middle Name (Optional)</mat-label>
+              <mat-icon matPrefix>person_outline</mat-icon>
               <input
                 matInput
                 formControlName="middle_name"
                 placeholder="Enter middle name"
                 autocomplete="additional-name"
               />
-              <mat-icon matPrefix>person_outline</mat-icon>
             </mat-form-field>
 
             <!-- Email -->
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Email</mat-label>
+              <mat-icon matPrefix>email</mat-icon>
               <input
                 matInput
                 formControlName="email"
@@ -84,7 +85,6 @@
                 placeholder="your.email@example.com"
                 autocomplete="email"
               />
-              <mat-icon matPrefix>email</mat-icon>
               <mat-error *ngIf="signupForm.get('email')?.invalid">
                 {{ getErrorMessage("email") }}
               </mat-error>
@@ -96,6 +96,7 @@
             <!-- Branch -->
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Branch</mat-label>
+              <mat-icon matPrefix>business</mat-icon>
               <mat-select formControlName="branch_id">
                 <mat-option
                   *ngFor="let branch of branches"
@@ -104,7 +105,6 @@
                   {{ branch.branch_name }}
                 </mat-option>
               </mat-select>
-              <mat-icon matPrefix>business</mat-icon>
               <mat-error *ngIf="signupForm.get('branch_id')?.invalid">
                 {{ getErrorMessage("branch_id") }}
               </mat-error>
@@ -113,6 +113,7 @@
             <!-- Department -->
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Department</mat-label>
+              <mat-icon matPrefix>apartment</mat-icon>
               <mat-select formControlName="department_id">
                 <mat-option
                   *ngFor="let department of departments"
@@ -121,7 +122,6 @@
                   {{ department.department_name }}
                 </mat-option>
               </mat-select>
-              <mat-icon matPrefix>apartment</mat-icon>
               <mat-error *ngIf="signupForm.get('department_id')?.invalid">
                 {{ getErrorMessage("department_id") }}
               </mat-error>
@@ -130,13 +130,13 @@
             <!-- Position -->
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Position</mat-label>
+              <mat-icon matPrefix>work</mat-icon>
               <input
                 matInput
                 formControlName="position"
                 placeholder="Enter your position"
                 autocomplete="organization-title"
               />
-              <mat-icon matPrefix>work</mat-icon>
               <mat-error *ngIf="signupForm.get('position')?.invalid">
                 {{ getErrorMessage("position") }}
               </mat-error>
@@ -145,6 +145,7 @@
             <!-- Contact Number -->
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Contact Number (Optional)</mat-label>
+              <mat-icon matPrefix>phone</mat-icon>
               <input
                 matInput
                 formControlName="contact_number"
@@ -152,7 +153,6 @@
                 placeholder="09123456789"
                 autocomplete="tel"
               />
-              <mat-icon matPrefix>phone</mat-icon>
             </mat-form-field>
           </div>
         </div>

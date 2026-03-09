@@ -113,6 +113,14 @@
             <button
               mat-icon-button
               color="primary"
+              (click)="downloadQRCode(asset)"
+              matTooltip="Download QR Code"
+            >
+              <mat-icon>qr_code</mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              color="primary"
               (click)="editAsset(asset)"
               matTooltip="Edit Asset"
               *ngIf="authService.isAdmin() || authService.isTechnician()"

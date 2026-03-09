@@ -7,13 +7,13 @@
     <div class="form-row">
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Department Name</mat-label>
+        <mat-icon matPrefix>business</mat-icon>
         <input
           matInput
           formControlName="department_name"
           placeholder="Enter department name"
           required
         />
-        <mat-icon matPrefix>business</mat-icon>
         <mat-error *ngIf="departmentForm.get('department_name')?.invalid">
           {{ getErrorMessage("department_name") }}
         </mat-error>
@@ -23,13 +23,13 @@
     <div class="form-row">
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Description</mat-label>
+        <mat-icon matPrefix>description</mat-icon>
         <textarea
           matInput
           formControlName="description"
           placeholder="Enter department description"
           rows="3"
         ></textarea>
-        <mat-icon matPrefix>description</mat-icon>
         <mat-error *ngIf="departmentForm.get('description')?.invalid">
           {{ getErrorMessage("description") }}
         </mat-error>

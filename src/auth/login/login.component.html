@@ -11,13 +11,13 @@
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Employee ID</mat-label>
+          <mat-icon matPrefix>person</mat-icon>
           <input
             matInput
             formControlName="username"
             type="text"
             autocomplete="username"
           />
-          <mat-icon matPrefix>person</mat-icon>
           <mat-error *ngIf="loginForm.get('username')?.hasError('required')">
             Username is required
           </mat-error>
@@ -25,13 +25,13 @@
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Password</mat-label>
+          <mat-icon matPrefix>lock</mat-icon>
           <input
             matInput
             formControlName="password"
             [type]="hidePassword ? 'password' : 'text'"
             autocomplete="current-password"
           />
-          <mat-icon matPrefix>lock</mat-icon>
           <button
             mat-icon-button
             matSuffix

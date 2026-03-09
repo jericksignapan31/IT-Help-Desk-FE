@@ -19,6 +19,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { MatTabsModule } from '@angular/material/tabs';
 import { AssetService } from '../../services/asset.service';
 import { EmployeeService } from '../../services/employee.service';
 import {
@@ -30,6 +31,7 @@ import {
 import { Branch } from '../../models/branch.model';
 import { Employee } from '../../models/employee.model';
 import Swal from 'sweetalert2';
+import * as QRCode from 'qrcode';
 
 export interface AssetDialogData {
   asset?: Asset;
@@ -51,6 +53,7 @@ export interface AssetDialogData {
     MatSelectModule,
     MatDatepickerModule,
     MatNativeDateModule,
+    MatTabsModule,
   ],
   templateUrl: './asset-dialog.component.html',
   styleUrls: ['./asset-dialog.component.scss'],
@@ -64,6 +67,9 @@ export class AssetDialogComponent implements OnInit {
   brands: any[] = [];
   loadingData = true;
   loadingEmployees = false;
+  qrCodeDataUrl: string | null = null;
+  showQRCode = false;
+  createdAsset: Asset | null = null;
 
   assetTypes = Object.values(AssetType);
   statusOptions = Object.values(AssetStatus);
@@ -90,6 +96,11 @@ export class AssetDialogComponent implements OnInit {
       purchase_date: [''],
       warranty_expiry: [''],
       notes: ['', Validators.maxLength(500)],
+      // Network Configuration fields
+      ip_address: [''],
+      mac_address: [''],
+      hostname: [''],
+      anydesk_id: [''],
     });
   }
 
@@ -242,14 +253,22 @@ export class AssetDialogComponent implements OnInit {
 
     operation.subscribe({
       next: (result) => {
-        Swal.fire({
-          icon: 'success',
-          title: 'Success!',
-          text: `Asset ${this.isEditMode ? 'updated' : 'created'} successfully`,
-          timer: 2000,
-          showConfirmButton: false,
-        });
-        this.dialogRef.close(result);
+        this.isSaving = false;
+        this.createdAsset = result;
+
+        // Generate QR code for new assets
+        if (!this.isEditMode) {
+          this.generateQRCode(result.asset_tag);
+        } else {
+          Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: 'Asset updated successfully',
+            timer: 2000,
+            showConfirmButton: false,
+          });
+          this.dialogRef.close(result);
+        }
       },
       error: (error) => {
         console.error('Asset save FAILED:', error);
@@ -277,5 +296,50 @@ export class AssetDialogComponent implements OnInit {
 
   onCancel(): void {
     this.dialogRef.close();
+  }
+
+  generateQRCode(assetTag: string): void {
+    const qrData = JSON.stringify({
+      asset_tag: assetTag,
+      type: 'asset',
+      created_at: new Date().toISOString(),
+    });
+
+    QRCode.toDataURL(qrData, {
+      width: 300,
+      margin: 2,
+      color: {
+        dark: '#000000',
+        light: '#FFFFFF',
+      },
+    })
+      .then((url) => {
+        this.qrCodeDataUrl = url;
+        this.showQRCode = true;
+      })
+      .catch((err) => {
+        console.error('QR Code generation failed:', err);
+        Swal.fire({
+          icon: 'success',
+          title: 'Asset Created!',
+          text: 'Asset created successfully, but QR code generation failed.',
+          timer: 2000,
+          showConfirmButton: false,
+        });
+        this.dialogRef.close(this.createdAsset);
+      });
+  }
+
+  downloadQRCode(): void {
+    if (!this.qrCodeDataUrl || !this.createdAsset) return;
+
+    const link = document.createElement('a');
+    link.download = `QR_${this.createdAsset.asset_tag}.png`;
+    link.href = this.qrCodeDataUrl;
+    link.click();
+  }
+
+  closeWithQRCode(): void {
+    this.dialogRef.close(this.createdAsset);
   }
 }

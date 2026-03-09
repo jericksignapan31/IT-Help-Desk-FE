@@ -16,6 +16,7 @@ import { Asset, AssetStatus, AssetCondition } from '../../models/asset.model';
 import { AuthService } from '../../services/auth.service';
 import { AssetDialogComponent } from '../asset-dialog/asset-dialog.component';
 import Swal from 'sweetalert2';
+import * as QRCode from 'qrcode';
 
 @Component({
   selector: 'app-asset-list',
@@ -159,5 +160,45 @@ export class AssetListComponent implements OnInit {
         });
       }
     });
+  }
+
+  downloadQRCode(asset: Asset): void {
+    const qrData = JSON.stringify({
+      asset_tag: asset.asset_tag,
+      type: 'asset',
+      created_at: asset.created_at || new Date().toISOString(),
+    });
+
+    QRCode.toDataURL(qrData, {
+      width: 300,
+      margin: 2,
+      color: {
+        dark: '#000000',
+        light: '#FFFFFF',
+      },
+    })
+      .then((url) => {
+        // Create download link
+        const link = document.createElement('a');
+        link.download = `QR_${asset.asset_tag}.png`;
+        link.href = url;
+        link.click();
+
+        Swal.fire({
+          icon: 'success',
+          title: 'QR Code Downloaded!',
+          text: `QR code for ${asset.asset_tag} has been downloaded.`,
+          timer: 2000,
+          showConfirmButton: false,
+        });
+      })
+      .catch((err) => {
+        console.error('QR Code generation failed:', err);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error!',
+          text: 'Failed to generate QR code. Please try again.',
+        });
+      });
   }
 }

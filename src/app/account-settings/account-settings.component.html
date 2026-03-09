@@ -17,13 +17,13 @@
         <!-- Current Password -->
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Current Password</mat-label>
+          <mat-icon matPrefix>lock</mat-icon>
           <input
             matInput
             formControlName="currentPassword"
             [type]="hideCurrentPassword ? 'password' : 'text'"
             autocomplete="current-password"
           />
-          <mat-icon matPrefix>lock</mat-icon>
           <button
             mat-icon-button
             matSuffix
@@ -46,13 +46,13 @@
         <!-- New Password -->
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>New Password</mat-label>
+          <mat-icon matPrefix>lock_open</mat-icon>
           <input
             matInput
             formControlName="newPassword"
             [type]="hideNewPassword ? 'password' : 'text'"
             autocomplete="new-password"
           />
-          <mat-icon matPrefix>lock_open</mat-icon>
           <button
             mat-icon-button
             matSuffix
@@ -71,13 +71,13 @@
         <!-- Confirm Password -->
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Confirm New Password</mat-label>
+          <mat-icon matPrefix>lock_open</mat-icon>
           <input
             matInput
             formControlName="confirmPassword"
             [type]="hideConfirmPassword ? 'password' : 'text'"
             autocomplete="new-password"
           />
-          <mat-icon matPrefix>lock_open</mat-icon>
           <button
             mat-icon-button
             matSuffix

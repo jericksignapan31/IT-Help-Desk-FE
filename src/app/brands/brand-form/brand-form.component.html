@@ -13,13 +13,13 @@
         <div class="form-row">
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Brand Name</mat-label>
+            <mat-icon matPrefix>label</mat-icon>
             <input
               matInput
               formControlName="name"
               placeholder="Enter brand name"
               required
             />
-            <mat-icon matPrefix>label</mat-icon>
             <mat-error *ngIf="brandForm.get('name')?.invalid">
               {{ getErrorMessage("name") }}
             </mat-error>
@@ -29,12 +29,12 @@
         <div class="form-row">
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Manufacturer</mat-label>
+            <mat-icon matPrefix>business</mat-icon>
             <input
               matInput
               formControlName="manufacturer"
               placeholder="Enter manufacturer name"
             />
-            <mat-icon matPrefix>business</mat-icon>
             <mat-error *ngIf="brandForm.get('manufacturer')?.invalid">
               {{ getErrorMessage("manufacturer") }}
             </mat-error>
@@ -44,13 +44,13 @@
         <div class="form-row">
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Description</mat-label>
+            <mat-icon matPrefix>description</mat-icon>
             <textarea
               matInput
               formControlName="description"
               placeholder="Enter brand description"
               rows="3"
             ></textarea>
-            <mat-icon matPrefix>description</mat-icon>
             <mat-error *ngIf="brandForm.get('description')?.invalid">
               {{ getErrorMessage("description") }}
             </mat-error>
@@ -60,13 +60,13 @@
         <div class="form-row">
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Website URL</mat-label>
+            <mat-icon matPrefix>link</mat-icon>
             <input
               matInput
               formControlName="website_url"
               placeholder="https://example.com"
               type="url"
             />
-            <mat-icon matPrefix>link</mat-icon>
             <mat-error *ngIf="brandForm.get('website_url')?.invalid">
               {{ getErrorMessage("website_url") }}
             </mat-error>
@@ -76,13 +76,13 @@
         <div class="form-row form-row-split">
           <mat-form-field appearance="outline">
             <mat-label>Support Email</mat-label>
+            <mat-icon matPrefix>email</mat-icon>
             <input
               matInput
               formControlName="support_email"
               placeholder="support@example.com"
               type="email"
             />
-            <mat-icon matPrefix>email</mat-icon>
             <mat-error *ngIf="brandForm.get('support_email')?.invalid">
               {{ getErrorMessage("support_email") }}
             </mat-error>
@@ -90,13 +90,13 @@
 
           <mat-form-field appearance="outline">
             <mat-label>Support Phone</mat-label>
+            <mat-icon matPrefix>phone</mat-icon>
             <input
               matInput
               formControlName="support_phone"
               placeholder="+1 (555) 123-4567"
               type="tel"
             />
-            <mat-icon matPrefix>phone</mat-icon>
             <mat-error *ngIf="brandForm.get('support_phone')?.invalid">
               {{ getErrorMessage("support_phone") }}
             </mat-error>
