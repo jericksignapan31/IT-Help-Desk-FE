@@ -15,6 +15,7 @@ import { FormsModule } from '@angular/forms';
 import { EmployeeService } from '../../services/employee.service';
 import { Employee } from '../../models/employee.model';
 import { EmployeeDialogComponent } from '../employee-dialog/employee-dialog.component';
+import { EmployeeViewDialogComponent } from '../employee-view-dialog/employee-view-dialog.component';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -116,6 +117,20 @@ export class EmployeeListComponent implements OnInit {
     });
   }
 
+  viewEmployee(employee: Employee): void {
+    const dialogRef = this.dialog.open(EmployeeViewDialogComponent, {
+      width: '700px',
+      data: {
+        employeeId: employee.employee_id,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe(() => {
+      // Reload employees to reflect any status changes
+      this.loadEmployees();
+    });
+  }
+
   editEmployee(employee: Employee): void {
     const dialogRef = this.dialog.open(EmployeeDialogComponent, {
       width: '600px',
@@ -177,53 +192,6 @@ export class EmployeeListComponent implements OnInit {
           });
       }
     });
-  }
-
-  toggleStatus(employee: Employee): void {
-    if (!employee.employee_id) {
-      console.log('No employee employee_id found:', employee);
-      return;
-    }
-
-    console.log('Toggle status for employee:', employee);
-    console.log('Current employment_status:', employee.employment_status);
-
-    const oldStatus = employee.employment_status;
-    const newStatus = !employee.employment_status;
-
-    // Optimistic UI update - change status immediately
-    employee.employment_status = newStatus;
-    console.log('Updated UI to new employment_status:', newStatus);
-
-    this.employeeService
-      .toggleEmployeeStatus(employee.employee_id as string, newStatus)
-      .subscribe({
-        next: (response) => {
-          console.log('Toggle status SUCCESS:', response);
-          // Update with response data to ensure sync with backend
-          if (response.employment_status !== undefined) {
-            employee.employment_status = response.employment_status;
-          }
-          Swal.fire({
-            icon: 'success',
-            title: 'Success!',
-            text: `Employee ${newStatus ? 'activated' : 'deactivated'} successfully`,
-            timer: 2000,
-            showConfirmButton: false,
-          });
-        },
-        error: (error) => {
-          console.error('Toggle status FAILED - Full error:', error);
-          // Revert status on error
-          employee.employment_status = oldStatus;
-          console.log('Reverted employment_status back to:', oldStatus);
-          Swal.fire({
-            icon: 'error',
-            title: 'Error!',
-            text: `Failed to update employee status: ${error.error?.message || error.message || 'Unknown error'}`,
-          });
-        },
-      });
   }
 
   getFullName(employee: Employee): string {

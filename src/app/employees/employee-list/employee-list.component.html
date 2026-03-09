@@ -130,23 +130,19 @@
             <ng-container *ngIf="employee.is_verified !== false">
               <button
                 mat-icon-button
+                (click)="viewEmployee(employee)"
+                matTooltip="View Profile"
+                color="accent"
+              >
+                <mat-icon>visibility</mat-icon>
+              </button>
+              <button
+                mat-icon-button
                 (click)="editEmployee(employee)"
                 matTooltip="Edit"
                 color="primary"
               >
                 <mat-icon>edit</mat-icon>
-              </button>
-              <button
-                mat-icon-button
-                (click)="toggleStatus(employee)"
-                [matTooltip]="
-                  employee.employment_status ? 'Deactivate' : 'Activate'
-                "
-                [color]="employee.employment_status ? 'accent' : 'warn'"
-              >
-                <mat-icon>{{
-                  employee.employment_status ? "toggle_on" : "toggle_off"
-                }}</mat-icon>
               </button>
               <button
                 mat-icon-button

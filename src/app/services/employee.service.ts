@@ -29,7 +29,7 @@ export class EmployeeService {
     });
   }
 
-  getEmployee(id: number): Observable<Employee> {
+  getEmployee(id: number | string): Observable<Employee> {
     return this.http.get<Employee>(`${this.API_URL}/employees/${id}`);
   }
 
