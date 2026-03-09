@@ -52,7 +52,11 @@ export class EmployeeViewDialogComponent implements OnInit {
       next: (data) => {
         this.employee = data;
         this.loading = false;
-        console.log('Employee details loaded:', data);
+        console.log('========== EMPLOYEE VIEW DATA ==========');
+        console.log('Full Employee Object:', JSON.stringify(data, null, 2));
+        console.log('Branch object:', data.branch);
+        console.log('Department object:', data.department);
+        console.log('=======================================');
       },
       error: (err) => {
         console.error('Failed to load employee details:', err);

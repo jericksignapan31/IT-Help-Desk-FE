@@ -1,0 +1,240 @@
+<h2 mat-dialog-title>
+  <mat-icon>inventory_2</mat-icon>
+  {{ isEditMode ? "Edit Asset" : "Add New Asset" }}
+</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="assetForm" class="asset-form">
+    <div class="form-grid">
+      <!-- Asset Tag -->
+      <mat-form-field appearance="outline">
+        <mat-label>Asset Tag</mat-label>
+        <input
+          matInput
+          formControlName="asset_tag"
+          placeholder="e.g., LAP-001"
+        />
+        <mat-icon matPrefix>tag</mat-icon>
+        <mat-error *ngIf="assetForm.get('asset_tag')?.hasError('required')">
+          Asset tag is required
+        </mat-error>
+        <mat-error *ngIf="assetForm.get('asset_tag')?.hasError('maxlength')">
+          Maximum 50 characters
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Asset Type -->
+      <mat-form-field appearance="outline">
+        <mat-label>Asset Type</mat-label>
+        <mat-select formControlName="type">
+          <mat-option *ngFor="let type of assetTypes" [value]="type">
+            {{ type }}
+          </mat-option>
+        </mat-select>
+        <mat-icon matPrefix>category</mat-icon>
+        <mat-error *ngIf="assetForm.get('type')?.hasError('required')">
+          Type is required
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Brand -->
+      <mat-form-field appearance="outline">
+        <mat-label>Brand</mat-label>
+        <mat-select formControlName="brand_id">
+          <mat-option value="">None</mat-option>
+          <mat-option *ngFor="let brand of brands" [value]="brand.id">
+            {{ brand.name }}
+          </mat-option>
+        </mat-select>
+        <mat-icon matPrefix>business</mat-icon>
+      </mat-form-field>
+
+      <!-- Model -->
+      <mat-form-field appearance="outline">
+        <mat-label>Model</mat-label>
+        <input
+          matInput
+          formControlName="model"
+          placeholder="e.g., ThinkPad X1"
+        />
+        <mat-icon matPrefix>devices</mat-icon>
+        <mat-error *ngIf="assetForm.get('model')?.hasError('required')">
+          Model is required
+        </mat-error>
+        <mat-error *ngIf="assetForm.get('model')?.hasError('maxlength')">
+          Maximum 100 characters
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Serial Number -->
+      <mat-form-field appearance="outline">
+        <mat-label>Serial Number</mat-label>
+        <input
+          matInput
+          formControlName="serial_number"
+          placeholder="Optional"
+        />
+        <mat-icon matPrefix>pin</mat-icon>
+        <mat-error
+          *ngIf="assetForm.get('serial_number')?.hasError('maxlength')"
+        >
+          Maximum 100 characters
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Status -->
+      <mat-form-field appearance="outline">
+        <mat-label>Status</mat-label>
+        <mat-select formControlName="status">
+          <mat-option *ngFor="let status of statusOptions" [value]="status">
+            {{ status }}
+          </mat-option>
+        </mat-select>
+        <mat-icon matPrefix>circle</mat-icon>
+        <mat-error *ngIf="assetForm.get('status')?.hasError('required')">
+          Status is required
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Condition -->
+      <mat-form-field appearance="outline">
+        <mat-label>Condition</mat-label>
+        <mat-select formControlName="condition">
+          <mat-option
+            *ngFor="let condition of conditionOptions"
+            [value]="condition"
+          >
+            {{ condition }}
+          </mat-option>
+        </mat-select>
+        <mat-icon matPrefix>star</mat-icon>
+        <mat-error *ngIf="assetForm.get('condition')?.hasError('required')">
+          Condition is required
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Branch -->
+      <mat-form-field appearance="outline">
+        <mat-label>Branch</mat-label>
+        <mat-select formControlName="branch_id">
+          <mat-option value="">Select Branch</mat-option>
+          <mat-option
+            *ngFor="let branch of branches"
+            [value]="branch.branch_id"
+          >
+            {{ branch.branch_name }}
+          </mat-option>
+        </mat-select>
+        <mat-icon matPrefix>location_city</mat-icon>
+        <mat-error *ngIf="assetForm.get('branch_id')?.hasError('required')">
+          Branch is required
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Assigned To -->
+      <mat-form-field appearance="outline">
+        <mat-label>Assigned To</mat-label>
+        <mat-select formControlName="employee_id">
+          <mat-option value="">
+            {{
+              loadingEmployees
+                ? "Loading employees..."
+                : assetForm.get("branch_id")?.value
+                  ? "Unassigned"
+                  : "Select Branch First"
+            }}
+          </mat-option>
+          <mat-option
+            *ngFor="let employee of employees"
+            [value]="employee.employee_id"
+          >
+            {{ employee.first_name }} {{ employee.last_name }} ({{
+              employee.employee_id
+            }})
+          </mat-option>
+        </mat-select>
+        <mat-icon matPrefix>person</mat-icon>
+        <mat-hint *ngIf="!assetForm.get('branch_id')?.value">
+          Please select a branch first
+        </mat-hint>
+        <mat-hint *ngIf="loadingEmployees">
+          Loading employees from selected branch...
+        </mat-hint>
+        <mat-hint
+          *ngIf="
+            assetForm.get('branch_id')?.value &&
+            !loadingEmployees &&
+            employees.length === 0
+          "
+        >
+          No active employees in this branch
+        </mat-hint>
+      </mat-form-field>
+
+      <!-- Purchase Date -->
+      <mat-form-field appearance="outline">
+        <mat-label>Purchase Date</mat-label>
+        <input
+          matInput
+          [matDatepicker]="purchasePicker"
+          formControlName="purchase_date"
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="purchasePicker"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #purchasePicker></mat-datepicker>
+        <mat-icon matPrefix>calendar_today</mat-icon>
+      </mat-form-field>
+
+      <!-- Warranty Expiry -->
+      <mat-form-field appearance="outline">
+        <mat-label>Warranty Expiry</mat-label>
+        <input
+          matInput
+          [matDatepicker]="warrantyPicker"
+          formControlName="warranty_expiry"
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="warrantyPicker"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #warrantyPicker></mat-datepicker>
+        <mat-icon matPrefix>event_available</mat-icon>
+      </mat-form-field>
+
+      <!-- Notes -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Notes</mat-label>
+        <textarea
+          matInput
+          formControlName="notes"
+          rows="3"
+          placeholder="Additional notes..."
+        ></textarea>
+        <mat-icon matPrefix>notes</mat-icon>
+        <mat-error *ngIf="assetForm.get('notes')?.hasError('maxlength')">
+          Maximum 500 characters
+        </mat-error>
+      </mat-form-field>
+    </div>
+  </form>
+
+  <div *ngIf="loadingData" class="loading-overlay">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>Loading data...</p>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()" [disabled]="isSaving">Cancel</button>
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="onSubmit()"
+    [disabled]="isSaving || assetForm.invalid"
+  >
+    <mat-spinner *ngIf="isSaving" diameter="20"></mat-spinner>
+    <span *ngIf="!isSaving">{{ isEditMode ? "Update" : "Create" }}</span>
+  </button>
+</mat-dialog-actions>

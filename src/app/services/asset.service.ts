@@ -27,6 +27,29 @@ export class AssetService {
     });
   }
 
+  // Search assets
+  searchAssets(query: string): Observable<Asset[]> {
+    const params = new HttpParams().set('q', query);
+    return this.http.get<Asset[]>(`${this.API_URL}/assets/search`, { params });
+  }
+
+  // Get assets by employee
+  getAssetsByEmployee(employeeId: string): Observable<Asset[]> {
+    return this.http.get<Asset[]>(
+      `${this.API_URL}/assets/employee/${employeeId}`,
+    );
+  }
+
+  // Get assets by branch
+  getAssetsByBranch(branchId: number): Observable<Asset[]> {
+    return this.http.get<Asset[]>(`${this.API_URL}/assets/branch/${branchId}`);
+  }
+
+  // Get assets by status
+  getAssetsByStatus(status: string): Observable<Asset[]> {
+    return this.http.get<Asset[]>(`${this.API_URL}/assets/status/${status}`);
+  }
+
   getAsset(id: number): Observable<Asset> {
     return this.http.get<Asset>(`${this.API_URL}/assets/${id}`);
   }

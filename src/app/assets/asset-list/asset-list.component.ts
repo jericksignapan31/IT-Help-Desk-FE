@@ -9,10 +9,13 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 import { AssetService } from '../../services/asset.service';
 import { Asset, AssetStatus, AssetCondition } from '../../models/asset.model';
 import { AuthService } from '../../services/auth.service';
+import { AssetDialogComponent } from '../asset-dialog/asset-dialog.component';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-asset-list',
@@ -28,6 +31,7 @@ import { AuthService } from '../../services/auth.service';
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
+    MatDialogModule,
     FormsModule,
   ],
   templateUrl: './asset-list.component.html',
@@ -58,6 +62,7 @@ export class AssetListComponent implements OnInit {
   constructor(
     private assetService: AssetService,
     public authService: AuthService,
+    private dialog: MatDialog,
   ) {}
 
   ngOnInit(): void {
@@ -93,5 +98,66 @@ export class AssetListComponent implements OnInit {
 
   getConditionClass(condition: string): string {
     return `condition-${condition}`;
+  }
+
+  addAsset(): void {
+    const dialogRef = this.dialog.open(AssetDialogComponent, {
+      width: '800px',
+      data: { isEditMode: false },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.loadAssets();
+      }
+    });
+  }
+
+  editAsset(asset: Asset): void {
+    const dialogRef = this.dialog.open(AssetDialogComponent, {
+      width: '800px',
+      data: { asset, isEditMode: true },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.loadAssets();
+      }
+    });
+  }
+
+  deleteAsset(asset: Asset): void {
+    Swal.fire({
+      title: 'Delete Asset',
+      text: `Are you sure you want to delete ${asset.asset_tag}?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.assetService.deleteAsset(asset.id).subscribe({
+          next: () => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Deleted!',
+              text: 'Asset has been deleted.',
+              timer: 2000,
+              showConfirmButton: false,
+            });
+            this.loadAssets();
+          },
+          error: (error) => {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error!',
+              text: `Failed to delete asset: ${error.error?.message || error.message}`,
+            });
+          },
+        });
+      }
+    });
   }
 }

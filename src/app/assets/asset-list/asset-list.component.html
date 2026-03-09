@@ -4,7 +4,7 @@
     <button
       mat-raised-button
       color="primary"
-      routerLink="/assets/create"
+      (click)="addAsset()"
       *ngIf="authService.isAdmin() || authService.isTechnician()"
     >
       <mat-icon>add</mat-icon>
@@ -112,10 +112,21 @@
           <td mat-cell *matCellDef="let asset">
             <button
               mat-icon-button
-              [routerLink]="['/assets', asset.id]"
-              matTooltip="View Details"
+              color="primary"
+              (click)="editAsset(asset)"
+              matTooltip="Edit Asset"
+              *ngIf="authService.isAdmin() || authService.isTechnician()"
             >
-              <mat-icon>visibility</mat-icon>
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              color="warn"
+              (click)="deleteAsset(asset)"
+              matTooltip="Delete Asset"
+              *ngIf="authService.isAdmin()"
+            >
+              <mat-icon>delete</mat-icon>
             </button>
           </td>
         </ng-container>

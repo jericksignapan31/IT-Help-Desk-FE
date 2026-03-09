@@ -64,12 +64,12 @@
       </h3>
       <div class="info-grid">
         <div class="info-item">
-          <label>Branch ID</label>
-          <p>{{ employee.branch_id || "N/A" }}</p>
+          <label>Branch</label>
+          <p>{{ employee.branch?.branch_name || "N/A" }}</p>
         </div>
         <div class="info-item">
-          <label>Department ID</label>
-          <p>{{ employee.department_id || "N/A" }}</p>
+          <label>Department</label>
+          <p>{{ employee.department?.department_name || "N/A" }}</p>
         </div>
         <div class="info-item">
           <label>Employment Status</label>
