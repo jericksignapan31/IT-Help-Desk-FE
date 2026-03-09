@@ -235,6 +235,20 @@ export const routes: Routes = [
           },
         ],
       },
+      // Profile Route (All authenticated users)
+      {
+        path: 'profile',
+        loadComponent: () =>
+          import('./profile/profile.component').then((m) => m.ProfileComponent),
+      },
+      // Account Settings Route (All authenticated users)
+      {
+        path: 'account-settings',
+        loadComponent: () =>
+          import('./account-settings/account-settings.component').then(
+            (m) => m.AccountSettingsComponent,
+          ),
+      },
     ],
   },
   {

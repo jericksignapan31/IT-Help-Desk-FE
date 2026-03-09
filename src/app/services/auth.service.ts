@@ -102,8 +102,18 @@ export class AuthService {
     this.router.navigate(['/login']);
   }
 
-  getProfile(): Observable<User> {
-    return this.http.get<User>(`${this.API_URL}/auth/profile`);
+  getProfile(): Observable<any> {
+    return this.http.get<any>(`${this.API_URL}/auth/profile`);
+  }
+
+  changePassword(data: {
+    currentPassword: string;
+    newPassword: string;
+  }): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(
+      `${this.API_URL}/auth/change-password`,
+      data,
+    );
   }
 
   getToken(): string | null {
@@ -174,7 +184,7 @@ export class AuthService {
   /**
    * Refresh user profile from server
    */
-  refreshUserProfile(): Observable<User> {
+  refreshUserProfile(): Observable<any> {
     return this.getProfile().pipe(
       tap((user) => {
         if (this.isBrowser) {

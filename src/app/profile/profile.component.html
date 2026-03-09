@@ -1,0 +1,152 @@
+<div class="profile-container">
+  <div class="header">
+    <h1>My Profile</h1>
+  </div>
+
+  <!-- Loading Spinner -->
+  <div *ngIf="loading" class="loading-spinner">
+    <mat-spinner></mat-spinner>
+    <p>Loading profile...</p>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="error" class="error-message">
+    <mat-icon>error</mat-icon>
+    <span>{{ error }}</span>
+  </div>
+
+  <!-- Profile Content -->
+  <div *ngIf="!loading && !error && profileData" class="profile-content">
+    <!-- Personal Information -->
+    <mat-card class="info-card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar>person</mat-icon>
+        <mat-card-title>Personal Information</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="info-grid">
+          <div class="info-item">
+            <label>Employee ID</label>
+            <p>{{ profileData.employee.employee_id }}</p>
+          </div>
+          <div class="info-item">
+            <label>Full Name</label>
+            <p>{{ getFullName() }}</p>
+          </div>
+          <div class="info-item">
+            <label>Email</label>
+            <p>{{ profileData.employee.email }}</p>
+          </div>
+          <div class="info-item">
+            <label>Contact Number</label>
+            <p>{{ profileData.employee.contact_number }}</p>
+          </div>
+          <div class="info-item">
+            <label>Position</label>
+            <p>{{ profileData.employee.position }}</p>
+          </div>
+          <div class="info-item">
+            <label>Role</label>
+            <p>
+              <mat-chip [ngClass]="getRoleBadgeClass()">
+                {{ profileData.employee.role | uppercase }}
+              </mat-chip>
+            </p>
+          </div>
+          <div class="info-item">
+            <label>Employment Status</label>
+            <p>
+              <mat-chip
+                [class.active-chip]="profileData.employee.employment_status"
+                [class.inactive-chip]="!profileData.employee.employment_status"
+              >
+                {{
+                  profileData.employee.employment_status ? "Active" : "Inactive"
+                }}
+              </mat-chip>
+            </p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Department Information -->
+    <mat-card class="info-card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar>business</mat-icon>
+        <mat-card-title>Department Information</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="info-grid">
+          <div class="info-item">
+            <label>Department Name</label>
+            <p>{{ profileData.employee.department.department_name }}</p>
+          </div>
+          <div class="info-item">
+            <label>Description</label>
+            <p>{{ profileData.employee.department.description }}</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Branch Information -->
+    <mat-card class="info-card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar>location_on</mat-icon>
+        <mat-card-title>Branch Information</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="info-grid">
+          <div class="info-item">
+            <label>Branch Name</label>
+            <p>{{ profileData.employee.branch.branch_name }}</p>
+          </div>
+          <div class="info-item">
+            <label>Location</label>
+            <p>{{ profileData.employee.branch.location }}</p>
+          </div>
+          <div class="info-item">
+            <label>Contact Number</label>
+            <p>{{ profileData.employee.branch.contact_number }}</p>
+          </div>
+          <div class="info-item">
+            <label>Status</label>
+            <p>
+              <mat-chip
+                [class.active-chip]="
+                  profileData.employee.branch.status === 'active'
+                "
+                [class.inactive-chip]="
+                  profileData.employee.branch.status !== 'active'
+                "
+              >
+                {{ profileData.employee.branch.status | uppercase }}
+              </mat-chip>
+            </p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Account Information -->
+    <mat-card class="info-card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar>account_circle</mat-icon>
+        <mat-card-title>Account Information</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="info-grid">
+          <div class="info-item">
+            <label>Username</label>
+            <p>{{ profileData.username }}</p>
+          </div>
+          <div class="info-item">
+            <label>User ID</label>
+            <p class="user-id">{{ profileData.user_id }}</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

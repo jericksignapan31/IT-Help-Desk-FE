@@ -67,6 +67,14 @@ export class LayoutComponent {
     return this.menuItems.filter((item) => this.canAccessMenuItem(item));
   }
 
+  navigateToProfile(): void {
+    this.router.navigate(['/profile']);
+  }
+
+  navigateToAccountSettings(): void {
+    this.router.navigate(['/account-settings']);
+  }
+
   logout(): void {
     this.authService.logout();
   }
