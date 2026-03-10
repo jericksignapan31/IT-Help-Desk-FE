@@ -23,6 +23,17 @@
     }
   }
 
+  .search-container {
+    padding: 1rem;
+    background-color: #fafafa;
+    border-bottom: 1px solid #e0e0e0;
+
+    .search-field {
+      width: 100%;
+      max-width: 500px;
+    }
+  }
+
   .loading-container {
     display: flex;
     justify-content: center;
@@ -87,10 +98,12 @@
       }
     }
 
-    mat-chip {
+    .status-badge {
+      display: inline-block;
       font-size: 0.75rem;
-      min-height: 24px;
-      padding: 0 8px;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-weight: 500;
 
       &.status-active {
         background-color: #4caf50;
@@ -100,6 +113,30 @@
       &.status-inactive {
         background-color: #f44336;
         color: white;
+      }
+    }
+
+    .image-cell {
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-start;
+      min-height: 50px;
+
+      .brand-image {
+        max-width: 60px;
+        max-height: 50px;
+        object-fit: contain;
+        border-radius: 4px;
+        border: 1px solid #e0e0e0;
+        padding: 4px;
+        background-color: white;
+      }
+
+      .no-image-icon {
+        color: #ccc;
+        font-size: 2rem;
+        width: 2rem;
+        height: 2rem;
       }
     }
 

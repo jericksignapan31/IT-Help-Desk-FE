@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -22,12 +22,15 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatTabsModule } from '@angular/material/tabs';
 import { AssetService } from '../../services/asset.service';
 import { EmployeeService } from '../../services/employee.service';
+import { BrandService } from '../../services/brand.service';
+import { forkJoin } from 'rxjs';
 import {
   Asset,
   AssetStatus,
   AssetCondition,
   AssetType,
 } from '../../models/asset.model';
+import { Brand } from '../../models/brand.model';
 import { Branch } from '../../models/branch.model';
 import { Employee } from '../../models/employee.model';
 import Swal from 'sweetalert2';
@@ -64,7 +67,7 @@ export class AssetDialogComponent implements OnInit {
   isSaving = false;
   branches: Branch[] = [];
   employees: Employee[] = [];
-  brands: any[] = [];
+  brands: Brand[] = [];
   loadingData = true;
   loadingEmployees = false;
   qrCodeDataUrl: string | null = null;
@@ -75,14 +78,24 @@ export class AssetDialogComponent implements OnInit {
   statusOptions = Object.values(AssetStatus);
   conditionOptions = Object.values(AssetCondition);
 
+  // Use inject() for BrandService to avoid DI ordering issues
+  private brandService = inject(BrandService);
+
   constructor(
     private fb: FormBuilder,
     private assetService: AssetService,
     private employeeService: EmployeeService,
     public dialogRef: MatDialogRef<AssetDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: AssetDialogData,
+    @Inject(MAT_DIALOG_DATA) public data: AssetDialogData | null = null,
   ) {
-    this.isEditMode = data.isEditMode;
+    console.log('AssetDialogComponent constructor - data received:', data);
+    console.log('BrandService instance:', this.brandService);
+    console.log(
+      'BrandService getAllBrands method:',
+      typeof this.brandService?.getAllBrands,
+    );
+    this.isEditMode = data?.isEditMode ?? false;
+    console.log('isEditMode set to:', this.isEditMode);
     this.assetForm = this.fb.group({
       asset_tag: ['', [Validators.required, Validators.maxLength(50)]],
       type: ['', Validators.required],
@@ -93,6 +106,7 @@ export class AssetDialogComponent implements OnInit {
       condition: ['excellent', Validators.required],
       employee_id: [''],
       branch_id: ['', Validators.required],
+      location: ['', Validators.maxLength(200)],
       purchase_date: [''],
       warranty_expiry: [''],
       notes: ['', Validators.maxLength(500)],
@@ -101,10 +115,17 @@ export class AssetDialogComponent implements OnInit {
       mac_address: [''],
       hostname: [''],
       anydesk_id: [''],
+      // Specifications fields
+      cpu: [''],
+      ram: [''],
+      storage: [''],
+      display: [''],
+      os: [''],
     });
   }
 
   ngOnInit(): void {
+    console.log('AssetDialogComponent ngOnInit called');
     this.loadData();
 
     // Disable employee dropdown initially
@@ -115,7 +136,7 @@ export class AssetDialogComponent implements OnInit {
       this.onBranchChange(branchId);
     });
 
-    if (this.isEditMode && this.data.asset) {
+    if (this.isEditMode && this.data?.asset) {
       this.assetForm.patchValue(this.data.asset);
       // Disable asset_tag in edit mode
       this.assetForm.get('asset_tag')?.disable();
@@ -129,30 +150,43 @@ export class AssetDialogComponent implements OnInit {
 
   loadData(): void {
     this.loadingData = true;
+    console.log('Loading branches and brands...');
+    console.log('BrandService check in loadData:', this.brandService);
+    console.log('getAllBrands check:', this.brandService?.getAllBrands);
 
-    // Load branches
-    this.employeeService.getBranches().subscribe({
-      next: (branches) => {
-        this.branches = branches;
-      },
-      error: (error) => {
-        console.error('Failed to load branches:', error);
-        Swal.fire({
-          icon: 'error',
-          title: 'Error!',
-          text: 'Failed to load branches',
-        });
-      },
-    });
+    // Verify services are available
+    if (!this.brandService) {
+      console.error('BrandService is not available!');
+      this.loadingData = false;
+      return;
+    }
 
-    // Load brands
-    this.assetService.getBrands().subscribe({
-      next: (brands) => {
-        this.brands = brands;
+    if (!this.employeeService) {
+      console.error('EmployeeService is not available!');
+      this.loadingData = false;
+      return;
+    }
+
+    // Load both branches and brands in parallel
+    forkJoin({
+      branches: this.employeeService.getBranches(),
+      brands: this.brandService.getAllBrands(),
+    }).subscribe({
+      next: (result) => {
+        this.branches = result.branches;
+        this.brands = result.brands;
+        console.log('Data loaded successfully:');
+        console.log('- Branches:', result.branches.length);
+        console.log('- Brands:', result.brands.length);
         this.loadingData = false;
       },
       error: (error) => {
-        console.error('Failed to load brands:', error);
+        console.error('Failed to load data:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error!',
+          text: 'Failed to load required data. Please try again.',
+        });
         this.loadingData = false;
       },
     });
@@ -226,13 +260,53 @@ export class AssetDialogComponent implements OnInit {
     }
 
     this.isSaving = true;
-    let assetData = this.assetForm.value;
+    const formValue = this.assetForm.getRawValue();
+
+    // Transform form data to match backend JSON structure
+    const assetData: any = {
+      asset_tag: formValue.asset_tag,
+      brand_id: formValue.brand_id || undefined,
+      branch_id: formValue.branch_id,
+      category: formValue.type, // Map 'type' to 'category'
+      model: formValue.model,
+      serial_number: formValue.serial_number || undefined,
+      purchase_date: formValue.purchase_date || undefined,
+      warranty_expiry_date: formValue.warranty_expiry || undefined, // Map to warranty_expiry_date
+      status: formValue.status,
+      assigned_to: formValue.employee_id || undefined, // Map 'employee_id' to 'assigned_to'
+      location: formValue.location || undefined,
+      notes: formValue.notes || undefined,
+      // Network configuration
+      ip_address: formValue.ip_address || undefined,
+      mac_address: formValue.mac_address || undefined,
+      hostname: formValue.hostname || undefined,
+      anydesk_id: formValue.anydesk_id || undefined,
+    };
+
+    // Build specifications object if any spec field has value
+    const hasSpecs =
+      formValue.cpu ||
+      formValue.ram ||
+      formValue.storage ||
+      formValue.display ||
+      formValue.os;
+
+    if (hasSpecs) {
+      assetData.specifications = {
+        cpu: formValue.cpu || undefined,
+        ram: formValue.ram || undefined,
+        storage: formValue.storage || undefined,
+        display: formValue.display || undefined,
+        os: formValue.os || undefined,
+      };
+    }
 
     // Remove asset_tag from update data in edit mode
     if (this.isEditMode) {
-      const { asset_tag, ...updateData } = assetData;
-      assetData = updateData;
+      delete assetData.asset_tag;
     }
+
+    console.log('Asset data to be sent to backend:', assetData);
 
     // Check if token exists
     const token = localStorage.getItem('access_token');
@@ -247,7 +321,7 @@ export class AssetDialogComponent implements OnInit {
     }
 
     const operation =
-      this.isEditMode && this.data.asset?.id
+      this.isEditMode && this.data?.asset?.id
         ? this.assetService.updateAsset(this.data.asset.id, assetData)
         : this.assetService.createAsset(assetData);
 

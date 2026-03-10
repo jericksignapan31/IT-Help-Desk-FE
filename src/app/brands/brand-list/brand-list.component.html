@@ -9,6 +9,26 @@
 
   <mat-card>
     <mat-card-content>
+      <!-- Search Bar -->
+      <div class="search-container">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Search brands</mat-label>
+          <mat-icon matPrefix>search</mat-icon>
+          <input
+            matInput
+            [formControl]="searchControl"
+            placeholder="Search by brand name..."
+          />
+          <button
+            mat-icon-button
+            matSuffix
+            *ngIf="searchControl.value"
+            (click)="searchControl.setValue('')"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
       <div *ngIf="isLoading" class="loading-container">
         <mat-spinner></mat-spinner>
       </div>
@@ -25,19 +45,11 @@
 
       <div *ngIf="!isLoading && brands.length > 0" class="table-container">
         <table mat-table [dataSource]="brands" class="brands-table">
-          <!-- Name Column -->
-          <ng-container matColumnDef="name">
+          <!-- Brand Name Column -->
+          <ng-container matColumnDef="brand_name">
             <th mat-header-cell *matHeaderCellDef>Brand Name</th>
             <td mat-cell *matCellDef="let brand">
-              <strong>{{ brand.name }}</strong>
-            </td>
-          </ng-container>
-
-          <!-- Manufacturer Column -->
-          <ng-container matColumnDef="manufacturer">
-            <th mat-header-cell *matHeaderCellDef>Manufacturer</th>
-            <td mat-cell *matCellDef="let brand">
-              {{ brand.manufacturer || "N/A" }}
+              <strong>{{ brand.brand_name }}</strong>
             </td>
           </ng-container>
 
@@ -49,17 +61,22 @@
             </td>
           </ng-container>
 
-          <!-- Support Email Column -->
-          <ng-container matColumnDef="support_email">
-            <th mat-header-cell *matHeaderCellDef>Support Email</th>
+          <!-- Brand Image URL Column -->
+          <ng-container matColumnDef="brand_image_url">
+            <th mat-header-cell *matHeaderCellDef>Image</th>
             <td mat-cell *matCellDef="let brand">
-              <a
-                *ngIf="brand.support_email"
-                [href]="'mailto:' + brand.support_email"
-              >
-                {{ brand.support_email }}
-              </a>
-              <span *ngIf="!brand.support_email">N/A</span>
+              <div class="image-cell">
+                <img
+                  *ngIf="brand.brand_image_url"
+                  [src]="brand.brand_image_url"
+                  [alt]="brand.brand_name"
+                  class="brand-image"
+                  (error)="onImageError($event)"
+                />
+                <mat-icon *ngIf="!brand.brand_image_url" class="no-image-icon">
+                  image_not_supported
+                </mat-icon>
+              </div>
             </td>
           </ng-container>
 
@@ -67,12 +84,13 @@
           <ng-container matColumnDef="status">
             <th mat-header-cell *matHeaderCellDef>Status</th>
             <td mat-cell *matCellDef="let brand">
-              <mat-chip
-                [class.status-active]="brand.is_active"
-                [class.status-inactive]="!brand.is_active"
+              <span
+                class="status-badge"
+                [class.status-active]="brand.status"
+                [class.status-inactive]="!brand.status"
               >
-                {{ brand.is_active ? "Active" : "Inactive" }}
-              </mat-chip>
+                {{ brand.status ? "Active" : "Inactive" }}
+              </span>
             </td>
           </ng-container>
 
@@ -88,16 +106,7 @@
               >
                 <mat-icon>edit</mat-icon>
               </button>
-              <button
-                mat-icon-button
-                [color]="brand.is_active ? 'warn' : 'accent'"
-                (click)="toggleStatus(brand)"
-                [matTooltip]="brand.is_active ? 'Deactivate' : 'Activate'"
-              >
-                <mat-icon>{{
-                  brand.is_active ? "toggle_on" : "toggle_off"
-                }}</mat-icon>
-              </button>
+
               <button
                 mat-icon-button
                 color="warn"

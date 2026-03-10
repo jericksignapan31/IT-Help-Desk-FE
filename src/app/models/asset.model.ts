@@ -1,3 +1,5 @@
+import { Brand } from './brand.model';
+
 export interface Asset {
   id: number;
   asset_tag: string;
@@ -9,21 +11,28 @@ export interface Asset {
   condition: AssetCondition;
   employee_id?: number;
   branch_id: number;
+  location?: string;
   purchase_date?: string;
   warranty_expiry?: string;
   notes?: string;
+  // Network Configuration (for computer/laptop)
+  ip_address?: string;
+  mac_address?: string;
+  hostname?: string;
+  anydesk_id?: string;
+  // Hardware Specifications (for computer/laptop)
+  specifications?: {
+    cpu?: string;
+    ram?: string;
+    storage?: string;
+    display?: string;
+    os?: string;
+  };
   created_at: string;
   updated_at: string;
   brand?: Brand;
   employee?: any;
   branch?: any;
-}
-
-export interface Brand {
-  id: number;
-  name: string;
-  created_at: string;
-  updated_at: string;
 }
 
 export enum AssetType {

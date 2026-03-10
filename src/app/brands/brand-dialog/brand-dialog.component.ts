@@ -58,24 +58,26 @@ export class BrandDialogComponent implements OnInit {
     public dialogRef: MatDialogRef<BrandDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: BrandDialogData,
   ) {
+    console.log('BrandDialogComponent constructor called with data:', data);
     this.isEditMode = data.isEditMode;
     this.brandForm = this.fb.group({
-      name: ['', [Validators.required, Validators.maxLength(100)]],
-      manufacturer: ['', Validators.maxLength(100)],
+      brand_name: ['', [Validators.required, Validators.maxLength(100)]],
       description: ['', Validators.maxLength(500)],
-      website_url: [
+      brand_image_url: [
         '',
-        [Validators.maxLength(255), Validators.pattern('https?://.+')],
+        [Validators.maxLength(500), Validators.pattern('https?://.+')],
       ],
-      support_email: ['', [Validators.email, Validators.maxLength(100)]],
-      support_phone: ['', Validators.maxLength(20)],
-      is_active: [true],
+      status: [true],
     });
+    console.log('Brand form initialized:', this.brandForm.value);
   }
 
   ngOnInit(): void {
+    console.log('BrandDialogComponent ngOnInit, isEditMode:', this.isEditMode);
     if (this.isEditMode && this.data.brand) {
+      console.log('Patching form with brand data:', this.data.brand);
       this.brandForm.patchValue(this.data.brand);
+      console.log('Form after patch:', this.brandForm.value);
     }
   }
 

@@ -79,6 +79,26 @@ export class AssetListComponent implements OnInit {
       },
       error: (err) => {
         console.error('Failed to load assets:', err);
+        console.error('Error status:', err.status);
+        console.error('Error message:', err.message);
+
+        if (err.status === 401) {
+          console.log(
+            '🔐 Token check:',
+            localStorage.getItem('access_token') ? 'Token exists' : 'No token',
+          );
+          Swal.fire({
+            icon: 'warning',
+            title: 'Session Expired',
+            text: 'Your session has expired. Please login again.',
+            confirmButtonText: 'Login',
+          }).then(() => {
+            // Redirect to login or handle re-authentication
+            localStorage.removeItem('access_token');
+            window.location.href = '/login';
+          });
+        }
+
         this.loading = false;
       },
     });
@@ -102,12 +122,15 @@ export class AssetListComponent implements OnInit {
   }
 
   addAsset(): void {
+    console.log('Opening asset dialog for creation...');
     const dialogRef = this.dialog.open(AssetDialogComponent, {
       width: '800px',
       data: { isEditMode: false },
+      disableClose: false,
     });
 
     dialogRef.afterClosed().subscribe((result) => {
+      console.log('Asset dialog closed with result:', result);
       if (result) {
         this.loadAssets();
       }

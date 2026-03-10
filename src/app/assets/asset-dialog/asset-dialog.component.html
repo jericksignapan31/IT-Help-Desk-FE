@@ -54,7 +54,7 @@
                 <mat-select formControlName="brand_id">
                   <mat-option value="">None</mat-option>
                   <mat-option *ngFor="let brand of brands" [value]="brand.id">
-                    {{ brand.name }}
+                    {{ brand.brand_name }}
                   </mat-option>
                 </mat-select>
               </mat-form-field>
@@ -270,6 +270,22 @@
                 </mat-hint>
               </mat-form-field>
 
+              <!-- Location -->
+              <mat-form-field appearance="outline">
+                <mat-label>Location</mat-label>
+                <mat-icon matPrefix>location_on</mat-icon>
+                <input
+                  matInput
+                  formControlName="location"
+                  placeholder="e.g., Main Office - IT Department"
+                />
+                <mat-error
+                  *ngIf="assetForm.get('location')?.hasError('maxlength')"
+                >
+                  Maximum 200 characters
+                </mat-error>
+              </mat-form-field>
+
               <!-- Purchase Date -->
               <mat-form-field appearance="outline">
                 <mat-label>Purchase Date</mat-label>
@@ -318,6 +334,88 @@
                   Maximum 500 characters
                 </mat-error>
               </mat-form-field>
+            </div>
+          </div>
+        </mat-tab>
+
+        <!-- Tab 4: Specifications (for computers/laptops) -->
+        <mat-tab label="Specifications">
+          <div class="tab-content">
+            <div
+              *ngIf="
+                assetForm.get('type')?.value === 'computer' ||
+                assetForm.get('type')?.value === 'laptop'
+              "
+              class="form-grid"
+            >
+              <!-- CPU -->
+              <mat-form-field appearance="outline">
+                <mat-label>CPU/Processor</mat-label>
+                <mat-icon matPrefix>memory</mat-icon>
+                <input
+                  matInput
+                  formControlName="cpu"
+                  placeholder="e.g., Intel Core i5-1145G7"
+                />
+              </mat-form-field>
+
+              <!-- RAM -->
+              <mat-form-field appearance="outline">
+                <mat-label>RAM</mat-label>
+                <mat-icon matPrefix>storage</mat-icon>
+                <input
+                  matInput
+                  formControlName="ram"
+                  placeholder="e.g., 16GB DDR4"
+                />
+              </mat-form-field>
+
+              <!-- Storage -->
+              <mat-form-field appearance="outline">
+                <mat-label>Storage</mat-label>
+                <mat-icon matPrefix>save</mat-icon>
+                <input
+                  matInput
+                  formControlName="storage"
+                  placeholder="e.g., 512GB SSD"
+                />
+              </mat-form-field>
+
+              <!-- Display -->
+              <mat-form-field appearance="outline">
+                <mat-label>Display</mat-label>
+                <mat-icon matPrefix>monitor</mat-icon>
+                <input
+                  matInput
+                  formControlName="display"
+                  placeholder="e.g., 14-inch FHD"
+                />
+              </mat-form-field>
+
+              <!-- Operating System -->
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Operating System</mat-label>
+                <mat-icon matPrefix>settings</mat-icon>
+                <input
+                  matInput
+                  formControlName="os"
+                  placeholder="e.g., Windows 11 Pro"
+                />
+              </mat-form-field>
+            </div>
+
+            <div
+              *ngIf="
+                assetForm.get('type')?.value !== 'computer' &&
+                assetForm.get('type')?.value !== 'laptop'
+              "
+              class="info-message"
+            >
+              <mat-icon>info</mat-icon>
+              <p>
+                Hardware specifications are only applicable for Desktop and
+                Laptop assets.
+              </p>
             </div>
           </div>
         </mat-tab>

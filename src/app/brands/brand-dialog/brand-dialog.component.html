@@ -8,27 +8,12 @@
         <mat-icon matPrefix>label</mat-icon>
         <input
           matInput
-          formControlName="name"
+          formControlName="brand_name"
           placeholder="Enter brand name"
           required
         />
-        <mat-error *ngIf="brandForm.get('name')?.invalid">
-          {{ getErrorMessage("name") }}
-        </mat-error>
-      </mat-form-field>
-    </div>
-
-    <div class="form-row">
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Manufacturer</mat-label>
-        <mat-icon matPrefix>business</mat-icon>
-        <input
-          matInput
-          formControlName="manufacturer"
-          placeholder="Enter manufacturer name"
-        />
-        <mat-error *ngIf="brandForm.get('manufacturer')?.invalid">
-          {{ getErrorMessage("manufacturer") }}
+        <mat-error *ngIf="brandForm.get('brand_name')?.invalid">
+          {{ getErrorMessage("brand_name") }}
         </mat-error>
       </mat-form-field>
     </div>
@@ -51,50 +36,24 @@
 
     <div class="form-row">
       <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Website URL</mat-label>
-        <mat-icon matPrefix>link</mat-icon>
+        <mat-label>Brand Image URL</mat-label>
+        <mat-icon matPrefix>image</mat-icon>
         <input
           matInput
-          formControlName="website_url"
-          placeholder="https://example.com"
+          formControlName="brand_image_url"
+          placeholder="https://example.com/logo.png"
           type="url"
         />
-        <mat-error *ngIf="brandForm.get('website_url')?.invalid">
-          {{ getErrorMessage("website_url") }}
+        <mat-error *ngIf="brandForm.get('brand_image_url')?.invalid">
+          {{ getErrorMessage("brand_image_url") }}
         </mat-error>
       </mat-form-field>
     </div>
 
     <div class="form-row">
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Support Email</mat-label>
-        <mat-icon matPrefix>email</mat-icon>
-        <input
-          matInput
-          formControlName="support_email"
-          placeholder="support@example.com"
-          type="email"
-        />
-        <mat-error *ngIf="brandForm.get('support_email')?.invalid">
-          {{ getErrorMessage("support_email") }}
-        </mat-error>
-      </mat-form-field>
-    </div>
-
-    <div class="form-row">
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Support Phone</mat-label>
-        <mat-icon matPrefix>phone</mat-icon>
-        <input
-          matInput
-          formControlName="support_phone"
-          placeholder="+1 (555) 123-4567"
-          type="tel"
-        />
-        <mat-error *ngIf="brandForm.get('support_phone')?.invalid">
-          {{ getErrorMessage("support_phone") }}
-        </mat-error>
-      </mat-form-field>
+      <mat-slide-toggle formControlName="status" color="primary">
+        {{ brandForm.get("status")?.value ? "Active" : "Inactive" }}
+      </mat-slide-toggle>
     </div>
   </form>
 </mat-dialog-content>

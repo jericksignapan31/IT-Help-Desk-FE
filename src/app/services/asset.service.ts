@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Asset, Brand } from '../models/asset.model';
+import { Asset } from '../models/asset.model';
+import { Brand } from '../models/brand.model';
 import { environment } from '../../environments/environment';
 
 @Injectable({
