@@ -28,10 +28,12 @@ import { AuthService } from '../../services/auth.service';
 export class MyTicketsComponent implements OnInit {
   tickets: Ticket[] = [];
   displayedColumns: string[] = [
-    'ticket_number',
-    'title',
+    'ticket_id',
+    'subject',
+    'category',
     'priority',
     'status',
+    'approval_status',
     'created_at',
     'actions',
   ];
@@ -50,8 +52,13 @@ export class MyTicketsComponent implements OnInit {
     this.loading = true;
     const currentUser = this.authService.currentUserValue;
 
-    if (currentUser) {
-      this.ticketService.getTickets({ reporter_id: currentUser.id }).subscribe({
+    if (currentUser && currentUser.employee_id) {
+      const employeeId =
+        typeof currentUser.employee_id === 'string'
+          ? parseInt(currentUser.employee_id, 10)
+          : currentUser.employee_id;
+
+      this.ticketService.getMyTickets(employeeId).subscribe({
         next: (data) => {
           this.tickets = data;
           this.loading = false;
@@ -61,6 +68,9 @@ export class MyTicketsComponent implements OnInit {
           this.loading = false;
         },
       });
+    } else {
+      console.error('No employee ID found');
+      this.loading = false;
     }
   }
 
@@ -69,7 +79,11 @@ export class MyTicketsComponent implements OnInit {
   }
 
   getStatusClass(status: string): string {
-    return `status-${status}`;
+    return `status-${status.replace('_', '-')}`;
+  }
+
+  getApprovalStatusClass(status: string): string {
+    return `approval-${status}`;
   }
 
   formatDate(date: string): string {

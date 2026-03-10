@@ -12,7 +12,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 import { AssetService } from '../../services/asset.service';
-import { Asset, AssetStatus, AssetCondition } from '../../models/asset.model';
+import { Asset, AssetStatus } from '../../models/asset.model';
 import { AuthService } from '../../services/auth.service';
 import { AssetDialogComponent } from '../asset-dialog/asset-dialog.component';
 import Swal from 'sweetalert2';
@@ -42,11 +42,11 @@ export class AssetListComponent implements OnInit {
   assets: Asset[] = [];
   displayedColumns: string[] = [
     'asset_tag',
-    'type',
+    'category',
     'model',
     'status',
-    'condition',
     'employee',
+    'qrcode',
     'actions',
   ];
   loading = true;
@@ -54,11 +54,9 @@ export class AssetListComponent implements OnInit {
   filters = {
     search: '',
     status: '',
-    condition: '',
   };
 
   statusOptions = Object.values(AssetStatus);
-  conditionOptions = Object.values(AssetCondition);
 
   constructor(
     private assetService: AssetService,
@@ -109,16 +107,12 @@ export class AssetListComponent implements OnInit {
   }
 
   clearFilters(): void {
-    this.filters = { search: '', status: '', condition: '' };
+    this.filters = { search: '', status: '' };
     this.loadAssets();
   }
 
   getStatusClass(status: string): string {
     return `status-${status}`;
-  }
-
-  getConditionClass(condition: string): string {
-    return `condition-${condition}`;
   }
 
   addAsset(): void {

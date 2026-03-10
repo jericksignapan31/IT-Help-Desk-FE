@@ -67,11 +67,68 @@ export class TicketService {
     );
   }
 
-  getMyTickets(): Observable<Ticket[]> {
-    return this.http.get<Ticket[]>(`${this.API_URL}/tickets/my-tickets`);
+  getMyTickets(employeeId: number): Observable<Ticket[]> {
+    return this.http.get<Ticket[]>(
+      `${this.API_URL}/tickets/reporter/${employeeId}`,
+    );
   }
 
-  getAssignedToMe(): Observable<Ticket[]> {
-    return this.http.get<Ticket[]>(`${this.API_URL}/tickets/assigned-to-me`);
+  getAssignedToMe(employeeId: number): Observable<Ticket[]> {
+    return this.http.get<Ticket[]>(
+      `${this.API_URL}/tickets/assignee/${employeeId}`,
+    );
+  }
+
+  // Search & Filter methods
+  searchTickets(query: string): Observable<Ticket[]> {
+    const params = new HttpParams().set('q', query);
+    return this.http.get<Ticket[]>(`${this.API_URL}/tickets/search`, {
+      params,
+    });
+  }
+
+  getTicketsByStatus(status: string): Observable<Ticket[]> {
+    return this.http.get<Ticket[]>(`${this.API_URL}/tickets/status/${status}`);
+  }
+
+  getTicketsByPriority(priority: string): Observable<Ticket[]> {
+    return this.http.get<Ticket[]>(
+      `${this.API_URL}/tickets/priority/${priority}`,
+    );
+  }
+
+  getTicketsByCategory(category: string): Observable<Ticket[]> {
+    return this.http.get<Ticket[]>(
+      `${this.API_URL}/tickets/category/${category}`,
+    );
+  }
+
+  // Approval workflow methods (Supervisor/Admin only)
+  getPendingApprovals(): Observable<Ticket[]> {
+    return this.http.get<Ticket[]>(`${this.API_URL}/tickets/pending-approvals`);
+  }
+
+  getTicketsByApprovalStatus(status: string): Observable<Ticket[]> {
+    return this.http.get<Ticket[]>(
+      `${this.API_URL}/tickets/approval-status/${status}`,
+    );
+  }
+
+  approveTicket(ticketId: number, assignedTo?: number): Observable<Ticket> {
+    const payload: any = {};
+    if (assignedTo) {
+      payload.assigned_to = assignedTo;
+    }
+    return this.http.patch<Ticket>(
+      `${this.API_URL}/tickets/${ticketId}/approve`,
+      payload,
+    );
+  }
+
+  rejectTicket(ticketId: number, reason: string): Observable<Ticket> {
+    return this.http.patch<Ticket>(
+      `${this.API_URL}/tickets/${ticketId}/reject`,
+      { rejection_reason: reason },
+    );
   }
 }

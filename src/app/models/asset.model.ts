@@ -3,17 +3,13 @@ import { Brand } from './brand.model';
 export interface Asset {
   id: number;
   asset_tag: string;
-  type: AssetType;
+  category: AssetType;
   brand_id: number;
   model: string;
   serial_number?: string;
   status: AssetStatus;
-  condition: AssetCondition;
   employee_id?: number;
   branch_id: number;
-  location?: string;
-  purchase_date?: string;
-  warranty_expiry?: string;
   notes?: string;
   // Network Configuration (for computer/laptop)
   ip_address?: string;
@@ -53,12 +49,4 @@ export enum AssetStatus {
   MAINTENANCE = 'maintenance',
   RETIRED = 'retired',
   LOST = 'lost',
-}
-
-export enum AssetCondition {
-  EXCELLENT = 'excellent',
-  GOOD = 'good',
-  FAIR = 'fair',
-  POOR = 'poor',
-  BROKEN = 'broken',
 }

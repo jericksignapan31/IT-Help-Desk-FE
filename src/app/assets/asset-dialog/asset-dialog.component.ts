@@ -17,19 +17,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
 import { MatTabsModule } from '@angular/material/tabs';
 import { AssetService } from '../../services/asset.service';
 import { EmployeeService } from '../../services/employee.service';
 import { BrandService } from '../../services/brand.service';
 import { forkJoin } from 'rxjs';
-import {
-  Asset,
-  AssetStatus,
-  AssetCondition,
-  AssetType,
-} from '../../models/asset.model';
+import { Asset, AssetStatus, AssetType } from '../../models/asset.model';
 import { Brand } from '../../models/brand.model';
 import { Branch } from '../../models/branch.model';
 import { Employee } from '../../models/employee.model';
@@ -54,8 +47,6 @@ export interface AssetDialogData {
     MatIconModule,
     MatProgressSpinnerModule,
     MatSelectModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
     MatTabsModule,
   ],
   templateUrl: './asset-dialog.component.html',
@@ -76,7 +67,6 @@ export class AssetDialogComponent implements OnInit {
 
   assetTypes = Object.values(AssetType);
   statusOptions = Object.values(AssetStatus);
-  conditionOptions = Object.values(AssetCondition);
 
   // Use inject() for BrandService to avoid DI ordering issues
   private brandService = inject(BrandService);
@@ -98,17 +88,13 @@ export class AssetDialogComponent implements OnInit {
     console.log('isEditMode set to:', this.isEditMode);
     this.assetForm = this.fb.group({
       asset_tag: ['', [Validators.required, Validators.maxLength(50)]],
-      type: ['', Validators.required],
+      category: ['', Validators.required],
       brand_id: [''],
       model: ['', [Validators.required, Validators.maxLength(100)]],
       serial_number: ['', Validators.maxLength(100)],
       status: ['available', Validators.required],
-      condition: ['excellent', Validators.required],
       employee_id: [''],
       branch_id: ['', Validators.required],
-      location: ['', Validators.maxLength(200)],
-      purchase_date: [''],
-      warranty_expiry: [''],
       notes: ['', Validators.maxLength(500)],
       // Network Configuration fields
       ip_address: [''],
@@ -137,7 +123,19 @@ export class AssetDialogComponent implements OnInit {
     });
 
     if (this.isEditMode && this.data?.asset) {
-      this.assetForm.patchValue(this.data.asset);
+      console.log('Edit mode - Asset data received:', this.data.asset);
+
+      // Map backend field names to form field names if needed
+      const assetData: any = this.data.asset;
+      const formData: any = {
+        ...this.data.asset,
+        category: this.data.asset.category || assetData.type, // Handle both field names
+        employee_id: this.data.asset.employee_id || assetData.assigned_to, // Map assigned_to back to employee_id
+      };
+
+      console.log('Mapped form data:', formData);
+      this.assetForm.patchValue(formData);
+
       // Disable asset_tag in edit mode
       this.assetForm.get('asset_tag')?.disable();
 
@@ -262,19 +260,18 @@ export class AssetDialogComponent implements OnInit {
     this.isSaving = true;
     const formValue = this.assetForm.getRawValue();
 
+    console.log('Form values:', formValue);
+    console.log('Is edit mode?:', this.isEditMode);
+
     // Transform form data to match backend JSON structure
     const assetData: any = {
-      asset_tag: formValue.asset_tag,
       brand_id: formValue.brand_id || undefined,
       branch_id: formValue.branch_id,
-      category: formValue.type, // Map 'type' to 'category'
+      category: formValue.category,
       model: formValue.model,
       serial_number: formValue.serial_number || undefined,
-      purchase_date: formValue.purchase_date || undefined,
-      warranty_expiry_date: formValue.warranty_expiry || undefined, // Map to warranty_expiry_date
       status: formValue.status,
       assigned_to: formValue.employee_id || undefined, // Map 'employee_id' to 'assigned_to'
-      location: formValue.location || undefined,
       notes: formValue.notes || undefined,
       // Network configuration
       ip_address: formValue.ip_address || undefined,
@@ -282,6 +279,11 @@ export class AssetDialogComponent implements OnInit {
       hostname: formValue.hostname || undefined,
       anydesk_id: formValue.anydesk_id || undefined,
     };
+
+    // Add asset_tag only for create mode
+    if (!this.isEditMode) {
+      assetData.asset_tag = formValue.asset_tag;
+    }
 
     // Build specifications object if any spec field has value
     const hasSpecs =
@@ -299,11 +301,6 @@ export class AssetDialogComponent implements OnInit {
         display: formValue.display || undefined,
         os: formValue.os || undefined,
       };
-    }
-
-    // Remove asset_tag from update data in edit mode
-    if (this.isEditMode) {
-      delete assetData.asset_tag;
     }
 
     console.log('Asset data to be sent to backend:', assetData);

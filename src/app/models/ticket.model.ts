@@ -1,32 +1,31 @@
 export interface Ticket {
-  id: number;
-  ticket_number: string;
-  title: string;
-  description: string;
+  ticket_id: number;
+  employee_id: number;
+  asset_id?: number;
   category: TicketCategory;
   priority: TicketPriority;
   status: TicketStatus;
-  reporter_id: number;
+  approval_status: ApprovalStatus;
+  subject: string;
+  description: string;
+  image_url?: string;
+  approved_by?: number;
+  approved_at?: string;
+  rejection_reason?: string;
   assigned_to?: number;
-  asset_id?: number;
-  branch_id: number;
   resolution_notes?: string;
   created_at: string;
-  updated_at: string;
-  resolved_at?: string;
+  updated_at?: string;
   reporter?: any;
-  assigned_technician?: any;
   asset?: any;
-  branch?: any;
+  assignedEmployee?: any;
+  approver?: any;
 }
 
 export enum TicketCategory {
   HARDWARE = 'hardware',
   SOFTWARE = 'software',
   NETWORK = 'network',
-  PRINTER = 'printer',
-  EMAIL = 'email',
-  ACCESS = 'access',
   OTHER = 'other',
 }
 
@@ -34,13 +33,22 @@ export enum TicketPriority {
   LOW = 'low',
   MEDIUM = 'medium',
   HIGH = 'high',
-  URGENT = 'urgent',
+  CRITICAL = 'critical',
 }
 
 export enum TicketStatus {
-  OPEN = 'open',
+  PENDING_APPROVAL = 'pending_approval',
+  APPROVED = 'approved',
+  ASSIGNED = 'assigned',
   IN_PROGRESS = 'in-progress',
   RESOLVED = 'resolved',
   CLOSED = 'closed',
+  REJECTED = 'rejected',
   CANCELLED = 'cancelled',
+}
+
+export enum ApprovalStatus {
+  PENDING = 'pending',
+  APPROVED = 'approved',
+  REJECTED = 'rejected',
 }

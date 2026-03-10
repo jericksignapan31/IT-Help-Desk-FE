@@ -32,6 +32,40 @@
   }
 }
 
+.image-upload-section {
+  margin-bottom: 1rem;
+
+  .upload-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+    color: rgba(0, 0, 0, 0.6);
+  }
+
+  .image-upload-container {
+    position: relative;
+
+    .image-preview {
+      position: relative;
+      width: 100%;
+      max-width: 400px;
+
+      img {
+        width: 100%;
+        border-radius: 8px;
+        border: 2px solid #e0e0e0;
+      }
+
+      .remove-image-btn {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background: rgba(255, 255, 255, 0.9);
+      }
+    }
+  }
+}
+
 .form-actions {
   display: flex;
   justify-content: flex-end;

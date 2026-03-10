@@ -1,4 +1,4 @@
-.my-tickets-container {
+.assigned-tickets-container {
   .header {
     display: flex;
     justify-content: space-between;
@@ -7,10 +7,6 @@
 
     h1 {
       margin: 0;
-    }
-
-    button mat-icon {
-      margin-right: 0.5rem;
     }
   }
 }
@@ -59,16 +55,6 @@
       color: #c62828;
     }
 
-    &.status-pending-approval {
-      background-color: #fff3e0;
-      color: #f57c00;
-    }
-
-    &.status-approved {
-      background-color: #e1f5fe;
-      color: #0277bd;
-    }
-
     &.status-assigned {
       background-color: #e3f2fd;
       color: #1976d2;
@@ -87,31 +73,6 @@
     &.status-closed {
       background-color: #f5f5f5;
       color: #616161;
-    }
-
-    &.status-rejected {
-      background-color: #ffebee;
-      color: #d32f2f;
-    }
-
-    &.status-cancelled {
-      background-color: #fce4ec;
-      color: #c2185b;
-    }
-
-    &.approval-pending {
-      background-color: #fff3e0;
-      color: #f57c00;
-    }
-
-    &.approval-approved {
-      background-color: #e8f5e9;
-      color: #388e3c;
-    }
-
-    &.approval-rejected {
-      background-color: #ffebee;
-      color: #d32f2f;
     }
   }
 
@@ -139,18 +100,12 @@
 
   p {
     font-size: 1.1rem;
-    margin: 0 0 1.5rem;
+    margin: 0;
   }
 }
 
 @media (max-width: 768px) {
-  .header {
-    flex-direction: column;
-    gap: 1rem;
-    align-items: flex-start !important;
-
-    button {
-      width: 100%;
-    }
+  .table-container {
+    margin: -1rem;
   }
 }

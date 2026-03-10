@@ -70,9 +70,9 @@ export class UserAccountService {
     return this.http.get<any[]>(`${this.API_URL}/user-accounts/credentials`);
   }
 
-  resetPassword(userId: string): Observable<{ message: string }> {
-    return this.http.post<{ message: string }>(
-      `${this.API_URL}/user-accounts/${userId}/reset-password`,
+  resetPassword(employeeId: string): Observable<{ message: string }> {
+    return this.http.patch<{ message: string }>(
+      `${this.API_URL}/employees/${employeeId}/reset-password`,
       {},
     );
   }

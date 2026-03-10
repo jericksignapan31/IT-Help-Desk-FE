@@ -1,10 +1,6 @@
-<div class="my-tickets-container">
+<div class="assigned-tickets-container">
   <div class="header">
-    <h1>My Requests</h1>
-    <button mat-raised-button color="primary" routerLink="/tickets/create">
-      <mat-icon>add</mat-icon>
-      New Request
-    </button>
+    <h1>Assigned to Me</h1>
   </div>
 
   <mat-card>
@@ -54,14 +50,12 @@
           </td>
         </ng-container>
 
-        <ng-container matColumnDef="approval_status">
-          <th mat-header-cell *matHeaderCellDef>Approval</th>
+        <ng-container matColumnDef="reporter">
+          <th mat-header-cell *matHeaderCellDef>Reporter</th>
           <td mat-cell *matCellDef="let ticket">
-            <mat-chip
-              [ngClass]="getApprovalStatusClass(ticket.approval_status)"
-            >
-              {{ ticket.approval_status | titlecase }}
-            </mat-chip>
+            <span *ngIf="ticket.reporter">
+              {{ ticket.reporter.first_name }} {{ ticket.reporter.last_name }}
+            </span>
           </td>
         </ng-container>
 
@@ -79,8 +73,27 @@
               mat-icon-button
               [routerLink]="['/tickets', ticket.ticket_id]"
               matTooltip="View Details"
+              color="primary"
             >
               <mat-icon>visibility</mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              *ngIf="canStartWork(ticket)"
+              (click)="startWork(ticket); $event.stopPropagation()"
+              matTooltip="Start Work"
+              color="accent"
+            >
+              <mat-icon>play_arrow</mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              *ngIf="canResolve(ticket)"
+              (click)="resolveTicket(ticket); $event.stopPropagation()"
+              matTooltip="Mark as Resolved"
+              color="primary"
+            >
+              <mat-icon>check_circle</mat-icon>
             </button>
           </td>
         </ng-container>
@@ -95,10 +108,7 @@
 
       <div *ngIf="tickets.length === 0 && !loading" class="no-data">
         <mat-icon>inbox</mat-icon>
-        <p>You haven't created any requests yet</p>
-        <button mat-raised-button color="primary" routerLink="/tickets/create">
-          Create Your First Request
-        </button>
+        <p>No tickets currently assigned to you</p>
       </div>
     </div>
   </mat-card>

@@ -9,6 +9,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { UserAccountService } from '../../services/user-account.service';
 import Swal from 'sweetalert2';
+import { log } from 'console';
 
 interface UserCredential {
   user_id: string;
@@ -77,6 +78,7 @@ export class UserCredentialsComponent implements OnInit {
   }
 
   resetPassword(credential: UserCredential): void {
+    console.log('Resetting password for user:', credential);
     Swal.fire({
       title: 'Reset Password?',
       text: `Reset password for ${credential.username}? Password will be reset to: ${credential.default_password_format}`,
@@ -88,7 +90,7 @@ export class UserCredentialsComponent implements OnInit {
       cancelButtonText: 'Cancel',
     }).then((result) => {
       if (result.isConfirmed) {
-        this.userAccountService.resetPassword(credential.user_id).subscribe({
+        this.userAccountService.resetPassword(credential.employee_id).subscribe({
           next: (response) => {
             Swal.fire({
               icon: 'success',

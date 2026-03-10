@@ -49,7 +49,7 @@ export const routes: Routes = [
                 (m) => m.TicketListComponent,
               ),
             canActivate: [roleGuard],
-            data: { roles: [UserRole.ADMIN, UserRole.TECHNICIAN] },
+            data: { roles: [UserRole.ADMIN, UserRole.SUPERVISOR] },
           },
           {
             path: 'create',
@@ -64,6 +64,15 @@ export const routes: Routes = [
               import('./tickets/my-tickets/my-tickets.component').then(
                 (m) => m.MyTicketsComponent,
               ),
+          },
+          {
+            path: 'assigned',
+            loadComponent: () =>
+              import('./tickets/assigned-tickets/assigned-tickets.component').then(
+                (m) => m.AssignedTicketsComponent,
+              ),
+            canActivate: [roleGuard],
+            data: { roles: [UserRole.ADMIN, UserRole.TECHNICIAN] },
           },
           {
             path: 'edit/:id',

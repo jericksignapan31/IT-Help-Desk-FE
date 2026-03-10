@@ -15,11 +15,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { TicketService } from '../../services/ticket.service';
 import { AssetService } from '../../services/asset.service';
-import { EmployeeService } from '../../services/employee.service';
 import { AuthService } from '../../services/auth.service';
 import { TicketCategory, TicketPriority } from '../../models/ticket.model';
 import { Asset } from '../../models/asset.model';
-import { Branch } from '../../models/branch.model';
 
 @Component({
   selector: 'app-ticket-form',
@@ -42,35 +40,34 @@ export class TicketFormComponent implements OnInit {
   loading = false;
   isEditMode = false;
   ticketId: number | null = null;
+  selectedImageFile: File | null = null;
+  imagePreview: string | null = null;
 
   categoryOptions = Object.values(TicketCategory);
   priorityOptions = Object.values(TicketPriority);
 
   assets: Asset[] = [];
-  branches: Branch[] = [];
 
   constructor(
     private fb: FormBuilder,
     private ticketService: TicketService,
     private assetService: AssetService,
-    private employeeService: EmployeeService,
     private authService: AuthService,
     private router: Router,
     private route: ActivatedRoute,
   ) {
     this.ticketForm = this.fb.group({
-      title: ['', Validators.required],
+      subject: ['', Validators.required],
       description: ['', Validators.required],
       category: ['', Validators.required],
       priority: ['', Validators.required],
-      asset_id: [null],
-      branch_id: ['', Validators.required],
+      asset_id: [null, Validators.required],
+      image_url: [''],
     });
   }
 
   ngOnInit(): void {
     this.loadAssets();
-    this.loadBranches();
 
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
@@ -81,16 +78,9 @@ export class TicketFormComponent implements OnInit {
   }
 
   loadAssets(): void {
-    this.assetService.getAssets().subscribe({
+    this.assetService.getMyBranchAssets().subscribe({
       next: (data) => (this.assets = data),
       error: (err) => console.error('Failed to load assets:', err),
-    });
-  }
-
-  loadBranches(): void {
-    this.employeeService.getBranches().subscribe({
-      next: (data) => (this.branches = data),
-      error: (err) => console.error('Failed to load branches:', err),
     });
   }
 
@@ -98,16 +88,51 @@ export class TicketFormComponent implements OnInit {
     this.ticketService.getTicket(id).subscribe({
       next: (ticket) => {
         this.ticketForm.patchValue({
-          title: ticket.title,
+          subject: ticket.subject,
           description: ticket.description,
           category: ticket.category,
           priority: ticket.priority,
           asset_id: ticket.asset_id,
-          branch_id: ticket.branch_id,
+          image_url: ticket.image_url,
         });
+        if (ticket.image_url) {
+          this.imagePreview = ticket.image_url;
+        }
       },
       error: (err) => console.error('Failed to load ticket:', err),
     });
+  }
+
+  onFileSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.match(/image\/(jpeg|jpg|png)/)) {
+        alert('Only JPEG and PNG images are allowed');
+        return;
+      }
+
+      // Validate file size (5MB limit)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('Image size must be less than 5MB');
+        return;
+      }
+
+      this.selectedImageFile = file;
+
+      // Create image preview
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.imagePreview = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  removeImage(): void {
+    this.selectedImageFile = null;
+    this.imagePreview = null;
+    this.ticketForm.patchValue({ image_url: '' });
   }
 
   onSubmit(): void {
@@ -117,6 +142,13 @@ export class TicketFormComponent implements OnInit {
 
     this.loading = true;
     const formData = this.ticketForm.value;
+
+    // Note: In production, you would upload the image to a storage service first
+    // and get the URL, then include that URL in the image_url field
+    // For now, we'll just use the preview URL or empty string
+    if (this.selectedImageFile && this.imagePreview) {
+      formData.image_url = this.imagePreview;
+    }
 
     const operation =
       this.isEditMode && this.ticketId

@@ -129,8 +129,13 @@ export class AuthService {
     return user ? roles.includes(user.role) : false;
   }
 
+  // Role checking methods
   isAdmin(): boolean {
     return this.hasRole([UserRole.ADMIN]);
+  }
+
+  isSupervisor(): boolean {
+    return this.hasRole([UserRole.SUPERVISOR]);
   }
 
   isTechnician(): boolean {

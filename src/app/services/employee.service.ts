@@ -67,6 +67,16 @@ export class EmployeeService {
     });
   }
 
+  resetEmployeePassword(
+    id: string | number,
+    newPassword: string,
+  ): Observable<{ message: string }> {
+    return this.http.patch<{ message: string }>(
+      `${this.API_URL}/employees/${id}/reset-password`,
+      { newPassword },
+    );
+  }
+
   // Departments
   getDepartments(): Observable<Department[]> {
     return this.http.get<Department[]>(`${this.API_URL}/departments`);

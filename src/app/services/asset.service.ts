@@ -34,6 +34,11 @@ export class AssetService {
     return this.http.get<Asset[]>(`${this.API_URL}/assets/search`, { params });
   }
 
+  // Get assets from user's branch (auto-filtered by JWT)
+  getMyBranchAssets(): Observable<Asset[]> {
+    return this.http.get<Asset[]>(`${this.API_URL}/assets/my-branch`);
+  }
+
   // Get assets by employee
   getAssetsByEmployee(employeeId: string): Observable<Asset[]> {
     return this.http.get<Asset[]>(
