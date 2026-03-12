@@ -18,13 +18,13 @@ export const MENU_ITEMS: MenuItem[] = [
     label: 'All Tickets',
     icon: 'list_alt',
     route: '/tickets',
-    roles: [UserRole.ADMIN, UserRole.TECHNICIAN],
+    roles: [UserRole.ADMIN, UserRole.IT],
   },
   {
     label: 'Assigned to Me',
     icon: 'assignment_ind',
     route: '/tickets/assigned',
-    roles: [UserRole.TECHNICIAN, UserRole.ADMIN],
+    roles: [UserRole.IT, UserRole.ADMIN],
   },
   { label: 'Assets', icon: 'devices', route: '/assets' },
   {
@@ -55,7 +55,7 @@ export const MENU_ITEMS: MenuItem[] = [
     label: 'Repair Logs',
     icon: 'build',
     route: '/repair-logs',
-    roles: [UserRole.ADMIN, UserRole.TECHNICIAN],
+    roles: [UserRole.ADMIN, UserRole.IT],
   },
 
   {

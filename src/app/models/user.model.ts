@@ -13,8 +13,8 @@ export interface User {
 export enum UserRole {
   ADMIN = 'admin',
   SUPERVISOR = 'supervisor',
-  TECHNICIAN = 'technician',
-  USER = 'user',
+  IT = 'it',
+  EMPLOYEE = 'employee',
 }
 
 export interface LoginRequest {

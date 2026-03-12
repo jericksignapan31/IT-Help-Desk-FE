@@ -72,7 +72,7 @@ export const routes: Routes = [
                 (m) => m.AssignedTicketsComponent,
               ),
             canActivate: [roleGuard],
-            data: { roles: [UserRole.ADMIN, UserRole.TECHNICIAN] },
+            data: { roles: [UserRole.ADMIN, UserRole.IT] },
           },
           {
             path: 'edit/:id',
@@ -108,7 +108,7 @@ export const routes: Routes = [
                 (m) => m.AssetListComponent,
               ),
             canActivate: [roleGuard],
-            data: { roles: [UserRole.ADMIN, UserRole.TECHNICIAN] },
+            data: { roles: [UserRole.ADMIN, UserRole.IT] },
           },
           {
             path: ':id',
@@ -218,7 +218,7 @@ export const routes: Routes = [
       {
         path: 'repair-logs',
         canActivate: [roleGuard],
-        data: { roles: [UserRole.ADMIN, UserRole.TECHNICIAN] },
+        data: { roles: [UserRole.ADMIN, UserRole.IT] },
         children: [
           {
             path: '',

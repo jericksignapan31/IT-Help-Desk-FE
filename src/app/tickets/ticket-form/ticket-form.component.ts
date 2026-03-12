@@ -88,9 +88,28 @@ export class TicketFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    console.log('🚀 [Ticket Form] ngOnInit started');
+
+    // Debug current user
+    const currentUser = this.authService.currentUserValue;
+    console.log('👤 [Ticket Form] Current User Object:', currentUser);
+    console.log('👤 [Ticket Form] User Role from Object:', currentUser?.role);
+
     // Load branches first for admin/IT/supervisor
     const isRegularEmployee = this.authService.isUser();
+    console.log('👤 [Ticket Form] isRegularEmployee:', isRegularEmployee);
+    console.log('👤 [Ticket Form] isAdmin:', this.authService.isAdmin());
+    console.log(
+      '👤 [Ticket Form] isTechnician:',
+      this.authService.isTechnician(),
+    );
+    console.log(
+      '👤 [Ticket Form] isSupervisor:',
+      this.authService.isSupervisor(),
+    );
+
     if (!isRegularEmployee) {
+      console.log('🏢 [Ticket Form] Loading branches for admin/IT/supervisor');
       this.loadBranches();
     }
 
@@ -109,79 +128,36 @@ export class TicketFormComponent implements OnInit {
 
     // Determine which API to use based on user role
     const isRegularEmployee = this.authService.isUser();
+    const isAdmin = this.authService.isAdmin();
+    const isIT = this.authService.isTechnician();
+    const isSupervisor = this.authService.isSupervisor();
 
     console.log('🔄 [Ticket Form] Loading assets...');
-    console.log(
-      '👤 [Ticket Form] User role - Regular Employee:',
-      isRegularEmployee,
-    );
+    console.log('👤 [Ticket Form] User role checks:');
+    console.log('   - isRegularEmployee (Employee/User):', isRegularEmployee);
+    console.log('   - isAdmin:', isAdmin);
+    console.log('   - isIT/Technician:', isIT);
+    console.log('   - isSupervisor:', isSupervisor);
 
     // Log current user info for debugging
     const currentUser = this.authService.currentUserValue;
     console.log('👤 [Ticket Form] Current user:', currentUser);
+    console.log('👤 [Ticket Form] User role from object:', currentUser?.role);
 
     let assetRequest: Observable<Asset[]>;
 
-    // Log JWT token to check branch_id
-    const token = localStorage.getItem('access_token');
-    if (token && isRegularEmployee) {
-      try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        console.log('🔑 [Ticket Form] JWT Payload:', payload);
-        console.log(
-          '🏢 [Ticket Form] User branch_id from JWT:',
-          payload.branch_id,
-        );
-
-        const branchId = payload.branch_id;
-        if (branchId) {
-          console.log(
-            '🏢 [Ticket Form] Scope: MY BRANCH ONLY (branch_id:',
-            branchId,
-            ')',
-          );
-          console.log(
-            '📡 [Ticket Form] API Endpoint: /assets/branch/' + branchId,
-          );
-          assetRequest = this.assetService.getAssetsByBranch(branchId);
-        } else {
-          console.error('❌ [Ticket Form] No branch_id found in JWT!');
-          this.loadingAssets = false;
-          Swal.fire({
-            icon: 'error',
-            title: 'Branch Not Found',
-            text: 'Unable to determine your branch. Please contact support.',
-            confirmButtonColor: '#3f51b5',
-          });
-          return;
-        }
-      } catch (e) {
-        console.error('❌ [Ticket Form] Failed to decode JWT:', e);
-        this.loadingAssets = false;
-        Swal.fire({
-          icon: 'error',
-          title: 'Authentication Error',
-          text: 'Unable to verify your credentials. Please log in again.',
-          confirmButtonColor: '#3f51b5',
-        });
-        return;
-      }
-    } else if (!isRegularEmployee) {
+    if (isRegularEmployee) {
+      // For employees: Use my-branch endpoint (auto-filtered by JWT on backend)
+      console.log('🏢 [Ticket Form] Scope: MY BRANCH ONLY (Regular Employee)');
+      console.log('📡 [Ticket Form] API Endpoint: /assets/my-branch');
+      assetRequest = this.assetService.getMyBranchAssets();
+    } else {
+      // For admin/IT/supervisor: Load all assets
       console.log(
         '🌍 [Ticket Form] Scope: ALL BRANCHES (Admin/IT/Supervisor access)',
       );
-      console.log('📡 [Ticket Form] API Endpoint: /assets');
+      console.log('📡 [Ticket Form] API Endpoint: /assets (ALL branches)');
       assetRequest = this.assetService.getAssets();
-    } else {
-      console.error('❌ [Ticket Form] No access token found!');
-      this.loadingAssets = false;
-      Swal.fire({
-        icon: 'error',
-        title: 'Authentication Error',
-        text: 'No access token found. Please log in again.',
-        confirmButtonColor: '#3f51b5',
-      });
-      return;
     }
 
     assetRequest.subscribe({
@@ -213,6 +189,14 @@ export class TicketFormComponent implements OnInit {
         this.assets = data;
         this.filteredAssets = data; // Initialize filtered assets
         this.loadingAssets = false;
+
+        console.log('✅ [Ticket Form] Assets assignment complete:');
+        console.log('   - this.assets.length:', this.assets.length);
+        console.log(
+          '   - this.filteredAssets.length:',
+          this.filteredAssets.length,
+        );
+        console.log('   - isRegularEmployee:', isRegularEmployee);
 
         // Group assets by branch for admin/IT/supervisor dropdown
         if (!isRegularEmployee && data.length > 0) {

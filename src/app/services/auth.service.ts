@@ -139,11 +139,11 @@ export class AuthService {
   }
 
   isTechnician(): boolean {
-    return this.hasRole([UserRole.TECHNICIAN]);
+    return this.hasRole([UserRole.IT]);
   }
 
   isUser(): boolean {
-    return this.hasRole([UserRole.USER]);
+    return this.hasRole([UserRole.EMPLOYEE]);
   }
 
   /**
