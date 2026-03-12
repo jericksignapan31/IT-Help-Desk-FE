@@ -56,7 +56,7 @@ export class AssetService {
     return this.http.get<Asset[]>(`${this.API_URL}/assets/status/${status}`);
   }
 
-  getAsset(id: number): Observable<Asset> {
+  getAsset(id: string): Observable<Asset> {
     return this.http.get<Asset>(`${this.API_URL}/assets/${id}`);
   }
 
@@ -64,24 +64,24 @@ export class AssetService {
     return this.http.post<Asset>(`${this.API_URL}/assets`, asset);
   }
 
-  updateAsset(id: number, asset: Partial<Asset>): Observable<Asset> {
+  updateAsset(id: string, asset: Partial<Asset>): Observable<Asset> {
     return this.http.patch<Asset>(`${this.API_URL}/assets/${id}`, asset);
   }
 
-  deleteAsset(id: number): Observable<void> {
+  deleteAsset(id: string): Observable<void> {
     return this.http.delete<void>(`${this.API_URL}/assets/${id}`);
   }
 
-  assignAsset(assetId: number, employeeId: number): Observable<Asset> {
+  assignAsset(assetId: string, employeeId: string): Observable<Asset> {
     return this.http.patch<Asset>(`${this.API_URL}/assets/${assetId}`, {
-      employee_id: employeeId,
+      assigned_to: employeeId,
       status: 'in-use',
     });
   }
 
-  unassignAsset(assetId: number): Observable<Asset> {
+  unassignAsset(assetId: string): Observable<Asset> {
     return this.http.patch<Asset>(`${this.API_URL}/assets/${assetId}`, {
-      employee_id: null,
+      assigned_to: null,
       status: 'available',
     });
   }

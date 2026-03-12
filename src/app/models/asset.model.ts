@@ -1,15 +1,15 @@
 import { Brand } from './brand.model';
 
 export interface Asset {
-  id: number;
+  asset_id: string;
   asset_tag: string;
   category: AssetType;
-  brand_id: number;
+  brand_id: string;
   model: string;
   serial_number?: string;
   status: AssetStatus;
-  employee_id?: number;
-  branch_id: number;
+  assigned_to?: string;
+  branch_id: string;
   notes?: string;
   // Network Configuration (for computer/laptop)
   ip_address?: string;
@@ -27,7 +27,7 @@ export interface Asset {
   created_at: string;
   updated_at: string;
   brand?: Brand;
-  employee?: any;
+  assignedEmployee?: any;
   branch?: any;
 }
 

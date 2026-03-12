@@ -10,11 +10,13 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { FormsModule } from '@angular/forms';
 import { AssetService } from '../../services/asset.service';
 import { Asset, AssetStatus } from '../../models/asset.model';
 import { AuthService } from '../../services/auth.service';
 import { AssetDialogComponent } from '../asset-dialog/asset-dialog.component';
+import { AssetDetailDialogComponent } from '../asset-detail-dialog/asset-detail-dialog.component';
 import Swal from 'sweetalert2';
 import * as QRCode from 'qrcode';
 
@@ -33,6 +35,7 @@ import * as QRCode from 'qrcode';
     MatInputModule,
     MatSelectModule,
     MatDialogModule,
+    MatTooltipModule,
     FormsModule,
   ],
   templateUrl: './asset-list.component.html',
@@ -70,15 +73,58 @@ export class AssetListComponent implements OnInit {
 
   loadAssets(): void {
     this.loading = true;
-    this.assetService.getAssets(this.filters).subscribe({
+
+    // Determine which API to use based on user role
+    const isRegularEmployee = this.authService.isUser();
+    const apiEndpoint = isRegularEmployee ? '/assets/my-branch' : '/assets';
+
+    console.log('🔄 Loading assets...');
+    console.log('👤 User role - Regular Employee:', isRegularEmployee);
+    console.log('📡 API Endpoint:', apiEndpoint);
+
+    if (isRegularEmployee) {
+      console.log('🏢 Scope: MY BRANCH ONLY (filtered by JWT)');
+    } else {
+      console.log('🌍 Scope: ALL BRANCHES (Admin/IT/Supervisor access)');
+      console.log('🔍 Filters:', this.filters);
+    }
+
+    // Regular employees use my-branch endpoint (no filters needed)
+    // IT/Supervisor/Admin use regular endpoint with filters - returns ALL branches
+    const assetRequest = isRegularEmployee
+      ? this.assetService.getMyBranchAssets()
+      : this.assetService.getAssets(this.filters);
+
+    assetRequest.subscribe({
       next: (data) => {
+        console.log('✅ Assets loaded successfully!');
+        console.log('📦 Total assets count:', data.length);
+
+        if (data.length > 0) {
+          console.log('🔍 First asset sample:', data[0]);
+          console.log('📝 Asset fields:', Object.keys(data[0]));
+
+          // Show branch distribution for admin/IT/supervisor
+          if (!isRegularEmployee && data.length > 0) {
+            const branchCounts = data.reduce((acc: any, asset) => {
+              const branchName = asset.branch?.branch_name || 'Unknown';
+              acc[branchName] = (acc[branchName] || 0) + 1;
+              return acc;
+            }, {});
+            console.log('🏢 Assets by branch:', branchCounts);
+          }
+        } else {
+          console.warn('⚠️ No assets found in the response');
+        }
+
         this.assets = data;
         this.loading = false;
       },
       error: (err) => {
-        console.error('Failed to load assets:', err);
-        console.error('Error status:', err.status);
-        console.error('Error message:', err.message);
+        console.error('❌ Failed to load assets:', err);
+        console.error('📊 Error status:', err.status);
+        console.error('💬 Error message:', err.message);
+        console.error('🔍 Full error object:', err);
 
         if (err.status === 401) {
           console.log(
@@ -144,6 +190,14 @@ export class AssetListComponent implements OnInit {
     });
   }
 
+  viewAssetDetails(asset: Asset): void {
+    this.dialog.open(AssetDetailDialogComponent, {
+      width: '900px',
+      maxWidth: '95vw',
+      data: { asset },
+    });
+  }
+
   deleteAsset(asset: Asset): void {
     Swal.fire({
       title: 'Delete Asset',
@@ -156,7 +210,7 @@ export class AssetListComponent implements OnInit {
       cancelButtonText: 'Cancel',
     }).then((result) => {
       if (result.isConfirmed) {
-        this.assetService.deleteAsset(asset.id).subscribe({
+        this.assetService.deleteAsset(asset.asset_id).subscribe({
           next: () => {
             Swal.fire({
               icon: 'success',

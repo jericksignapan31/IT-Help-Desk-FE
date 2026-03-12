@@ -130,7 +130,7 @@ export class AssetDialogComponent implements OnInit {
       const formData: any = {
         ...this.data.asset,
         category: this.data.asset.category || assetData.type, // Handle both field names
-        employee_id: this.data.asset.employee_id || assetData.assigned_to, // Map assigned_to back to employee_id
+        employee_id: this.data.asset.assigned_to || assetData.assigned_to, // Map assigned_to to employee_id
       };
 
       console.log('Mapped form data:', formData);
@@ -318,8 +318,8 @@ export class AssetDialogComponent implements OnInit {
     }
 
     const operation =
-      this.isEditMode && this.data?.asset?.id
-        ? this.assetService.updateAsset(this.data.asset.id, assetData)
+      this.isEditMode && this.data?.asset?.asset_id
+        ? this.assetService.updateAsset(this.data.asset.asset_id, assetData)
         : this.assetService.createAsset(assetData);
 
     operation.subscribe({

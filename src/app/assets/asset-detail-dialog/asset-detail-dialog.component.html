@@ -1,0 +1,285 @@
+<div class="dialog-container">
+  <div class="dialog-header">
+    <div class="header-content">
+      <div class="title-section">
+        <mat-icon class="header-icon">inventory_2</mat-icon>
+        <h2 mat-dialog-title>Asset Details</h2>
+      </div>
+      <mat-chip [color]="getStatusColor(data.asset.status)" highlighted>
+        {{ data.asset.status | uppercase }}
+      </mat-chip>
+    </div>
+    <button mat-icon-button (click)="close()" class="close-button">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content>
+    <div class="details-grid">
+      <!-- Asset Tag & QR Code -->
+      <mat-card class="info-card full-width">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>label</mat-icon>
+            Asset Tag
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="qr-section">
+            <div class="asset-tag-display">
+              <h1>{{ data.asset.asset_tag }}</h1>
+            </div>
+            <div class="qr-code" *ngIf="qrCodeDataUrl">
+              <img [src]="qrCodeDataUrl" alt="Asset QR Code" />
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Basic Information -->
+      <mat-card class="info-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>info</mat-icon>
+            Basic Information
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="detail-row">
+            <span class="label">Category:</span>
+            <span class="value">{{ data.asset.category | uppercase }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Model:</span>
+            <span class="value">{{ data.asset.model }}</span>
+          </div>
+          <div class="detail-row" *ngIf="data.asset.serial_number">
+            <span class="label">Serial Number:</span>
+            <span class="value">{{ data.asset.serial_number }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Status:</span>
+            <span class="value">{{ data.asset.status | uppercase }}</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Brand Information -->
+      <mat-card class="info-card" *ngIf="data.asset.brand">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>business</mat-icon>
+            Brand
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="brand-section">
+            <img
+              *ngIf="data.asset.brand.brand_image_url"
+              [src]="data.asset.brand.brand_image_url"
+              [alt]="data.asset.brand.brand_name"
+              class="brand-logo"
+            />
+            <div class="brand-info">
+              <div class="detail-row">
+                <span class="label">Brand Name:</span>
+                <span class="value">{{ data.asset.brand.brand_name }}</span>
+              </div>
+              <div class="detail-row" *ngIf="data.asset.brand.description">
+                <span class="label">Description:</span>
+                <span class="value">{{ data.asset.brand.description }}</span>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Assignment Information -->
+      <mat-card class="info-card" *ngIf="data.asset.assigned_to">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>person</mat-icon>
+            Assigned To
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="detail-row" *ngIf="data.asset.assignedEmployee">
+            <span class="label">Employee:</span>
+            <span class="value">
+              {{ data.asset.assignedEmployee.first_name }}
+              {{ data.asset.assignedEmployee.last_name }}
+            </span>
+          </div>
+          <div class="detail-row" *ngIf="data.asset.assignedEmployee">
+            <span class="label">Employee ID:</span>
+            <span class="value">{{ data.asset.assigned_to }}</span>
+          </div>
+          <div class="detail-row" *ngIf="data.asset.assignedEmployee?.email">
+            <span class="label">Email:</span>
+            <span class="value">{{ data.asset.assignedEmployee.email }}</span>
+          </div>
+          <div class="detail-row" *ngIf="data.asset.assignedEmployee?.position">
+            <span class="label">Position:</span>
+            <span class="value">{{
+              data.asset.assignedEmployee.position
+            }}</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Not Assigned -->
+      <mat-card class="info-card" *ngIf="!data.asset.assigned_to">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>person_off</mat-icon>
+            Assignment Status
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="not-assigned">
+            <mat-icon>check_circle</mat-icon>
+            <span>Not Assigned - Available</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Branch Information -->
+      <mat-card class="info-card" *ngIf="data.asset.branch">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>location_on</mat-icon>
+            Branch Location
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="detail-row">
+            <span class="label">Branch Name:</span>
+            <span class="value">{{ data.asset.branch.branch_name }}</span>
+          </div>
+          <div class="detail-row" *ngIf="data.asset.branch.address">
+            <span class="label">Address:</span>
+            <span class="value">{{ data.asset.branch.address }}</span>
+          </div>
+          <div class="detail-row" *ngIf="data.asset.branch.contact_number">
+            <span class="label">Contact:</span>
+            <span class="value">{{ data.asset.branch.contact_number }}</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Network Information -->
+      <mat-card class="info-card full-width" *ngIf="hasNetworkInfo()">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>router</mat-icon>
+            Network Information
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="network-grid">
+            <div class="detail-row" *ngIf="data.asset.ip_address">
+              <span class="label">IP Address:</span>
+              <span class="value">{{ data.asset.ip_address }}</span>
+            </div>
+            <div class="detail-row" *ngIf="data.asset.mac_address">
+              <span class="label">MAC Address:</span>
+              <span class="value">{{ data.asset.mac_address }}</span>
+            </div>
+            <div class="detail-row" *ngIf="data.asset.hostname">
+              <span class="label">Hostname:</span>
+              <span class="value">{{ data.asset.hostname }}</span>
+            </div>
+            <div class="detail-row" *ngIf="data.asset.anydesk_id">
+              <span class="label">AnyDesk ID:</span>
+              <span class="value">{{ data.asset.anydesk_id }}</span>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Specifications -->
+      <mat-card class="info-card full-width" *ngIf="hasSpecifications()">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>settings</mat-icon>
+            Technical Specifications
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="specs-grid">
+            <div class="detail-row" *ngIf="data.asset.specifications?.cpu">
+              <span class="label">CPU:</span>
+              <span class="value">{{ data.asset.specifications?.cpu }}</span>
+            </div>
+            <div class="detail-row" *ngIf="data.asset.specifications?.ram">
+              <span class="label">RAM:</span>
+              <span class="value">{{ data.asset.specifications?.ram }}</span>
+            </div>
+            <div class="detail-row" *ngIf="data.asset.specifications?.storage">
+              <span class="label">Storage:</span>
+              <span class="value">{{
+                data.asset.specifications?.storage
+              }}</span>
+            </div>
+            <div class="detail-row" *ngIf="data.asset.specifications?.display">
+              <span class="label">Display:</span>
+              <span class="value">{{
+                data.asset.specifications?.display
+              }}</span>
+            </div>
+            <div class="detail-row" *ngIf="data.asset.specifications?.os">
+              <span class="label">Operating System:</span>
+              <span class="value">{{ data.asset.specifications?.os }}</span>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Notes -->
+      <mat-card class="info-card full-width" *ngIf="data.asset.notes">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>note</mat-icon>
+            Notes
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p class="notes-text">{{ data.asset.notes }}</p>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Timestamps -->
+      <mat-card class="info-card full-width">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>schedule</mat-icon>
+            Timeline
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="timeline-grid">
+            <div class="detail-row">
+              <span class="label">Created:</span>
+              <span class="value">{{
+                data.asset.created_at | date: "medium"
+              }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Last Updated:</span>
+              <span class="value">{{
+                data.asset.updated_at | date: "medium"
+              }}</span>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-raised-button color="primary" (click)="close()">
+      <mat-icon>close</mat-icon>
+      Close
+    </button>
+  </mat-dialog-actions>
+</div>

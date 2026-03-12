@@ -53,15 +53,57 @@
           <!-- Asset Selection -->
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Related Asset (Required)</mat-label>
-            <mat-select formControlName="asset_id" required>
-              <mat-option [value]="null">Select an asset</mat-option>
-              <mat-option *ngFor="let asset of assets" [value]="asset.id">
-                {{ asset.asset_tag }} - {{ asset.category }} ({{ asset.model }})
+            <mat-select
+              formControlName="asset_id"
+              required
+              [disabled]="loadingAssets"
+            >
+              <mat-option [value]="null" *ngIf="!loadingAssets">
+                {{
+                  assets.length === 0
+                    ? "No assets available"
+                    : "Select an asset"
+                }}
+              </mat-option>
+              <mat-option [value]="null" *ngIf="loadingAssets">
+                Loading assets...
+              </mat-option>
+              <mat-option *ngFor="let asset of assets" [value]="asset.asset_id">
+                {{ asset.asset_tag }} - {{ asset.brand?.brand_name || "" }}
+                {{ asset.model }}
               </mat-option>
             </mat-select>
+            <mat-icon matSuffix *ngIf="loadingAssets">
+              <span class="spinner"></span>
+            </mat-icon>
             <mat-error *ngIf="ticketForm.get('asset_id')?.hasError('required')">
               Asset selection is required
             </mat-error>
+            <mat-hint *ngIf="authService.isUser() && assets.length > 0">
+              Showing assets from your branch only
+            </mat-hint>
+            <mat-hint
+              *ngIf="
+                (authService.isAdmin() ||
+                  authService.isSupervisor() ||
+                  authService.isTechnician()) &&
+                assets.length > 0
+              "
+            >
+              Showing all assets from all branches
+            </mat-hint>
+            <mat-hint *ngIf="assets.length === 0 && !loadingAssets">
+              No assets found.
+              <button
+                type="button"
+                mat-button
+                color="primary"
+                (click)="loadAllAssets()"
+                style="text-decoration: underline; padding: 0; min-width: auto"
+              >
+                Try loading all assets
+              </button>
+            </mat-hint>
           </mat-form-field>
 
           <!-- Category -->

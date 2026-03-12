@@ -1,7 +1,7 @@
 export interface Ticket {
   ticket_id: number;
   employee_id: number;
-  asset_id?: number;
+  asset_id?: string;
   category: TicketCategory;
   priority: TicketPriority;
   status: TicketStatus;

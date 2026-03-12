@@ -12,7 +12,15 @@
     </button>
   </div>
 
-  <mat-card class="filters-card">
+  <!-- Filters only for IT, Supervisor, and Admin -->
+  <mat-card
+    class="filters-card"
+    *ngIf="
+      authService.isAdmin() ||
+      authService.isSupervisor() ||
+      authService.isTechnician()
+    "
+  >
     <div class="filters">
       <mat-form-field appearance="outline">
         <mat-label>Search</mat-label>
@@ -40,6 +48,32 @@
         </button>
         <button mat-button (click)="clearFilters()">Clear</button>
       </div>
+    </div>
+  </mat-card>
+
+  <!-- Info banner for Admin/IT/Supervisor - viewing ALL branches -->
+  <mat-card
+    class="info-card all-branches"
+    *ngIf="
+      authService.isAdmin() ||
+      authService.isSupervisor() ||
+      authService.isTechnician()
+    "
+  >
+    <div class="info-content">
+      <mat-icon>public</mat-icon>
+      <span
+        ><strong>Viewing ALL assets from ALL branches</strong> - You have full
+        access</span
+      >
+    </div>
+  </mat-card>
+
+  <!-- Info banner for regular employees - viewing own branch only -->
+  <mat-card class="info-card employee-branch" *ngIf="authService.isUser()">
+    <div class="info-content">
+      <mat-icon>info</mat-icon>
+      <span>Showing assets from your branch only</span>
     </div>
   </mat-card>
 
@@ -78,8 +112,10 @@
           <th mat-header-cell *matHeaderCellDef>Assigned To</th>
           <td mat-cell *matCellDef="let asset">
             {{
-              asset.employee
-                ? asset.employee.first_name + " " + asset.employee.last_name
+              asset.assignedEmployee
+                ? asset.assignedEmployee.first_name +
+                  " " +
+                  asset.assignedEmployee.last_name
                 : "Unassigned"
             }}
           </td>
@@ -102,6 +138,14 @@
         <ng-container matColumnDef="actions">
           <th mat-header-cell *matHeaderCellDef>Actions</th>
           <td mat-cell *matCellDef="let asset">
+            <button
+              mat-icon-button
+              color="accent"
+              (click)="viewAssetDetails(asset)"
+              matTooltip="View Details"
+            >
+              <mat-icon>visibility</mat-icon>
+            </button>
             <button
               mat-icon-button
               color="primary"
