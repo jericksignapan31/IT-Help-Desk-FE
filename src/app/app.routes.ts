@@ -87,7 +87,7 @@ export const routes: Routes = [
               import('./tickets/ticket-list/ticket-list.component').then(
                 (m) => m.TicketListComponent,
               ),
-            data: { statusFilter: 'in-progress' },
+            data: { statusFilter: 'in_progress' },
           },
           {
             path: 'completed',

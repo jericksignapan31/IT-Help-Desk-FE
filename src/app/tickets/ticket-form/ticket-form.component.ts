@@ -116,10 +116,20 @@ export class TicketFormComponent implements OnInit {
     this.loadAssets();
 
     const id = this.route.snapshot.paramMap.get('id');
+    console.log('🔍 [Ticket Form] Route ID parameter:', id);
+
     if (id) {
-      this.isEditMode = true;
-      this.ticketId = +id;
-      this.loadTicket(this.ticketId);
+      const numericId = +id;
+      console.log('🔍 [Ticket Form] Converted to number:', numericId);
+
+      if (!isNaN(numericId)) {
+        this.isEditMode = true;
+        this.ticketId = numericId;
+        this.loadTicket(this.ticketId);
+      } else {
+        console.error('❌ [Ticket Form] Invalid ticket ID:', id);
+        this.router.navigate(['/tickets']);
+      }
     }
   }
 
@@ -304,8 +314,22 @@ export class TicketFormComponent implements OnInit {
   }
 
   loadTicket(id: number): void {
+    console.log('🔄 [Ticket Form] Loading ticket with ID:', id);
+
+    if (!id || isNaN(id)) {
+      console.error('❌ [Ticket Form] Invalid ticket ID for loading:', id);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Invalid ticket ID',
+      });
+      this.router.navigate(['/tickets']);
+      return;
+    }
+
     this.ticketService.getTicket(id).subscribe({
       next: (ticket) => {
+        console.log('✅ [Ticket Form] Ticket loaded successfully:', ticket);
         this.ticketForm.patchValue({
           subject: ticket.subject,
           description: ticket.description,
@@ -318,7 +342,15 @@ export class TicketFormComponent implements OnInit {
           this.imagePreview = ticket.image_url;
         }
       },
-      error: (err) => console.error('Failed to load ticket:', err),
+      error: (err) => {
+        console.error('❌ [Ticket Form] Failed to load ticket:', err);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Failed to load ticket details',
+        });
+        this.router.navigate(['/tickets']);
+      },
     });
   }
 

@@ -153,34 +153,37 @@
         <ng-container matColumnDef="actions">
           <th mat-header-cell *matHeaderCellDef>Actions</th>
           <td mat-cell *matCellDef="let ticket">
-            <!-- Approve/Reject buttons for Supervisors/Admins -->
-            <button
-              *ngIf="canApproveReject(ticket)"
-              mat-icon-button
-              color="primary"
-              (click)="approveTicket(ticket); $event.stopPropagation()"
-              matTooltip="Approve Ticket"
-            >
-              <mat-icon>check_circle</mat-icon>
-            </button>
-            <button
-              *ngIf="canApproveReject(ticket)"
-              mat-icon-button
-              color="warn"
-              (click)="rejectTicket(ticket); $event.stopPropagation()"
-              matTooltip="Reject Ticket"
-            >
-              <mat-icon>cancel</mat-icon>
-            </button>
+            <div class="action-buttons">
+              <!-- Approve/Reject buttons for Supervisors/Admins -->
+              <button
+                *ngIf="canApproveReject(ticket)"
+                mat-icon-button
+                color="primary"
+                (click)="approveTicket(ticket); $event.stopPropagation()"
+                matTooltip="Approve Ticket"
+              >
+                <mat-icon>check_circle</mat-icon>
+              </button>
+              <button
+                *ngIf="canApproveReject(ticket)"
+                mat-icon-button
+                color="warn"
+                (click)="rejectTicket(ticket); $event.stopPropagation()"
+                matTooltip="Reject Ticket"
+              >
+                <mat-icon>cancel</mat-icon>
+              </button>
 
-            <!-- View details button -->
-            <button
-              mat-icon-button
-              [routerLink]="['/tickets', ticket.ticket_id]"
-              matTooltip="View Details"
-            >
-              <mat-icon>visibility</mat-icon>
-            </button>
+              <!-- View details button -->
+              <button
+                mat-icon-button
+                (click)="viewTicket(ticket); $event.stopPropagation()"
+                matTooltip="View Details"
+                color="primary"
+              >
+                <mat-icon>visibility</mat-icon>
+              </button>
+            </div>
           </td>
         </ng-container>
 

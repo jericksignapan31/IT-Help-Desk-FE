@@ -54,7 +54,7 @@ export enum TicketStatus {
   PENDING_APPROVAL = 'pending_approval',
   APPROVED = 'approved',
   ASSIGNED = 'assigned',
-  IN_PROGRESS = 'in-progress',
+  IN_PROGRESS = 'in_progress',
   RESOLVED = 'resolved',
   CLOSED = 'closed',
   REJECTED = 'rejected',

@@ -101,8 +101,9 @@
               <!-- View details button -->
               <button
                 mat-icon-button
-                [routerLink]="['/tickets', ticket.ticket_id]"
+                (click)="viewTicket(ticket); $event.stopPropagation()"
                 matTooltip="View Details"
+                color="primary"
               >
                 <mat-icon>visibility</mat-icon>
               </button>

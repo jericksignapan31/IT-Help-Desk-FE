@@ -74,6 +74,11 @@ export class AssignedTicketsComponent implements OnInit {
       this.ticketService.getAssignedToMe(employeeId).subscribe({
         next: (data) => {
           this.tickets = data;
+          console.log('✅ [Assigned Tickets] Loaded tickets:', data);
+          console.log(
+            '✅ [Assigned Tickets] Ticket statuses:',
+            data.map((t) => ({ id: t.ticket_id, status: t.status })),
+          );
           this.loading = false;
         },
         error: (err) => {
@@ -92,9 +97,6 @@ export class AssignedTicketsComponent implements OnInit {
       title: 'Start Working?',
       text: `Do you want to start working on ticket #${ticket.ticket_id}?`,
       icon: 'question',
-      input: 'textarea',
-      inputLabel: 'Notes (optional)',
-      inputPlaceholder: 'e.g., Starting diagnosis...',
       showCancelButton: true,
       confirmButtonColor: '#3f51b5',
       cancelButtonColor: '#9e9e9e',
@@ -102,22 +104,29 @@ export class AssignedTicketsComponent implements OnInit {
       cancelButtonText: 'Cancel',
     }).then((result) => {
       if (result.isConfirmed) {
-        this.ticketService
-          .startWork(ticket.ticket_id, result.value || undefined)
-          .subscribe({
-            next: () => {
-              Swal.fire(
-                'Started!',
-                'Ticket status updated to In Progress',
-                'success',
-              );
-              this.loadAssignedTickets();
-            },
-            error: (err) => {
-              console.error('Failed to start work:', err);
-              Swal.fire('Error', 'Failed to start work on ticket', 'error');
-            },
-          });
+        this.ticketService.startWork(ticket.ticket_id).subscribe({
+          next: () => {
+            Swal.fire(
+              'Started!',
+              'Ticket status updated to In Progress',
+              'success',
+            );
+            this.loadAssignedTickets();
+          },
+          error: (err) => {
+            console.error('Failed to start work:', err);
+            console.error('Error details:', {
+              status: err.status,
+              message: err.error?.message,
+              error: err.error,
+            });
+            const errorMessage =
+              err.error?.message ||
+              err.message ||
+              'Failed to start work on ticket';
+            Swal.fire('Error', errorMessage, 'error');
+          },
+        });
       }
     });
   }
@@ -219,13 +228,30 @@ export class AssignedTicketsComponent implements OnInit {
   }
 
   canStartWork(ticket: Ticket): boolean {
-    return ticket.status === TicketStatus.ASSIGNED;
+    console.log(
+      '🔍 [canStartWork] Checking ticket:',
+      ticket.ticket_id,
+      'Status:',
+      ticket.status,
+    );
+    // Can start work if ticket is assigned OR approved (just assigned by supervisor)
+    return (
+      ticket.status === TicketStatus.ASSIGNED ||
+      ticket.status === TicketStatus.APPROVED
+    );
   }
 
   canResolve(ticket: Ticket): boolean {
+    console.log(
+      '🔍 [canResolve] Checking ticket:',
+      ticket.ticket_id,
+      'Status:',
+      ticket.status,
+    );
     return (
       ticket.status === TicketStatus.IN_PROGRESS ||
-      ticket.status === TicketStatus.ASSIGNED
+      ticket.status === TicketStatus.ASSIGNED ||
+      ticket.status === TicketStatus.APPROVED
     );
   }
 
@@ -239,5 +265,171 @@ export class AssignedTicketsComponent implements OnInit {
 
   formatDate(date: string): string {
     return new Date(date).toLocaleDateString();
+  }
+
+  viewTicket(ticket: Ticket): void {
+    const statusColor = this.getStatusColorForModal(ticket.status);
+    const priorityColor = this.getPriorityColorForModal(ticket.priority);
+
+    const reporterName = ticket.reporter
+      ? `${ticket.reporter.first_name} ${ticket.reporter.last_name}`
+      : 'N/A';
+
+    const assetInfo = ticket.asset
+      ? `${ticket.asset.asset_tag} (${ticket.asset.category})`
+      : 'N/A';
+
+    Swal.fire({
+      title: `<strong>Ticket Details</strong>`,
+      html: `
+        <div style="text-align: left; padding: 1rem;">
+          <h3 style="color: #1976d2; margin-bottom: 1rem;">${ticket.subject}</h3>
+          
+          <div style="margin-bottom: 1.5rem;">
+            <h4 style="color: #666; font-size: 0.9rem; margin-bottom: 0.5rem;">DESCRIPTION</h4>
+            <p style="background: #f5f5f5; padding: 0.75rem; border-radius: 4px; margin: 0;">${ticket.description}</p>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+            <div>
+              <strong style="color: #666;">Status:</strong><br/>
+              <span style="display: inline-block; padding: 0.25rem 0.75rem; background: ${statusColor}; color: white; border-radius: 12px; font-size: 0.85rem; margin-top: 0.25rem;">
+                ${ticket.status}
+              </span>
+            </div>
+            <div>
+              <strong style="color: #666;">Priority:</strong><br/>
+              <span style="display: inline-block; padding: 0.25rem 0.75rem; background: ${priorityColor}; color: white; border-radius: 12px; font-size: 0.85rem; margin-top: 0.25rem;">
+                ${ticket.priority}
+              </span>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+            <div>
+              <strong style="color: #666;">Category:</strong><br/>
+              <span>${ticket.category}</span>
+            </div>
+            <div>
+              <strong style="color: #666;">Approval:</strong><br/>
+              <span>${ticket.approval_status}</span>
+            </div>
+          </div>
+
+          <hr style="margin: 1rem 0; border: none; border-top: 1px solid #e0e0e0;"/>
+
+          <div style="margin-bottom: 0.75rem;">
+            <strong style="color: #666;">Reporter:</strong> ${reporterName}
+          </div>
+          <div style="margin-bottom: 0.75rem;">
+            <strong style="color: #666;">Asset:</strong> ${assetInfo}
+          </div>
+          <div style="margin-bottom: 0.75rem;">
+            <strong style="color: #666;">Created:</strong> ${this.formatDate(ticket.created_at)}
+          </div>
+
+          ${
+            ticket.started_at
+              ? `
+            <div style="margin-bottom: 0.75rem;">
+              <strong style="color: #666;">Started:</strong> ${this.formatDate(ticket.started_at)}
+            </div>
+          `
+              : ''
+          }
+
+          ${
+            ticket.resolved_at
+              ? `
+            <div style="margin-bottom: 0.75rem;">
+              <strong style="color: #666;">Resolved:</strong> ${this.formatDate(ticket.resolved_at)}
+            </div>
+          `
+              : ''
+          }
+
+          ${
+            ticket.observation
+              ? `
+            <hr style="margin: 1rem 0; border: none; border-top: 1px solid #e0e0e0;"/>
+            <div style="margin-bottom: 0.75rem;">
+              <strong style="color: #666;">Observation:</strong><br/>
+              <p style="background: #f5f5f5; padding: 0.75rem; border-radius: 4px; margin-top: 0.25rem;">${ticket.observation}</p>
+            </div>
+          `
+              : ''
+          }
+
+          ${
+            ticket.action_taken
+              ? `
+            <div style="margin-bottom: 0.75rem;">
+              <strong style="color: #666;">Action Taken:</strong><br/>
+              <p style="background: #f5f5f5; padding: 0.75rem; border-radius: 4px; margin-top: 0.25rem;">${ticket.action_taken}</p>
+            </div>
+          `
+              : ''
+          }
+
+          ${
+            ticket.recommendation
+              ? `
+            <div style="margin-bottom: 0.75rem;">
+              <strong style="color: #666;">Recommendation:</strong><br/>
+              <p style="background: #f5f5f5; padding: 0.75rem; border-radius: 4px; margin-top: 0.25rem;">${ticket.recommendation}</p>
+            </div>
+          `
+              : ''
+          }
+
+          ${
+            ticket.image_url
+              ? `
+            <hr style="margin: 1rem 0; border: none; border-top: 1px solid #e0e0e0;"/>
+            <div style="margin-bottom: 0.75rem;">
+              <strong style="color: #666;">Attachment:</strong><br/>
+              <img src="${ticket.image_url}" style="max-width: 100%; border-radius: 4px; margin-top: 0.5rem;" alt="Ticket attachment"/>
+            </div>
+          `
+              : ''
+          }
+        </div>
+      `,
+      width: '700px',
+      showDenyButton: this.canStartWork(ticket),
+      denyButtonText: 'Start Working',
+      denyButtonColor: '#ff4081',
+      confirmButtonText: 'Close',
+      confirmButtonColor: '#1976d2',
+    }).then((result) => {
+      if (result.isDenied) {
+        this.startWork(ticket);
+      }
+    });
+  }
+
+  getStatusColorForModal(status: string): string {
+    const colors: { [key: string]: string } = {
+      pending_approval: '#f57f17',
+      approved: '#0277bd',
+      assigned: '#1976d2',
+      in_progress: '#f57c00',
+      'in-progress': '#f57c00',
+      resolved: '#388e3c',
+      closed: '#616161',
+      rejected: '#c62828',
+      cancelled: '#d32f2f',
+    };
+    return colors[status] || '#757575';
+  }
+
+  getPriorityColorForModal(priority: string): string {
+    const colors: { [key: string]: string } = {
+      low: '#2e7d32',
+      medium: '#e65100',
+      high: '#c2185b',
+      critical: '#c62828',
+    };
+    return colors[priority] || '#757575';
   }
 }

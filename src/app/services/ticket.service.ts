@@ -45,7 +45,7 @@ export class TicketService {
   assignTicket(ticketId: number, technicianId: number): Observable<Ticket> {
     return this.http.patch<Ticket>(`${this.API_URL}/tickets/${ticketId}`, {
       assigned_to: technicianId,
-      status: 'in-progress',
+      status: 'in_progress',
     });
   }
 
@@ -133,14 +133,10 @@ export class TicketService {
   }
 
   // IT Staff workflow methods
-  startWork(ticketId: number, notes?: string): Observable<Ticket> {
-    const payload: any = {};
-    if (notes) {
-      payload.notes = notes;
-    }
+  startWork(ticketId: number): Observable<Ticket> {
     return this.http.patch<Ticket>(
       `${this.API_URL}/tickets/${ticketId}/start-work`,
-      payload,
+      null,
     );
   }
 

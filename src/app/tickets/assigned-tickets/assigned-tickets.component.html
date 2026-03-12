@@ -69,32 +69,26 @@
         <ng-container matColumnDef="actions">
           <th mat-header-cell *matHeaderCellDef>Actions</th>
           <td mat-cell *matCellDef="let ticket">
-            <button
-              mat-icon-button
-              [routerLink]="['/tickets', ticket.ticket_id]"
-              matTooltip="View Details"
-              color="primary"
-            >
-              <mat-icon>visibility</mat-icon>
-            </button>
-            <button
-              mat-icon-button
-              *ngIf="canStartWork(ticket)"
-              (click)="startWork(ticket); $event.stopPropagation()"
-              matTooltip="Start Work"
-              color="accent"
-            >
-              <mat-icon>play_arrow</mat-icon>
-            </button>
-            <button
-              mat-icon-button
-              *ngIf="canResolve(ticket)"
-              (click)="resolveTicket(ticket); $event.stopPropagation()"
-              matTooltip="Mark as Resolved"
-              color="primary"
-            >
-              <mat-icon>check_circle</mat-icon>
-            </button>
+            <div class="action-buttons">
+              <button
+                mat-icon-button
+                (click)="viewTicket(ticket); $event.stopPropagation()"
+                matTooltip="View Details"
+                color="primary"
+              >
+                <mat-icon>visibility</mat-icon>
+              </button>
+              <button
+                mat-raised-button
+                *ngIf="canResolve(ticket)"
+                (click)="resolveTicket(ticket); $event.stopPropagation()"
+                color="primary"
+                class="complete-btn"
+              >
+                <mat-icon>check_circle</mat-icon>
+                Complete
+              </button>
+            </div>
           </td>
         </ng-container>
 
