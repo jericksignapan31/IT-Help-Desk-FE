@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { MatTableModule } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
@@ -59,6 +59,7 @@ export class TicketListComponent implements OnInit {
   ];
   loading = true;
   viewMode: 'all' | 'pending-approvals' = 'all';
+  statusFilter: string | null = null;
 
   filters = {
     search: '',
@@ -72,10 +73,17 @@ export class TicketListComponent implements OnInit {
   constructor(
     private ticketService: TicketService,
     public authService: AuthService,
+    private route: ActivatedRoute,
   ) {}
 
   ngOnInit(): void {
-    this.loadTickets();
+    this.route.data.subscribe((data) => {
+      this.statusFilter = data['statusFilter'] || null;
+      if (this.statusFilter) {
+        this.filters.status = this.statusFilter;
+      }
+      this.loadTickets();
+    });
   }
 
   loadTickets(): void {
@@ -88,6 +96,9 @@ export class TicketListComponent implements OnInit {
     } else if (this.filters.search) {
       // Use search endpoint if search query exists
       request = this.ticketService.searchTickets(this.filters.search);
+    } else if (this.statusFilter === 'completed') {
+      // Special case: completed means resolved OR closed
+      request = this.ticketService.getTickets(this.filters);
     } else if (this.filters.status && !this.filters.priority) {
       // Use status filter endpoint
       request = this.ticketService.getTicketsByStatus(this.filters.status);
@@ -101,7 +112,14 @@ export class TicketListComponent implements OnInit {
 
     request.subscribe({
       next: (data: Ticket[]) => {
-        this.tickets = data;
+        // Filter for completed tickets (resolved OR closed)
+        if (this.statusFilter === 'completed') {
+          this.tickets = data.filter(
+            (t) => t.status === 'resolved' || t.status === 'closed',
+          );
+        } else {
+          this.tickets = data;
+        }
         this.loading = false;
       },
       error: (err: any) => {

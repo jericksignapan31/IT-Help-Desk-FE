@@ -85,6 +85,81 @@
         color: white !important;
       }
     }
+
+    // Expansion panel for parent menu items
+    .menu-expansion {
+      background-color: transparent;
+      box-shadow: none;
+      margin: 0.25rem 0.5rem;
+      border-radius: 8px;
+
+      .mat-expansion-panel-header {
+        padding: 0 1rem;
+        height: 48px;
+        background-color: transparent;
+        color: white;
+
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.05) !important;
+        }
+
+        .mat-expansion-panel-header-title {
+          color: white;
+        }
+
+        .menu-title {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          color: white;
+
+          .menu-icon {
+            color: white;
+          }
+
+          .menu-label {
+            color: white;
+          }
+        }
+
+        .mat-expansion-indicator {
+          &::after {
+            color: white;
+          }
+        }
+      }
+
+      .mat-expansion-panel-body {
+        padding: 0;
+        background-color: rgba(0, 0, 0, 0.1);
+      }
+
+      // Nested menu items (children)
+      .nested-item {
+        color: white;
+        border-radius: 0;
+
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        &.active-link {
+          background-color: rgba(102, 126, 234, 0.3);
+
+          .mat-icon {
+            color: #667eea;
+          }
+        }
+
+        .mat-icon {
+          color: rgba(255, 255, 255, 0.7);
+        }
+
+        span[matlistitemtitle] {
+          color: white !important;
+        }
+      }
+    }
   }
 }
 

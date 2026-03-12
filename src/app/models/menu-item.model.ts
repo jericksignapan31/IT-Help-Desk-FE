@@ -3,28 +3,43 @@ import { UserRole } from './user.model';
 export interface MenuItem {
   label: string;
   icon: string;
-  route: string;
+  route?: string;
   roles?: UserRole[];
+  children?: MenuItem[];
 }
 
 export const MENU_ITEMS: MenuItem[] = [
   { label: 'Dashboard', icon: 'dashboard', route: '/dashboard' },
   {
-    label: 'My Tickets',
+    label: 'Tickets',
     icon: 'confirmation_number',
-    route: '/tickets/my-tickets',
-  },
-  {
-    label: 'All Tickets',
-    icon: 'list_alt',
-    route: '/tickets',
-    roles: [UserRole.ADMIN, UserRole.IT],
-  },
-  {
-    label: 'Assigned to Me',
-    icon: 'assignment_ind',
-    route: '/tickets/assigned',
-    roles: [UserRole.IT, UserRole.ADMIN],
+    children: [
+      {
+        label: 'My Tickets',
+        icon: 'person',
+        route: '/tickets/my-tickets',
+      },
+      {
+        label: 'Pending',
+        icon: 'pending',
+        route: '/tickets/pending',
+      },
+      {
+        label: 'Approved',
+        icon: 'check',
+        route: '/tickets/approved',
+      },
+      {
+        label: 'Work in Progress',
+        icon: 'autorenew',
+        route: '/tickets/in-progress',
+      },
+      {
+        label: 'Completed',
+        icon: 'check_circle',
+        route: '/tickets/completed',
+      },
+    ],
   },
   { label: 'Assets', icon: 'devices', route: '/assets' },
   {

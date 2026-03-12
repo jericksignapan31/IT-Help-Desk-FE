@@ -1,0 +1,133 @@
+<div class="pending-approvals-container">
+  <div class="header">
+    <h1>
+      <mat-icon>pending_actions</mat-icon>
+      Pending Approvals
+    </h1>
+    <p class="subtitle">Review and approve ticket requests from employees</p>
+  </div>
+
+  <mat-card>
+    <div class="table-container">
+      <table mat-table [dataSource]="tickets" class="ticket-table">
+        <ng-container matColumnDef="ticket_id">
+          <th mat-header-cell *matHeaderCellDef>Ticket #</th>
+          <td mat-cell *matCellDef="let ticket">
+            <strong>#{{ ticket.ticket_id }}</strong>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="subject">
+          <th mat-header-cell *matHeaderCellDef>Subject</th>
+          <td mat-cell *matCellDef="let ticket">
+            <div class="subject-cell">
+              <span>{{ ticket.subject }}</span>
+              <mat-icon *ngIf="ticket.image_url" class="has-image-icon"
+                >image</mat-icon
+              >
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="category">
+          <th mat-header-cell *matHeaderCellDef>Category</th>
+          <td mat-cell *matCellDef="let ticket">
+            {{ ticket.category | titlecase }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="priority">
+          <th mat-header-cell *matHeaderCellDef>Priority</th>
+          <td mat-cell *matCellDef="let ticket">
+            <mat-chip [ngClass]="getPriorityClass(ticket.priority)">
+              {{ ticket.priority | titlecase }}
+            </mat-chip>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let ticket">
+            <mat-chip [ngClass]="getStatusClass(ticket.status)">
+              {{ ticket.status | titlecase }}
+            </mat-chip>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="reporter">
+          <th mat-header-cell *matHeaderCellDef>Reporter</th>
+          <td mat-cell *matCellDef="let ticket">
+            <div *ngIf="ticket.reporter" class="reporter-info">
+              <strong
+                >{{ ticket.reporter.first_name }}
+                {{ ticket.reporter.last_name }}</strong
+              >
+              <small>{{ ticket.reporter.email }}</small>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="created_at">
+          <th mat-header-cell *matHeaderCellDef>Created</th>
+          <td mat-cell *matCellDef="let ticket">
+            {{ formatDate(ticket.created_at) }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let ticket">
+            <div class="action-buttons">
+              <!-- Approve button -->
+              <button
+                mat-mini-fab
+                color="primary"
+                (click)="approveTicket(ticket); $event.stopPropagation()"
+                matTooltip="Approve Ticket"
+              >
+                <mat-icon>check</mat-icon>
+              </button>
+
+              <!-- Reject button -->
+              <button
+                mat-mini-fab
+                color="warn"
+                (click)="rejectTicket(ticket); $event.stopPropagation()"
+                matTooltip="Reject Ticket"
+              >
+                <mat-icon>close</mat-icon>
+              </button>
+
+              <!-- View details button -->
+              <button
+                mat-icon-button
+                [routerLink]="['/tickets', ticket.ticket_id]"
+                matTooltip="View Details"
+              >
+                <mat-icon>visibility</mat-icon>
+              </button>
+            </div>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr
+          mat-row
+          *matRowDef="let row; columns: displayedColumns"
+          class="ticket-row"
+        ></tr>
+      </table>
+
+      <div *ngIf="tickets.length === 0 && !loading" class="no-data">
+        <mat-icon>check_circle</mat-icon>
+        <h3>No Pending Approvals</h3>
+        <p>All tickets have been reviewed</p>
+      </div>
+
+      <div *ngIf="loading" class="loading">
+        <mat-icon class="spinner">refresh</mat-icon>
+        <p>Loading pending approvals...</p>
+      </div>
+    </div>
+  </mat-card>
+</div>

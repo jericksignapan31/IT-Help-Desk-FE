@@ -66,6 +66,47 @@ export const routes: Routes = [
               ),
           },
           {
+            path: 'pending',
+            loadComponent: () =>
+              import('./tickets/ticket-list/ticket-list.component').then(
+                (m) => m.TicketListComponent,
+              ),
+            data: { statusFilter: 'pending_approval' },
+          },
+          {
+            path: 'approved',
+            loadComponent: () =>
+              import('./tickets/ticket-list/ticket-list.component').then(
+                (m) => m.TicketListComponent,
+              ),
+            data: { statusFilter: 'approved' },
+          },
+          {
+            path: 'in-progress',
+            loadComponent: () =>
+              import('./tickets/ticket-list/ticket-list.component').then(
+                (m) => m.TicketListComponent,
+              ),
+            data: { statusFilter: 'in-progress' },
+          },
+          {
+            path: 'completed',
+            loadComponent: () =>
+              import('./tickets/ticket-list/ticket-list.component').then(
+                (m) => m.TicketListComponent,
+              ),
+            data: { statusFilter: 'completed' },
+          },
+          {
+            path: 'pending-approvals',
+            loadComponent: () =>
+              import('./tickets/pending-approvals/pending-approvals.component').then(
+                (m) => m.PendingApprovalsComponent,
+              ),
+            canActivate: [roleGuard],
+            data: { roles: [UserRole.SUPERVISOR, UserRole.ADMIN] },
+          },
+          {
             path: 'assigned',
             loadComponent: () =>
               import('./tickets/assigned-tickets/assigned-tickets.component').then(

@@ -8,6 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { AuthService } from '../services/auth.service';
 import { User, UserRole } from '../models/user.model';
 import { MenuItem, MENU_ITEMS } from '../models/menu-item.model';
@@ -25,6 +26,7 @@ import { MenuItem, MENU_ITEMS } from '../models/menu-item.model';
     MatButtonModule,
     MatMenuModule,
     MatTooltipModule,
+    MatExpansionModule,
   ],
   templateUrl: './layout.component.html',
   styleUrls: ['./layout.component.scss'],
@@ -33,6 +35,7 @@ export class LayoutComponent {
   currentUser: User | null = null;
   isSidenavOpen = true;
   menuItems: MenuItem[] = MENU_ITEMS;
+  expandedMenus: { [key: string]: boolean } = {};
 
   constructor(
     public authService: AuthService,
@@ -65,6 +68,17 @@ export class LayoutComponent {
 
   get visibleMenuItems(): MenuItem[] {
     return this.menuItems.filter((item) => this.canAccessMenuItem(item));
+  }
+
+  getVisibleChildren(item: MenuItem): MenuItem[] {
+    if (!item.children) {
+      return [];
+    }
+    return item.children.filter((child) => this.canAccessMenuItem(child));
+  }
+
+  hasVisibleChildren(item: MenuItem): boolean {
+    return this.getVisibleChildren(item).length > 0;
   }
 
   navigateToProfile(): void {
