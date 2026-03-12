@@ -11,7 +11,11 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatDialogModule } from '@angular/material/dialog';
 import { TicketService } from '../../services/ticket.service';
-import { Ticket, TicketStatus } from '../../models/ticket.model';
+import {
+  Ticket,
+  TicketStatus,
+  TicketCompletionData,
+} from '../../models/ticket.model';
 import { AuthService } from '../../services/auth.service';
 import Swal from 'sweetalert2';
 
@@ -88,6 +92,9 @@ export class AssignedTicketsComponent implements OnInit {
       title: 'Start Working?',
       text: `Do you want to start working on ticket #${ticket.ticket_id}?`,
       icon: 'question',
+      input: 'textarea',
+      inputLabel: 'Notes (optional)',
+      inputPlaceholder: 'e.g., Starting diagnosis...',
       showCancelButton: true,
       confirmButtonColor: '#3f51b5',
       cancelButtonColor: '#9e9e9e',
@@ -96,7 +103,7 @@ export class AssignedTicketsComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.ticketService
-          .updateTicketStatus(ticket.ticket_id, TicketStatus.IN_PROGRESS)
+          .startWork(ticket.ticket_id, result.value || undefined)
           .subscribe({
             next: () => {
               Swal.fire(
@@ -107,8 +114,8 @@ export class AssignedTicketsComponent implements OnInit {
               this.loadAssignedTickets();
             },
             error: (err) => {
-              console.error('Failed to update ticket:', err);
-              Swal.fire('Error', 'Failed to update ticket status', 'error');
+              console.error('Failed to start work:', err);
+              Swal.fire('Error', 'Failed to start work on ticket', 'error');
             },
           });
       }
@@ -117,37 +124,94 @@ export class AssignedTicketsComponent implements OnInit {
 
   resolveTicket(ticket: Ticket): void {
     Swal.fire({
-      title: 'Resolve Ticket',
-      text: 'Please provide resolution notes:',
-      input: 'textarea',
-      inputPlaceholder: 'Describe what was fixed...',
+      title: 'Complete Ticket',
+      html: `
+        <div class="swal-form" style="text-align: left;">
+          <div class="form-group">
+            <label for="unit_status" style="display: block; font-weight: 500; margin-bottom: 5px;">Unit Status *</label>
+            <select id="unit_status" class="swal2-input" style="width: 100%; box-sizing: border-box;">
+              <option value="">Select status...</option>
+              <option value="working">Working</option>
+              <option value="not_working">Not Working</option>
+              <option value="needs_replacement">Needs Replacement</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-top: 10px;">
+            <label for="observation" style="display: block; font-weight: 500; margin-bottom: 5px;">Observation *</label>
+            <textarea id="observation" class="swal2-textarea" placeholder="What did you find?" style="width: 100%; box-sizing: border-box;"></textarea>
+          </div>
+          <div class="form-group" style="margin-top: 10px;">
+            <label for="action_taken" style="display: block; font-weight: 500; margin-bottom: 5px;">Action Taken *</label>
+            <textarea id="action_taken" class="swal2-textarea" placeholder="What did you do?" style="width: 100%; box-sizing: border-box;"></textarea>
+          </div>
+          <div class="form-group" style="margin-top: 10px;">
+            <label for="recommendation" style="display: block; font-weight: 500; margin-bottom: 5px;">Recommendation *</label>
+            <textarea id="recommendation" class="swal2-textarea" placeholder="What should be done next?" style="width: 100%; box-sizing: border-box;"></textarea>
+          </div>
+          <div class="form-group" style="margin-top: 10px;">
+            <label for="resolution_notes" style="display: block; font-weight: 500; margin-bottom: 5px;">Additional Notes (optional)</label>
+            <textarea id="resolution_notes" class="swal2-textarea" placeholder="Any additional information..." style="width: 100%; box-sizing: border-box;"></textarea>
+          </div>
+        </div>
+      `,
+      width: '600px',
       showCancelButton: true,
       confirmButtonColor: '#4caf50',
       cancelButtonColor: '#9e9e9e',
-      confirmButtonText: 'Mark as Resolved',
+      confirmButtonText: 'Complete Ticket',
       cancelButtonText: 'Cancel',
-      inputValidator: (value) => {
-        if (!value) {
-          return 'Resolution notes are required!';
+      preConfirm: () => {
+        const unit_status = (
+          document.getElementById('unit_status') as HTMLSelectElement
+        ).value;
+        const observation = (
+          document.getElementById('observation') as HTMLTextAreaElement
+        ).value;
+        const action_taken = (
+          document.getElementById('action_taken') as HTMLTextAreaElement
+        ).value;
+        const recommendation = (
+          document.getElementById('recommendation') as HTMLTextAreaElement
+        ).value;
+        const resolution_notes = (
+          document.getElementById('resolution_notes') as HTMLTextAreaElement
+        ).value;
+
+        if (!unit_status || !observation || !action_taken || !recommendation) {
+          Swal.showValidationMessage('Please fill in all required fields');
+          return false;
         }
-        return null;
+
+        const completionData: any = {
+          unit_status,
+          observation,
+          action_taken,
+          recommendation,
+        };
+
+        if (resolution_notes) {
+          completionData.resolution_notes = resolution_notes;
+        }
+
+        return completionData;
       },
     }).then((result) => {
       if (result.isConfirmed && result.value) {
         this.ticketService
-          .updateTicketStatus(
-            ticket.ticket_id,
-            TicketStatus.RESOLVED,
-            result.value,
-          )
+          .completeTicket(ticket.ticket_id, result.value)
           .subscribe({
             next: () => {
-              Swal.fire('Resolved!', 'Ticket has been resolved', 'success');
+              Swal.fire({
+                icon: 'success',
+                title: 'Completed!',
+                text: 'Ticket has been marked as resolved',
+                timer: 2000,
+              });
               this.loadAssignedTickets();
             },
             error: (err) => {
-              console.error('Failed to resolve ticket:', err);
-              Swal.fire('Error', 'Failed to resolve ticket', 'error');
+              console.error('Failed to complete ticket:', err);
+              Swal.fire('Error', 'Failed to complete ticket', 'error');
             },
           });
       }

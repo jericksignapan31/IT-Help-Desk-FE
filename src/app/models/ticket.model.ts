@@ -14,12 +14,26 @@ export interface Ticket {
   rejection_reason?: string;
   assigned_to?: number;
   resolution_notes?: string;
+  started_at?: string;
+  resolved_at?: string;
+  unit_status?: string;
+  observation?: string;
+  action_taken?: string;
+  recommendation?: string;
   created_at: string;
   updated_at?: string;
   reporter?: any;
   asset?: any;
   assignedEmployee?: any;
   approver?: any;
+}
+
+export interface TicketCompletionData {
+  unit_status: string;
+  observation: string;
+  action_taken: string;
+  recommendation: string;
+  resolution_notes?: string;
 }
 
 export enum TicketCategory {

@@ -131,4 +131,23 @@ export class TicketService {
       { rejection_reason: reason },
     );
   }
+
+  // IT Staff workflow methods
+  startWork(ticketId: number, notes?: string): Observable<Ticket> {
+    const payload: any = {};
+    if (notes) {
+      payload.notes = notes;
+    }
+    return this.http.patch<Ticket>(
+      `${this.API_URL}/tickets/${ticketId}/start-work`,
+      payload,
+    );
+  }
+
+  completeTicket(ticketId: number, data: any): Observable<Ticket> {
+    return this.http.patch<Ticket>(
+      `${this.API_URL}/tickets/${ticketId}/complete`,
+      data,
+    );
+  }
 }
