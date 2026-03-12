@@ -67,13 +67,13 @@ export class TicketService {
     );
   }
 
-  getMyTickets(employeeId: number): Observable<Ticket[]> {
+  getMyTickets(employeeId: number | string): Observable<Ticket[]> {
     return this.http.get<Ticket[]>(
       `${this.API_URL}/tickets/reporter/${employeeId}`,
     );
   }
 
-  getAssignedToMe(employeeId: number): Observable<Ticket[]> {
+  getAssignedToMe(employeeId: number | string): Observable<Ticket[]> {
     return this.http.get<Ticket[]>(
       `${this.API_URL}/tickets/assignee/${employeeId}`,
     );

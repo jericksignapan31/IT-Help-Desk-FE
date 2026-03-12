@@ -78,15 +78,10 @@ export class AssetListComponent implements OnInit {
     const isRegularEmployee = this.authService.isUser();
     const apiEndpoint = isRegularEmployee ? '/assets/my-branch' : '/assets';
 
-    console.log('🔄 Loading assets...');
-    console.log('👤 User role - Regular Employee:', isRegularEmployee);
-    console.log('📡 API Endpoint:', apiEndpoint);
+    
 
     if (isRegularEmployee) {
-      console.log('🏢 Scope: MY BRANCH ONLY (filtered by JWT)');
     } else {
-      console.log('🌍 Scope: ALL BRANCHES (Admin/IT/Supervisor access)');
-      console.log('🔍 Filters:', this.filters);
     }
 
     // Regular employees use my-branch endpoint (no filters needed)
@@ -97,12 +92,8 @@ export class AssetListComponent implements OnInit {
 
     assetRequest.subscribe({
       next: (data) => {
-        console.log('✅ Assets loaded successfully!');
-        console.log('📦 Total assets count:', data.length);
 
         if (data.length > 0) {
-          console.log('🔍 First asset sample:', data[0]);
-          console.log('📝 Asset fields:', Object.keys(data[0]));
 
           // Show branch distribution for admin/IT/supervisor
           if (!isRegularEmployee && data.length > 0) {
@@ -111,26 +102,18 @@ export class AssetListComponent implements OnInit {
               acc[branchName] = (acc[branchName] || 0) + 1;
               return acc;
             }, {});
-            console.log('🏢 Assets by branch:', branchCounts);
           }
         } else {
-          console.warn('⚠️ No assets found in the response');
         }
 
         this.assets = data;
         this.loading = false;
       },
       error: (err) => {
-        console.error('❌ Failed to load assets:', err);
-        console.error('📊 Error status:', err.status);
-        console.error('💬 Error message:', err.message);
-        console.error('🔍 Full error object:', err);
+      
 
         if (err.status === 401) {
-          console.log(
-            '🔐 Token check:',
-            localStorage.getItem('access_token') ? 'Token exists' : 'No token',
-          );
+         
           Swal.fire({
             icon: 'warning',
             title: 'Session Expired',
