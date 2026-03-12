@@ -63,6 +63,11 @@ export class TicketFormComponent implements OnInit {
   selectedBranchId: string | null = null;
   loadingBranches = false;
 
+  // Camera properties
+  isCameraOpen = false;
+  videoStream: MediaStream | null = null;
+  showCameraButtons = false;
+
   constructor(
     private fb: FormBuilder,
     private ticketService: TicketService,
@@ -452,6 +457,135 @@ export class TicketFormComponent implements OnInit {
     this.selectedImageFile = null;
     this.imagePreview = null;
     this.ticketForm.patchValue({ image_url: '' });
+    this.stopCamera();
+  }
+
+  async openCamera(): Promise<void> {
+    try {
+      // Stop any existing stream first
+      this.stopCamera();
+
+      console.log('📷 [Camera] Requesting camera access...');
+
+      // Request camera access with mobile-friendly constraints
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: 'environment', // Use back camera on mobile
+          width: { ideal: 1920 },
+          height: { ideal: 1080 },
+        },
+        audio: false,
+      });
+
+      this.videoStream = stream;
+      this.isCameraOpen = true;
+      this.showCameraButtons = true;
+
+      console.log('✅ [Camera] Camera opened successfully');
+
+      // Wait for DOM to update and attach stream to video element
+      setTimeout(() => {
+        const videoElement = document.getElementById(
+          'cameraVideo',
+        ) as HTMLVideoElement;
+        if (videoElement) {
+          videoElement.srcObject = stream;
+          videoElement.play();
+          console.log('📹 [Camera] Video stream attached to element');
+        } else {
+          console.error('❌ [Camera] Video element not found');
+        }
+      }, 100);
+    } catch (error) {
+      console.error('❌ [Camera] Failed to access camera:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Camera Access Denied',
+        text: 'Unable to access camera. Please check your browser permissions.',
+        confirmButtonColor: '#3f51b5',
+      });
+      this.isCameraOpen = false;
+      this.showCameraButtons = false;
+    }
+  }
+
+  capturePhoto(): void {
+    const videoElement = document.getElementById(
+      'cameraVideo',
+    ) as HTMLVideoElement;
+    const canvas = document.createElement('canvas');
+
+    if (!videoElement || !this.videoStream) {
+      console.error('❌ [Camera] No video stream available');
+      return;
+    }
+
+    console.log('📸 [Camera] Capturing photo...');
+
+    // Set canvas dimensions to match video
+    canvas.width = videoElement.videoWidth;
+    canvas.height = videoElement.videoHeight;
+
+    // Draw current video frame to canvas
+    const context = canvas.getContext('2d');
+    if (context) {
+      context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+
+      // Convert canvas to blob then to file
+      canvas.toBlob(
+        (blob) => {
+          if (blob) {
+            // Create a File object from blob
+            const file = new File([blob], `camera-${Date.now()}.jpg`, {
+              type: 'image/jpeg',
+            });
+            this.selectedImageFile = file;
+
+            // Create preview
+            this.imagePreview = canvas.toDataURL('image/jpeg', 0.9);
+
+            console.log('✅ [Camera] Photo captured successfully');
+            console.log(
+              '📊 [Camera] File size:',
+              (blob.size / 1024).toFixed(2),
+              'KB',
+            );
+
+            // Stop camera after capture
+            this.stopCamera();
+
+            Swal.fire({
+              icon: 'success',
+              title: 'Photo Captured',
+              text: 'Photo captured successfully!',
+              timer: 1500,
+              showConfirmButton: false,
+            });
+          }
+        },
+        'image/jpeg',
+        0.9,
+      );
+    }
+  }
+
+  stopCamera(): void {
+    if (this.videoStream) {
+      console.log('🛑 [Camera] Stopping camera stream...');
+      this.videoStream.getTracks().forEach((track) => {
+        track.stop();
+      });
+      this.videoStream = null;
+    }
+    this.isCameraOpen = false;
+    this.showCameraButtons = false;
+  }
+
+  toggleUploadMode(): void {
+    if (this.isCameraOpen) {
+      this.stopCamera();
+    }
+    this.showCameraButtons = !this.showCameraButtons;
   }
 
   onSubmit(): void {
