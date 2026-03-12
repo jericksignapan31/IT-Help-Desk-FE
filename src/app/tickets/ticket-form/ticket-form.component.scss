@@ -1,31 +1,51 @@
 .ticket-form-container {
-  max-width: 800px;
-  margin: 0 auto;
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+mat-card {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+mat-card-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 1.5rem;
+  margin: -16px -16px 0 -16px;
+
+  mat-card-title {
+    color: white;
+    margin-bottom: 0;
+  }
 }
 
 .header {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  color: white;
 
   mat-icon {
-    font-size: 1.75rem;
-    width: 1.75rem;
-    height: 1.75rem;
+    font-size: 2rem;
+    width: 2rem;
+    height: 2rem;
   }
 
   h2 {
     margin: 0;
-    font-size: 1.5rem;
+    font-size: 1.75rem;
     font-weight: 500;
+    letter-spacing: 0.5px;
   }
 }
 
 .form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  margin-top: 1rem;
+  gap: 1.5rem;
+  margin-top: 2rem;
 
   .full-width {
     grid-column: 1 / -1;
@@ -33,17 +53,27 @@
 }
 
 .image-upload-section {
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
 
   .upload-label {
     display: block;
-    margin-bottom: 0.5rem;
+    margin-bottom: 1rem;
     font-size: 0.875rem;
-    color: rgba(0, 0, 0, 0.6);
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.7);
   }
 
   .image-upload-container {
     position: relative;
+
+    button[mat-raised-button] {
+      background: white;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
 
     .image-preview {
       position: relative;
@@ -52,15 +82,21 @@
 
       img {
         width: 100%;
-        border-radius: 8px;
-        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        border: 3px solid white;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
       }
 
       .remove-image-btn {
         position: absolute;
         top: 8px;
         right: 8px;
-        background: rgba(255, 255, 255, 0.9);
+        background: rgba(244, 67, 54, 0.95);
+        color: white;
+
+        &:hover {
+          background: rgb(244, 67, 54);
+        }
       }
     }
   }
@@ -70,10 +106,16 @@
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
-  margin-top: 2rem;
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e0e0e0;
 
   button {
-    min-width: 120px;
+    min-width: 140px;
+    height: 44px;
+    font-size: 1rem;
+    font-weight: 500;
+    letter-spacing: 0.5px;
 
     mat-icon {
       margin-right: 0.5rem;
@@ -84,16 +126,219 @@
   }
 }
 
+// Asset selection row with branch filter (side by side)
+.asset-selection-row {
+  display: flex;
+  gap: 1.5rem;
+  width: 100%;
+  align-items: flex-start;
+  grid-column: 1 / -1;
+
+  .branch-filter-field {
+    flex: 0 0 30%;
+  }
+
+  .asset-select-field {
+    flex: 0 0 70%;
+
+    &.full-width {
+      flex: 0 0 100%;
+    }
+  }
+}
+
+// Branch filter field styling
+.branch-filter-field {
+  background: linear-gradient(135deg, #e8f4ff 0%, #d4e7ff 100%);
+  border-radius: 10px;
+  padding: 12px;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+  border: 1px solid rgba(102, 126, 234, 0.2);
+
+  mat-icon {
+    color: #667eea;
+  }
+
+  mat-hint {
+    color: #667eea;
+    font-weight: 600;
+    font-size: 11px;
+  }
+
+  ::ng-deep .mat-mdc-form-field-focus-overlay {
+    background: rgba(102, 126, 234, 0.05);
+  }
+}
+
+// Asset selection field emphasis
+.asset-select-field {
+  background: linear-gradient(135deg, #ffffff 0%, #fafbff 100%);
+  border-radius: 8px;
+  padding: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+// Category and Priority Row (side by side)
+.category-priority-row {
+  display: flex;
+  gap: 1.5rem;
+  width: 100%;
+  grid-column: 1 / -1;
+
+  mat-form-field {
+    flex: 1;
+  }
+}
+
+// Enhanced form field styling
+::ng-deep {
+  .ticket-form-container {
+    .mat-mdc-form-field {
+      .mat-mdc-text-field-wrapper {
+        background: white;
+      }
+
+      .mdc-notched-outline__leading,
+      .mdc-notched-outline__notch,
+      .mdc-notched-outline__trailing {
+        border-color: rgba(0, 0, 0, 0.12);
+      }
+
+      &:hover .mdc-notched-outline {
+        .mdc-notched-outline__leading,
+        .mdc-notched-outline__notch,
+        .mdc-notched-outline__trailing {
+          border-color: rgba(0, 0, 0, 0.26);
+        }
+      }
+
+      &.mat-focused {
+        .mdc-notched-outline {
+          .mdc-notched-outline__leading,
+          .mdc-notched-outline__notch,
+          .mdc-notched-outline__trailing {
+            border-color: #667eea;
+            border-width: 2px;
+          }
+        }
+      }
+
+      .mat-mdc-form-field-icon-suffix {
+        color: rgba(0, 0, 0, 0.54);
+      }
+    }
+
+    // Subject field emphasis
+    mat-form-field:has(input[formcontrolname="subject"]) {
+      .mat-mdc-text-field-wrapper {
+        background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+      }
+    }
+
+    // Description field styling
+    textarea {
+      min-height: 100px;
+      line-height: 1.6;
+    }
+  }
+}
+
 @media (max-width: 768px) {
+  .ticket-form-container {
+    margin: 1rem auto;
+    padding: 0 0.5rem;
+  }
+
+  mat-card-header {
+    padding: 1rem;
+  }
+
+  .header {
+    h2 {
+      font-size: 1.25rem;
+    }
+  }
+
   .form-grid {
     grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .image-upload-section {
+    padding: 1rem;
   }
 
   .form-actions {
     flex-direction: column-reverse;
+    gap: 0.75rem;
 
     button {
       width: 100%;
+      min-width: unset;
+    }
+  }
+
+  // Stack asset selection row on mobile
+  .asset-selection-row {
+    flex-direction: column;
+    gap: 1rem;
+
+    .branch-filter-field,
+    .asset-select-field {
+      flex: 0 0 100%;
+      width: 100%;
+    }
+  }
+
+  // Stack category-priority row on mobile
+  .category-priority-row {
+    flex-direction: column;
+    gap: 1rem;
+
+    mat-form-field {
+      width: 100%;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .ticket-form-container {
+    max-width: 100%;
+  }
+
+  mat-card {
+    border-radius: 0;
+  }
+}
+
+// Grouped dropdown styling
+::ng-deep {
+  .mat-mdc-optgroup-label {
+    font-weight: 700 !important;
+    font-size: 14px !important;
+    color: #667eea !important;
+    background: linear-gradient(135deg, #f8f9ff 0%, #f0f2ff 100%) !important;
+    padding: 12px 16px !important;
+    border-bottom: 2px solid #667eea !important;
+    letter-spacing: 0.5px !important;
+    text-transform: uppercase !important;
+  }
+
+  .mat-mdc-option {
+    &.mat-mdc-option-in-group {
+      padding-left: 32px !important;
+      font-size: 14px !important;
+
+      &:hover {
+        background-color: #f0f4ff !important;
+      }
+    }
+  }
+
+  .mat-optgroup {
+    .mat-option {
+      padding-left: 32px !important;
     }
   }
 }

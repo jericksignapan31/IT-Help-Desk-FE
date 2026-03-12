@@ -50,94 +50,6 @@
             </div>
           </div>
 
-          <!-- Asset Selection -->
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Related Asset (Required)</mat-label>
-            <mat-select
-              formControlName="asset_id"
-              required
-              [disabled]="loadingAssets"
-            >
-              <mat-option [value]="null" *ngIf="!loadingAssets">
-                {{
-                  assets.length === 0
-                    ? "No assets available"
-                    : "Select an asset"
-                }}
-              </mat-option>
-              <mat-option [value]="null" *ngIf="loadingAssets">
-                Loading assets...
-              </mat-option>
-              <mat-option *ngFor="let asset of assets" [value]="asset.asset_id">
-                {{ asset.asset_tag }} - {{ asset.brand?.brand_name || "" }}
-                {{ asset.model }}
-              </mat-option>
-            </mat-select>
-            <mat-icon matSuffix *ngIf="loadingAssets">
-              <span class="spinner"></span>
-            </mat-icon>
-            <mat-error *ngIf="ticketForm.get('asset_id')?.hasError('required')">
-              Asset selection is required
-            </mat-error>
-            <mat-hint *ngIf="authService.isUser() && assets.length > 0">
-              Showing assets from your branch only
-            </mat-hint>
-            <mat-hint
-              *ngIf="
-                (authService.isAdmin() ||
-                  authService.isSupervisor() ||
-                  authService.isTechnician()) &&
-                assets.length > 0
-              "
-            >
-              Showing all assets from all branches
-            </mat-hint>
-            <mat-hint *ngIf="assets.length === 0 && !loadingAssets">
-              No assets found.
-              <button
-                type="button"
-                mat-button
-                color="primary"
-                (click)="loadAllAssets()"
-                style="text-decoration: underline; padding: 0; min-width: auto"
-              >
-                Try loading all assets
-              </button>
-            </mat-hint>
-          </mat-form-field>
-
-          <!-- Category -->
-          <mat-form-field appearance="outline">
-            <mat-label>Category</mat-label>
-            <mat-select formControlName="category">
-              <mat-option
-                *ngFor="let category of categoryOptions"
-                [value]="category"
-              >
-                {{ category | titlecase }}
-              </mat-option>
-            </mat-select>
-            <mat-error *ngIf="ticketForm.get('category')?.hasError('required')">
-              Category is required
-            </mat-error>
-          </mat-form-field>
-
-          <!-- Priority -->
-          <mat-form-field appearance="outline">
-            <mat-label>Priority</mat-label>
-            <mat-select formControlName="priority">
-              <mat-option
-                *ngFor="let priority of priorityOptions"
-                [value]="priority"
-              >
-                {{ priority | titlecase }}
-              </mat-option>
-            </mat-select>
-            <mat-error *ngIf="ticketForm.get('priority')?.hasError('required')">
-              Priority is required
-            </mat-error>
-          </mat-form-field>
-
           <!-- Subject -->
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Subject</mat-label>
@@ -146,10 +58,203 @@
               formControlName="subject"
               placeholder="Brief summary of the issue"
             />
+            <mat-icon matSuffix>title</mat-icon>
             <mat-error *ngIf="ticketForm.get('subject')?.hasError('required')">
               Subject is required
             </mat-error>
           </mat-form-field>
+
+          <!-- Asset Selection Row with Branch Filter -->
+          <div class="asset-selection-row">
+            <!-- Branch Filter for Admin/IT/Supervisor -->
+            <mat-form-field
+              appearance="outline"
+              class="branch-filter-field"
+              *ngIf="
+                (authService.isAdmin() ||
+                  authService.isSupervisor() ||
+                  authService.isTechnician()) &&
+                !loadingAssets &&
+                assets.length > 0
+              "
+            >
+              <mat-label>Filter by Branch</mat-label>
+              <mat-select
+                [(ngModel)]="selectedBranchId"
+                (ngModelChange)="filterAssetsByBranch()"
+                [ngModelOptions]="{ standalone: true }"
+              >
+                <mat-option [value]="null">All Branches</mat-option>
+                <mat-option
+                  *ngFor="let branch of branches"
+                  [value]="branch.branch_id"
+                >
+                  {{ branch.branch_name }}
+                </mat-option>
+              </mat-select>
+              <mat-icon matSuffix>filter_list</mat-icon>
+              <mat-hint *ngIf="selectedBranchId">
+                {{ filteredAssets.length }} assets
+              </mat-hint>
+              <mat-hint *ngIf="!selectedBranchId">
+                All {{ assets.length }} assets
+              </mat-hint>
+            </mat-form-field>
+
+            <!-- Asset Selection -->
+            <mat-form-field
+              appearance="outline"
+              class="asset-select-field"
+              [class.full-width]="
+                authService.isUser() || loadingAssets || assets.length === 0
+              "
+            >
+              <mat-label>Related Asset (Required)</mat-label>
+              <mat-select
+                formControlName="asset_id"
+                required
+                [disabled]="loadingAssets"
+              >
+                <mat-option [value]="null" *ngIf="!loadingAssets">
+                  {{
+                    filteredAssets.length === 0 && selectedBranchId
+                      ? "No assets in selected branch"
+                      : assets.length === 0
+                        ? "No assets available"
+                        : "Select an asset"
+                  }}
+                </mat-option>
+                <mat-option [value]="null" *ngIf="loadingAssets">
+                  Loading assets...
+                </mat-option>
+
+                <!-- Grouped dropdown for Admin/IT/Supervisor -->
+                <ng-container
+                  *ngIf="
+                    (authService.isAdmin() ||
+                      authService.isSupervisor() ||
+                      authService.isTechnician()) &&
+                    !loadingAssets &&
+                    filteredAssets.length > 0
+                  "
+                >
+                  <mat-optgroup
+                    *ngFor="let branchName of getBranchNames()"
+                    [label]="branchName"
+                  >
+                    <mat-option
+                      *ngFor="
+                        let asset of selectedBranchId
+                          ? filteredAssetsByBranch[branchName]
+                          : assetsByBranch[branchName]
+                      "
+                      [value]="asset.asset_id"
+                    >
+                      {{ asset.asset_tag }} -
+                      {{ asset.brand?.brand_name || "" }}
+                      {{ asset.model }}
+                    </mat-option>
+                  </mat-optgroup>
+                </ng-container>
+
+                <!-- Simple dropdown for regular employees -->
+                <ng-container
+                  *ngIf="
+                    authService.isUser() &&
+                    !loadingAssets &&
+                    filteredAssets.length > 0
+                  "
+                >
+                  <mat-option
+                    *ngFor="let asset of filteredAssets"
+                    [value]="asset.asset_id"
+                  >
+                    {{ asset.asset_tag }} - {{ asset.brand?.brand_name || "" }}
+                    {{ asset.model }}
+                  </mat-option>
+                </ng-container>
+              </mat-select>
+              <mat-icon matSuffix *ngIf="loadingAssets">
+                <span class="spinner"></span>
+              </mat-icon>
+              <mat-icon matSuffix *ngIf="!loadingAssets">devices</mat-icon>
+              <mat-error
+                *ngIf="ticketForm.get('asset_id')?.hasError('required')"
+              >
+                Asset selection is required
+              </mat-error>
+              <mat-hint *ngIf="authService.isUser() && assets.length > 0">
+                Showing assets from your branch only
+              </mat-hint>
+              <mat-hint
+                *ngIf="
+                  (authService.isAdmin() ||
+                    authService.isSupervisor() ||
+                    authService.isTechnician()) &&
+                  assets.length > 0
+                "
+              >
+                Showing all assets from all branches
+              </mat-hint>
+              <mat-hint *ngIf="assets.length === 0 && !loadingAssets">
+                No assets found.
+                <button
+                  type="button"
+                  mat-button
+                  color="primary"
+                  (click)="loadAllAssets()"
+                  style="
+                    text-decoration: underline;
+                    padding: 0;
+                    min-width: auto;
+                  "
+                >
+                  Try loading all assets
+                </button>
+              </mat-hint>
+            </mat-form-field>
+          </div>
+
+          <!-- Category and Priority Row -->
+          <div class="category-priority-row">
+            <!-- Priority -->
+            <mat-form-field appearance="outline">
+              <mat-label>Priority</mat-label>
+              <mat-select formControlName="priority">
+                <mat-option
+                  *ngFor="let priority of priorityOptions"
+                  [value]="priority"
+                >
+                  {{ priority | titlecase }}
+                </mat-option>
+              </mat-select>
+              <mat-icon matSuffix>flag</mat-icon>
+              <mat-error
+                *ngIf="ticketForm.get('priority')?.hasError('required')"
+              >
+                Priority is required
+              </mat-error>
+            </mat-form-field>
+
+            <!-- Category -->
+            <mat-form-field appearance="outline">
+              <mat-label>Category</mat-label>
+              <mat-select formControlName="category">
+                <mat-option
+                  *ngFor="let category of categoryOptions"
+                  [value]="category"
+                >
+                  {{ category | titlecase }}
+                </mat-option>
+              </mat-select>
+              <mat-icon matSuffix>category</mat-icon>
+              <mat-error
+                *ngIf="ticketForm.get('category')?.hasError('required')"
+              >
+                Category is required
+              </mat-error>
+            </mat-form-field>
+          </div>
 
           <!-- Description -->
           <mat-form-field appearance="outline" class="full-width">
@@ -160,6 +265,7 @@
               rows="4"
               placeholder="Detailed description of the issue"
             ></textarea>
+            <mat-icon matSuffix>description</mat-icon>
             <mat-error
               *ngIf="ticketForm.get('description')?.hasError('required')"
             >

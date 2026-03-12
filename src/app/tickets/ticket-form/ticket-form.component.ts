@@ -5,8 +5,10 @@ import {
   FormGroup,
   Validators,
   ReactiveFormsModule,
+  FormsModule,
 } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
+import { Observable } from 'rxjs';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -16,8 +18,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { TicketService } from '../../services/ticket.service';
 import { AssetService } from '../../services/asset.service';
 import { AuthService } from '../../services/auth.service';
+import { BranchService } from '../../services/branch.service';
 import { TicketCategory, TicketPriority } from '../../models/ticket.model';
 import { Asset } from '../../models/asset.model';
+import { Branch } from '../../models/branch.model';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -26,6 +30,7 @@ import Swal from 'sweetalert2';
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    FormsModule,
     MatCardModule,
     MatFormFieldModule,
     MatInputModule,
@@ -49,11 +54,20 @@ export class TicketFormComponent implements OnInit {
   priorityOptions = Object.values(TicketPriority);
 
   assets: Asset[] = [];
+  assetsByBranch: { [branchName: string]: Asset[] } = {};
+  filteredAssets: Asset[] = [];
+  filteredAssetsByBranch: { [branchName: string]: Asset[] } = {};
+
+  // Branch filter
+  branches: Branch[] = [];
+  selectedBranchId: string | null = null;
+  loadingBranches = false;
 
   constructor(
     private fb: FormBuilder,
     private ticketService: TicketService,
     private assetService: AssetService,
+    private branchService: BranchService,
     public authService: AuthService,
     private router: Router,
     private route: ActivatedRoute,
@@ -69,6 +83,12 @@ export class TicketFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Load branches first for admin/IT/supervisor
+    const isRegularEmployee = this.authService.isUser();
+    if (!isRegularEmployee) {
+      this.loadBranches();
+    }
+
     this.loadAssets();
 
     const id = this.route.snapshot.paramMap.get('id');
@@ -84,22 +104,22 @@ export class TicketFormComponent implements OnInit {
 
     // Determine which API to use based on user role
     const isRegularEmployee = this.authService.isUser();
-    const apiEndpoint = isRegularEmployee ? '/assets/my-branch' : '/assets';
 
     console.log('🔄 [Ticket Form] Loading assets...');
     console.log(
       '👤 [Ticket Form] User role - Regular Employee:',
       isRegularEmployee,
     );
-    console.log('📡 [Ticket Form] API Endpoint:', apiEndpoint);
 
     // Log current user info for debugging
     const currentUser = this.authService.currentUserValue;
     console.log('👤 [Ticket Form] Current user:', currentUser);
 
+    let assetRequest: Observable<Asset[]>;
+
     // Log JWT token to check branch_id
     const token = localStorage.getItem('access_token');
-    if (token) {
+    if (token && isRegularEmployee) {
       try {
         const payload = JSON.parse(atob(token.split('.')[1]));
         console.log('🔑 [Ticket Form] JWT Payload:', payload);
@@ -107,24 +127,57 @@ export class TicketFormComponent implements OnInit {
           '🏢 [Ticket Form] User branch_id from JWT:',
           payload.branch_id,
         );
+
+        const branchId = payload.branch_id;
+        if (branchId) {
+          console.log(
+            '🏢 [Ticket Form] Scope: MY BRANCH ONLY (branch_id:',
+            branchId,
+            ')',
+          );
+          console.log(
+            '📡 [Ticket Form] API Endpoint: /assets/branch/' + branchId,
+          );
+          assetRequest = this.assetService.getAssetsByBranch(branchId);
+        } else {
+          console.error('❌ [Ticket Form] No branch_id found in JWT!');
+          this.loadingAssets = false;
+          Swal.fire({
+            icon: 'error',
+            title: 'Branch Not Found',
+            text: 'Unable to determine your branch. Please contact support.',
+            confirmButtonColor: '#3f51b5',
+          });
+          return;
+        }
       } catch (e) {
         console.error('❌ [Ticket Form] Failed to decode JWT:', e);
+        this.loadingAssets = false;
+        Swal.fire({
+          icon: 'error',
+          title: 'Authentication Error',
+          text: 'Unable to verify your credentials. Please log in again.',
+          confirmButtonColor: '#3f51b5',
+        });
+        return;
       }
-    }
-
-    if (isRegularEmployee) {
-      console.log('🏢 [Ticket Form] Scope: MY BRANCH ONLY (filtered by JWT)');
-    } else {
+    } else if (!isRegularEmployee) {
       console.log(
         '🌍 [Ticket Form] Scope: ALL BRANCHES (Admin/IT/Supervisor access)',
       );
+      console.log('📡 [Ticket Form] API Endpoint: /assets');
+      assetRequest = this.assetService.getAssets();
+    } else {
+      console.error('❌ [Ticket Form] No access token found!');
+      this.loadingAssets = false;
+      Swal.fire({
+        icon: 'error',
+        title: 'Authentication Error',
+        text: 'No access token found. Please log in again.',
+        confirmButtonColor: '#3f51b5',
+      });
+      return;
     }
-
-    // Regular employees use my-branch endpoint
-    // Admin/IT/Supervisor use regular endpoint - returns ALL branches
-    const assetRequest = isRegularEmployee
-      ? this.assetService.getMyBranchAssets()
-      : this.assetService.getAssets();
 
     assetRequest.subscribe({
       next: (data) => {
@@ -153,7 +206,13 @@ export class TicketFormComponent implements OnInit {
         }
 
         this.assets = data;
+        this.filteredAssets = data; // Initialize filtered assets
         this.loadingAssets = false;
+
+        // Group assets by branch for admin/IT/supervisor dropdown
+        if (!isRegularEmployee && data.length > 0) {
+          this.groupAssetsByBranch(this.filteredAssets);
+        }
 
         if (data.length === 0) {
           const scope = isRegularEmployee ? 'your branch' : 'the system';
@@ -217,7 +276,13 @@ export class TicketFormComponent implements OnInit {
         }
 
         this.assets = data;
+        this.filteredAssets = data; // Initialize filtered assets
         this.loadingAssets = false;
+
+        // Group assets for admin/IT/supervisor
+        if (data.length > 0) {
+          this.groupAssetsByBranch(this.filteredAssets);
+        }
 
         if (data.length === 0) {
           Swal.fire({
@@ -266,6 +331,95 @@ export class TicketFormComponent implements OnInit {
       },
       error: (err) => console.error('Failed to load ticket:', err),
     });
+  }
+
+  loadBranches(): void {
+    this.loadingBranches = true;
+    console.log('🏢 [Ticket Form] Loading branches for filter...');
+
+    this.branchService.getAllBranches().subscribe({
+      next: (branches) => {
+        this.branches = branches.filter((b) => b.status === 'active');
+        this.loadingBranches = false;
+        console.log('✅ [Ticket Form] Branches loaded:', this.branches.length);
+      },
+      error: (err) => {
+        console.error('❌ [Ticket Form] Failed to load branches:', err);
+        this.loadingBranches = false;
+      },
+    });
+  }
+
+  groupAssetsByBranch(assetsToGroup: Asset[]): void {
+    const grouped: { [branchName: string]: Asset[] } = {};
+
+    assetsToGroup.forEach((asset) => {
+      const branchName = asset.branch?.branch_name || 'Unknown Branch';
+
+      if (!grouped[branchName]) {
+        grouped[branchName] = [];
+      }
+
+      grouped[branchName].push(asset);
+    });
+
+    // Sort branch names alphabetically
+    const sortedGrouped = Object.keys(grouped)
+      .sort()
+      .reduce((acc: any, key) => {
+        acc[key] = grouped[key];
+        return acc;
+      }, {});
+
+    // Store in appropriate property based on whether filtering is active
+    if (this.selectedBranchId) {
+      this.filteredAssetsByBranch = sortedGrouped;
+      console.log(
+        '📂 [Ticket Form] Grouped FILTERED assets by branch:',
+        Object.keys(this.filteredAssetsByBranch),
+      );
+    } else {
+      this.assetsByBranch = sortedGrouped;
+      this.filteredAssetsByBranch = sortedGrouped;
+      console.log(
+        '📂 [Ticket Form] Grouped assets by branch:',
+        Object.keys(this.assetsByBranch),
+      );
+    }
+  }
+
+  getBranchNames(): string[] {
+    return this.selectedBranchId
+      ? Object.keys(this.filteredAssetsByBranch)
+      : Object.keys(this.assetsByBranch);
+  }
+
+  filterAssetsByBranch(): void {
+    console.log('🔍 [Ticket Form] Filtering by branch:', this.selectedBranchId);
+
+    if (!this.selectedBranchId) {
+      // No filter - show all assets
+      this.filteredAssets = this.assets;
+      this.filteredAssetsByBranch = this.assetsByBranch;
+      console.log('🔍 [Ticket Form] Filter cleared - showing all assets');
+      return;
+    }
+
+    // Filter assets by selected branch ID
+    this.filteredAssets = this.assets.filter((asset) => {
+      return asset.branch_id?.toString() === this.selectedBranchId?.toString();
+    });
+
+    console.log(
+      `🔍 [Ticket Form] Filter applied - showing ${this.filteredAssets.length} of ${this.assets.length} assets`,
+    );
+
+    // Re-group filtered assets for dropdown
+    if (this.filteredAssets.length > 0) {
+      this.groupAssetsByBranch(this.filteredAssets);
+    } else {
+      this.filteredAssetsByBranch = {};
+    }
   }
 
   onFileSelected(event: any): void {
