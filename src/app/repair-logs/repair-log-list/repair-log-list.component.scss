@@ -2,24 +2,36 @@
   .header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     margin-bottom: 1.5rem;
 
     h1 {
       margin: 0;
       color: black;
+      font-size: 1.75rem;
     }
 
-    button {
-      mat-icon {
-        margin-right: 0.5rem;
-      }
+    .subtitle {
+      margin: 0.25rem 0 0 0;
+      color: #666;
+      font-size: 0.875rem;
     }
   }
 
   mat-card {
     mat-card-content {
-      padding: 0;
+      padding: 1.5rem;
+    }
+  }
+
+  .filters-section {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+
+    mat-form-field {
+      width: 100%;
     }
   }
 
@@ -78,26 +90,54 @@
       }
     }
 
+    .duration-badge {
+      display: inline-block;
+      padding: 4px 8px;
+      background-color: #e3f2fd;
+      color: #1976d2;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
     mat-chip {
       font-size: 0.75rem;
       min-height: 24px;
       padding: 0 8px;
 
-      &.status-completed {
-        background-color: #4caf50;
-        color: white;
-      }
-
-      &.status-in-progress {
-        background-color: #2196f3;
-        color: white;
-      }
-
-      &.status-pending {
+      &.status-pending,
+      &.status-pending-approval {
         background-color: #ff9800;
         color: white;
       }
 
+      &.status-approved {
+        background-color: #4caf50;
+        color: white;
+      }
+
+      &.status-assigned {
+        background-color: #2196f3;
+        color: white;
+      }
+
+      &.status-in-progress {
+        background-color: #f57c00;
+        color: white;
+      }
+
+      &.status-resolved {
+        background-color: #8bc34a;
+        color: white;
+      }
+
+      &.status-closed {
+        background-color: #607d8b;
+        color: white;
+      }
+
+      &.status-rejected,
+      &.status-rejected,
       &.status-cancelled {
         background-color: #f44336;
         color: white;

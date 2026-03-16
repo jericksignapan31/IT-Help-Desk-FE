@@ -67,8 +67,8 @@ export const MENU_ITEMS: MenuItem[] = [
     roles: [UserRole.ADMIN],
   },
   {
-    label: 'Repair Logs',
-    icon: 'build',
+    label: 'Logs & Reports',
+    icon: 'assessment',
     route: '/repair-logs',
     roles: [UserRole.ADMIN, UserRole.IT],
   },
