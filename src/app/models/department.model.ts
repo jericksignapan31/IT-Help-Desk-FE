@@ -6,6 +6,7 @@ export interface Department {
   head?: any;
   employees?: any[];
   status?: string;
+  is_active?: boolean;
   created_at?: string;
   updated_at?: string;
 }

@@ -9,6 +9,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { DepartmentService } from '../../services/department.service';
+import { AuthService } from '../../services/auth.service';
 import { Department } from '../../models/department.model';
 import { DepartmentDialogComponent } from '../department-dialog/department-dialog.component';
 import Swal from 'sweetalert2';
@@ -42,8 +43,13 @@ export class DepartmentListComponent implements OnInit {
 
   constructor(
     private departmentService: DepartmentService,
+    private authService: AuthService,
     private dialog: MatDialog,
   ) {}
+
+  get isAdmin(): boolean {
+    return this.authService.isAdmin();
+  }
 
   ngOnInit(): void {
     this.loadDepartments();
@@ -152,38 +158,27 @@ export class DepartmentListComponent implements OnInit {
       return;
     }
 
-    console.log('Toggle status for department:', department);
-    console.log('Current status:', department.status);
+    const newIsActive = !department.is_active;
 
-    const oldStatus = department.status;
-    const newStatus = department.status === 'active' ? 'inactive' : 'active';
-
-    // Optimistic UI update - change status immediately
-    department.status = newStatus;
-    console.log('Updated UI to new status:', newStatus);
+    // Optimistic UI update
+    department.is_active = newIsActive;
 
     this.departmentService
-      .toggleDepartmentStatus(department.department_id, newStatus)
+      .toggleDepartmentStatus(department.department_id, newIsActive)
       .subscribe({
         next: (response) => {
-          console.log('Toggle status SUCCESS:', response);
-          // Update with response data to ensure sync with backend
-          if (response.status) {
-            department.status = response.status;
-          }
+          department.is_active = response.is_active;
           Swal.fire({
             icon: 'success',
             title: 'Success!',
-            text: `Department ${newStatus === 'active' ? 'activated' : 'deactivated'} successfully`,
+            text: `Department ${newIsActive ? 'activated' : 'deactivated'} successfully`,
             timer: 2000,
             showConfirmButton: false,
           });
         },
         error: (error) => {
-          console.error('Toggle status FAILED - Full error:', error);
-          // Revert status on error
-          department.status = oldStatus;
-          console.log('Reverted status back to:', oldStatus);
+          // Revert on error
+          department.is_active = !newIsActive;
           Swal.fire({
             icon: 'error',
             title: 'Error!',

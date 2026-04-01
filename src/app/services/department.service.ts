@@ -43,14 +43,10 @@ export class DepartmentService {
 
   toggleDepartmentStatus(
     id: number | string,
-    status: string,
+    is_active: boolean,
   ): Observable<Department> {
-    console.log(
-      `Calling PATCH ${this.API_URL}/${id}/status with status:`,
-      status,
-    );
     return this.http.patch<Department>(`${this.API_URL}/${id}/status`, {
-      status,
+      is_active,
     });
   }
 }
