@@ -78,31 +78,58 @@ export class AssetScannerComponent implements OnInit {
     this.cameraActive = true;
     this.isScanning = true;
 
-    navigator.mediaDevices
-      .getUserMedia({
-        video: {
-          facingMode: 'environment',
-          width: { ideal: 1280 },
-          height: { ideal: 720 },
-        },
-      })
-      .then((stream) => {
-        if (this.videoElement) {
-          this.videoElement.nativeElement.srcObject = stream;
-          this.videoElement.nativeElement.play();
-          this.scanQRCode();
-        }
-      })
-      .catch((error) => {
-        console.error('Camera access denied:', error);
+    // Try camera access with fallback options
+    const constraints = [
+      // Try with environment camera first
+      { video: { facingMode: { ideal: 'environment' } } },
+      // Try without facingMode
+      { video: true },
+      // Try user camera
+      { video: { facingMode: { ideal: 'user' } } },
+    ];
+
+    const tryCamera = (index: number) => {
+      if (index >= constraints.length) {
+        console.error('No camera constraints worked');
         Swal.fire({
           icon: 'error',
           title: 'Camera Error',
-          text: 'Unable to access camera. Please check permissions.',
+          html: `<div style="text-align: left;">
+            <p>Unable to access camera.</p>
+            <p><strong>Solutions:</strong></p>
+            <ul>
+              <li>Check browser camera permissions</li>
+              <li>Ensure you're on HTTPS or localhost</li>
+              <li>Try allowing camera access again</li>
+              <li>Use manual search instead</li>
+            </ul>
+          </div>`,
+          confirmButtonText: 'Use Manual Search',
+        }).then(() => {
+          this.cameraActive = false;
+          this.isScanning = false;
         });
-        this.cameraActive = false;
-        this.isScanning = false;
-      });
+        return;
+      }
+
+      navigator.mediaDevices
+        .getUserMedia(constraints[index])
+        .then((stream) => {
+          if (this.videoElement) {
+            this.videoElement.nativeElement.srcObject = stream;
+            this.videoElement.nativeElement.onloadedmetadata = () => {
+              this.videoElement.nativeElement.play();
+              this.scanQRCode();
+            };
+          }
+        })
+        .catch((error) => {
+          console.warn(`Camera constraint ${index} failed:`, error);
+          tryCamera(index + 1);
+        });
+    };
+
+    tryCamera(0);
   }
 
   stopCamera(): void {
