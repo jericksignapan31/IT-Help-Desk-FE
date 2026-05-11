@@ -1,0 +1,254 @@
+<div class="scanner-container">
+  <mat-card class="header-card">
+    <div class="header">
+      <h1>
+        <mat-icon>qr_code_scanner</mat-icon>
+        Asset Scanner
+      </h1>
+      <p class="subtitle">Scan QR codes on assets to view details and history</p>
+    </div>
+  </mat-card>
+
+  <!-- Scanner Mode -->
+  <mat-card class="scanner-card" *ngIf="!scannedAsset">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>photo_camera</mat-icon>
+        Scan Asset
+      </mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <!-- Camera Feed -->
+      <div class="camera-section" *ngIf="cameraActive">
+        <div class="camera-container">
+          <video
+            #video
+            class="camera-feed"
+            playsinline
+            autoplay
+            muted
+          ></video>
+          <canvas #canvas style="display: none"></canvas>
+          <div class="scanner-overlay">
+            <div class="scanner-frame"></div>
+            <p class="scanning-text">Position QR code in frame</p>
+          </div>
+        </div>
+
+        <button
+          mat-raised-button
+          color="warn"
+          (click)="stopCamera()"
+          class="full-width-btn"
+        >
+          <mat-icon>stop_circle</mat-icon>
+          Stop Scanning
+        </button>
+      </div>
+
+      <!-- Camera Start Button -->
+      <div *ngIf="!cameraActive" class="no-camera">
+        <mat-icon class="large-icon">qr_code_scanner</mat-icon>
+        <p>Click below to start scanning QR codes</p>
+        <button
+          mat-raised-button
+          color="primary"
+          (click)="startCamera()"
+          class="full-width-btn"
+        >
+          <mat-icon>photo_camera</mat-icon>
+          Start Camera
+        </button>
+      </div>
+
+      <!-- Manual Search -->
+      <div class="divider-section">
+        <mat-divider></mat-divider>
+        <span class="or-text">Or</span>
+      </div>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Asset Tag</mat-label>
+        <input
+          matInput
+          [(ngModel)]="manualAssetTag"
+          placeholder="e.g., AST-001"
+          (keyup.enter)="loadAssetByTag()"
+        />
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="loadAssetByTag()"
+        [disabled]="!manualAssetTag.trim() || loadingAsset"
+        class="full-width-btn"
+      >
+        <mat-icon *ngIf="!loadingAsset">search</mat-icon>
+        <mat-spinner *ngIf="loadingAsset" diameter="20"></mat-spinner>
+        Search Asset
+      </button>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Asset Details & History -->
+  <div *ngIf="scannedAsset" class="asset-details">
+    <!-- Asset Info Card -->
+    <mat-card class="asset-info-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon color="primary">devices</mat-icon>
+          {{ scannedAsset.asset_tag }}
+        </mat-card-title>
+        <mat-card-subtitle>{{ scannedAsset.category }}</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div class="info-grid">
+          <div class="info-item">
+            <label>Brand</label>
+            <span>{{ scannedAsset.brand?.brand_name || 'N/A' }}</span>
+          </div>
+
+          <div class="info-item">
+            <label>Model</label>
+            <span>{{ scannedAsset.model || 'N/A' }}</span>
+          </div>
+
+          <div class="info-item">
+            <label>Serial Number</label>
+            <span>{{ scannedAsset.serial_number || 'N/A' }}</span>
+          </div>
+
+          <div class="info-item">
+            <label>Status</label>
+            <mat-chip [style.backgroundColor]="getStatusColor(scannedAsset.status)">
+              {{ scannedAsset.status }}
+            </mat-chip>
+          </div>
+
+          <div class="info-item">
+            <label>Assigned To</label>
+            <span>
+              {{
+                scannedAsset.assignedEmployee
+                  ? scannedAsset.assignedEmployee.first_name +
+                    ' ' +
+                    scannedAsset.assignedEmployee.last_name
+                  : 'Unassigned'
+              }}
+            </span>
+          </div>
+
+          <div class="info-item">
+            <label>Branch</label>
+            <span>{{ scannedAsset.branch?.branch_name || 'N/A' }}</span>
+          </div>
+
+          <div class="info-item" *ngIf="scannedAsset.ip_address">
+            <label>IP Address</label>
+            <span>{{ scannedAsset.ip_address }}</span>
+          </div>
+
+          <div class="info-item" *ngIf="scannedAsset.mac_address">
+            <label>MAC Address</label>
+            <span>{{ scannedAsset.mac_address }}</span>
+          </div>
+
+          <div class="info-item" *ngIf="scannedAsset.hostname">
+            <label>Hostname</label>
+            <span>{{ scannedAsset.hostname }}</span>
+          </div>
+
+          <div class="info-item" *ngIf="scannedAsset.anydesk_id">
+            <label>AnyDesk ID</label>
+            <span>{{ scannedAsset.anydesk_id }}</span>
+          </div>
+        </div>
+
+        <!-- Specifications -->
+        <div *ngIf="scannedAsset.specifications" class="specifications">
+          <h3>Specifications</h3>
+          <div class="specs-grid">
+            <div *ngIf="scannedAsset.specifications.cpu" class="spec-item">
+              <strong>CPU:</strong> {{ scannedAsset.specifications.cpu }}
+            </div>
+            <div *ngIf="scannedAsset.specifications.ram" class="spec-item">
+              <strong>RAM:</strong> {{ scannedAsset.specifications.ram }}
+            </div>
+            <div *ngIf="scannedAsset.specifications.storage" class="spec-item">
+              <strong>Storage:</strong> {{ scannedAsset.specifications.storage }}
+            </div>
+            <div *ngIf="scannedAsset.specifications.display" class="spec-item">
+              <strong>Display:</strong> {{ scannedAsset.specifications.display }}
+            </div>
+            <div *ngIf="scannedAsset.specifications.os" class="spec-item">
+              <strong>OS:</strong> {{ scannedAsset.specifications.os }}
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+
+      <mat-card-actions>
+        <button
+          mat-button
+          color="primary"
+          (click)="updateAssetStatus()"
+          matTooltip="Change asset status"
+        >
+          <mat-icon>edit</mat-icon>
+          Update Status
+        </button>
+        <button
+          mat-button
+          color="accent"
+          (click)="assignAssetToEmployee()"
+          matTooltip="Assign to employee"
+        >
+          <mat-icon>person_add</mat-icon>
+          Assign
+        </button>
+        <button mat-button color="warn" (click)="clearScan()">
+          <mat-icon>close</mat-icon>
+          Clear
+        </button>
+      </mat-card-actions>
+    </mat-card>
+
+    <!-- Asset History -->
+    <mat-card class="history-card" *ngIf="assetHistory.length > 0">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>history</mat-icon>
+          Asset History
+        </mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content>
+        <mat-list class="history-list">
+          <mat-list-item
+            *ngFor="let event of assetHistory; let last = last"
+            [ngClass]="{ 'last-item': last }"
+          >
+            <mat-icon matListItemIcon [color]="'primary'">
+              {{ event.type === 'Repair' ? 'build' : 'info' }}
+            </mat-icon>
+
+            <div matListItemTitle class="history-title">
+              {{ event.type }}: {{ event.description }}
+            </div>
+
+            <div matListItemLine class="history-details">
+              <small>{{ formatDate(event.date) }}</small>
+              <small *ngIf="event.changedBy"> • By {{ event.changedBy }}</small>
+            </div>
+
+            <mat-divider *ngIf="!last" matListItemMeta></mat-divider>
+          </mat-list-item>
+        </mat-list>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

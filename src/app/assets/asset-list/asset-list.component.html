@@ -1,15 +1,27 @@
 <div class="asset-list-container">
   <div class="header">
     <h1>Assets</h1>
-    <button
-      mat-raised-button
-      color="primary"
-      (click)="addAsset()"
-      *ngIf="authService.isAdmin() || authService.isTechnician()"
-    >
-      <mat-icon>add</mat-icon>
-      Add Asset
-    </button>
+    <div class="header-actions">
+      <button
+        mat-raised-button
+        color="accent"
+        routerLink="/assets/scanner/index"
+        *ngIf="authService.isAdmin() || authService.isTechnician()"
+        matTooltip="Scan QR codes on assets"
+      >
+        <mat-icon>qr_code_scanner</mat-icon>
+        Scanner
+      </button>
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="addAsset()"
+        *ngIf="authService.isAdmin() || authService.isTechnician()"
+      >
+        <mat-icon>add</mat-icon>
+        Add Asset
+      </button>
+    </div>
   </div>
 
   <!-- Filters only for IT, Supervisor, and Admin -->

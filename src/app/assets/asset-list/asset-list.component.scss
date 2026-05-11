@@ -9,8 +9,16 @@
       margin: 0;
     }
 
-    button mat-icon {
-      margin-right: 0.5rem;
+    .header-actions {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+
+      button {
+        mat-icon {
+          margin-right: 0.5rem;
+        }
+      }
     }
   }
 }

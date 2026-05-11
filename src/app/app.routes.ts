@@ -158,6 +158,15 @@ export const routes: Routes = [
                 (m) => m.AssetListComponent,
               ),
           },
+          {
+            path: 'scanner/index',
+            loadComponent: () =>
+              import('./assets/asset-scanner/asset-scanner.component').then(
+                (m) => m.AssetScannerComponent,
+              ),
+            canActivate: [roleGuard],
+            data: { roles: [UserRole.ADMIN, UserRole.IT] },
+          },
         ],
       },
       // Employee Routes (Admin only)
