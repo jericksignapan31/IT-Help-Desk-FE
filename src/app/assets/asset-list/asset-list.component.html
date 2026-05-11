@@ -5,6 +5,7 @@
       mat-raised-button
       color="primary"
       (click)="addAsset()"
+      *ngIf="authService.isAdmin() || authService.isTechnician()"
     >
       <mat-icon>add</mat-icon>
       Add Asset

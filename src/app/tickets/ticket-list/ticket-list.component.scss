@@ -66,6 +66,59 @@
 
 .table-container {
   overflow-x: auto;
+
+  .ticket-table {
+    // Set column widths for better layout
+    .ticket-id {
+      width: 10%;
+      min-width: 80px;
+    }
+
+    .subject {
+      width: 25%;
+      min-width: 180px;
+    }
+
+    .image {
+      width: 10%;
+      min-width: 80px;
+    }
+
+    .category {
+      width: 10%;
+      min-width: 100px;
+    }
+
+    .priority {
+      width: 8%;
+      min-width: 80px;
+    }
+
+    .status {
+      width: 12%;
+      min-width: 100px;
+    }
+
+    .approval {
+      width: 10%;
+      min-width: 90px;
+    }
+
+    .reporter {
+      width: 12%;
+      min-width: 120px;
+    }
+
+    .created {
+      width: 12%;
+      min-width: 120px;
+    }
+
+    .actions {
+      width: 10%;
+      min-width: 100px;
+    }
+  }
 }
 
 .ticket-table {
@@ -219,6 +272,34 @@
   p {
     font-size: 1.1rem;
     margin: 0;
+  }
+}
+
+.image-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 70px;
+
+  .ticket-image-thumbnail {
+    max-width: 50px;
+    max-height: 50px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 1px solid #e0e0e0;
+    object-fit: cover;
+
+    &:hover {
+      transform: scale(1.08);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+  }
+
+  .no-image {
+    color: #ccc;
+    font-size: 1.2rem;
+    font-weight: 300;
   }
 }
 

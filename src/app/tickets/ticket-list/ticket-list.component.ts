@@ -49,6 +49,7 @@ export class TicketListComponent implements OnInit {
   displayedColumns: string[] = [
     'ticket_id',
     'subject',
+    'image',
     'category',
     'priority',
     'status',
@@ -608,5 +609,23 @@ export class TicketListComponent implements OnInit {
       critical: '#c62828',
     };
     return colors[priority] || '#757575';
+  }
+
+  viewImage(imageUrl: string): void {
+    Swal.fire({
+      imageUrl: imageUrl,
+      imageAlt: 'Ticket attachment',
+      showConfirmButton: true,
+      confirmButtonText: 'Close',
+      width: 'auto',
+      background: '#000',
+      didOpen: () => {
+        const image = document.querySelector('.swal2-image') as HTMLImageElement;
+        if (image) {
+          image.style.maxHeight = '600px';
+          image.style.maxWidth = '80vw';
+        }
+      },
+    });
   }
 }
