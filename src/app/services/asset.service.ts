@@ -106,4 +106,24 @@ export class AssetService {
   deleteBrand(id: number): Observable<void> {
     return this.http.delete<void>(`${this.API_URL}/brands/${id}`);
   }
+
+  // Asset History
+  getAssetHistory(
+    assetId: string,
+    limit: number = 50,
+    offset: number = 0,
+    type?: string,
+  ): Observable<any> {
+    let params = new HttpParams()
+      .set('limit', limit.toString())
+      .set('offset', offset.toString());
+
+    if (type) {
+      params = params.set('type', type);
+    }
+
+    return this.http.get<any>(`${this.API_URL}/assets/${assetId}/history`, {
+      params,
+    });
+  }
 }

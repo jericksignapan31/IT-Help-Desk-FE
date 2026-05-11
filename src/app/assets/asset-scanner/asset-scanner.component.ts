@@ -244,36 +244,37 @@ export class AssetScannerComponent implements OnInit {
   }
 
   loadAssetHistory(assetId: number | string): void {
-    // Load repair logs or ticket history for this asset
-    // This would require a backend endpoint to get asset history
-    // For now, we'll show basic asset info and assign it if needed
-
-    // Mock history data - replace with actual API call
-    this.assetHistory = [
-      {
-        id: 1,
-        type: 'Status Change',
-        description: 'Asset status changed to IN_USE',
-        date: new Date().toISOString(),
-        changedBy: 'Admin User',
+    this.assetService.getAssetHistory(String(assetId)).subscribe({
+      next: (response: any) => {
+        if (response.data && response.data.events) {
+          this.assetHistory = response.data.events;
+        } else {
+          this.assetHistory = [];
+        }
+        this.loadingAsset = false;
       },
-      {
-        id: 2,
-        type: 'Assignment',
-        description: 'Assigned to John Doe',
-        date: new Date(Date.now() - 86400000).toISOString(),
-        changedBy: 'Admin User',
+      error: (error) => {
+        console.error('Failed to load asset history:', error);
+        // Fallback to mock data if API fails
+        this.assetHistory = [
+          {
+            id: 1,
+            type: 'status_change',
+            description: 'Asset status changed to in_use',
+            timestamp: new Date().toISOString(),
+            changedBy: 'System',
+            changedByRole: 'SYSTEM',
+          },
+        ];
+        this.loadingAsset = false;
+        Swal.fire({
+          icon: 'warning',
+          title: 'Limited History',
+          text: 'Could not load full asset history. Showing limited data.',
+          timer: 3000,
+        });
       },
-      {
-        id: 3,
-        type: 'Repair',
-        description: 'Replaced GPU',
-        date: new Date(Date.now() - 2 * 86400000).toISOString(),
-        changedBy: 'IT Tech',
-      },
-    ];
-
-    this.loadingAsset = false;
+    });
   }
 
   clearScan(): void {
