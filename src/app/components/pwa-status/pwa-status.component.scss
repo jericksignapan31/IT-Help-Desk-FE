@@ -1,0 +1,79 @@
+.pwa-status {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem;
+
+  .status-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+
+    &:has(.offline-icon) {
+      background-color: #ffebee;
+      color: #c62828;
+
+      .offline-icon {
+        color: #c62828;
+      }
+    }
+
+    &:has(.update-icon) {
+      background-color: #fff3e0;
+      color: #e65100;
+
+      .update-icon {
+        color: #e65100;
+        animation: pulse 2s infinite;
+      }
+
+      .update-button {
+        margin-left: 0.5rem;
+        opacity: 0.7;
+        transition: opacity 0.3s;
+
+        &:hover {
+          opacity: 1;
+        }
+      }
+
+      @keyframes pulse {
+        0% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.6;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+    }
+
+    &.development-info {
+      background-color: #e3f2fd;
+      color: #1565c0;
+
+      mat-icon {
+        color: #1565c0;
+      }
+
+      .dev-text {
+        font-size: 0.8rem;
+      }
+    }
+  }
+
+  .install-button {
+    white-space: nowrap;
+  }
+
+  mat-icon {
+    font-size: 1.25rem;
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+}
