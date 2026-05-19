@@ -52,14 +52,9 @@ export class EmployeeViewDialogComponent implements OnInit {
       next: (data) => {
         this.employee = data;
         this.loading = false;
-        console.log('========== EMPLOYEE VIEW DATA ==========');
-        console.log('Full Employee Object:', JSON.stringify(data, null, 2));
-        console.log('Branch object:', data.branch);
-        console.log('Department object:', data.department);
-        console.log('=======================================');
+       
       },
       error: (err) => {
-        console.error('Failed to load employee details:', err);
         this.error = 'Failed to load employee details';
         this.loading = false;
       },
@@ -94,7 +89,6 @@ export class EmployeeViewDialogComponent implements OnInit {
 
   toggleStatus(): void {
     if (!this.employee?.employee_id) {
-      console.log('No employee employee_id found:', this.employee);
       return;
     }
 
@@ -113,18 +107,15 @@ export class EmployeeViewDialogComponent implements OnInit {
       cancelButtonText: 'Cancel',
     }).then((result) => {
       if (result.isConfirmed && this.employee) {
-        console.log('Toggle status for employee:', this.employee);
-        console.log('Current employment_status:', currentStatus);
+      
 
         // Optimistic UI update
         this.employee.employment_status = newStatus;
-        console.log('Updated UI to new employment_status:', newStatus);
 
         this.employeeService
           .toggleEmployeeStatus(this.employee.employee_id as string, newStatus)
           .subscribe({
             next: (response) => {
-              console.log('Toggle status SUCCESS:', response);
               if (this.employee && response.employment_status !== undefined) {
                 this.employee.employment_status = response.employment_status;
               }
@@ -137,12 +128,10 @@ export class EmployeeViewDialogComponent implements OnInit {
               });
             },
             error: (error) => {
-              console.error('Toggle status FAILED - Full error:', error);
               // Revert status on error
               if (this.employee) {
                 this.employee.employment_status = currentStatus;
               }
-              console.log('Reverted employment_status back to:', currentStatus);
               Swal.fire({
                 icon: 'error',
                 title: 'Error!',

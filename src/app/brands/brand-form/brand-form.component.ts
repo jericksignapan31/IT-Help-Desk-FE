@@ -87,7 +87,6 @@ export class BrandFormComponent implements OnInit {
         this.isLoading = false;
       },
       error: (error) => {
-        console.error('Error loading brand:', error);
         this.snackBar.open('Failed to load brand', 'Close', { duration: 3000 });
         this.isLoading = false;
         this.router.navigate(['/brands']);
@@ -122,7 +121,6 @@ export class BrandFormComponent implements OnInit {
         this.router.navigate(['/brands']);
       },
       error: (error) => {
-        console.error('Error saving brand:', error);
         this.snackBar.open(
           `Failed to ${this.isEditMode ? 'update' : 'create'} brand`,
           'Close',

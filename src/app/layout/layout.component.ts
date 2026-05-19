@@ -44,17 +44,7 @@ export class LayoutComponent {
     this.authService.currentUser.subscribe((user) => {
       this.currentUser = user;
       if (user) {
-        console.log('👤 Current User in Layout:');
-        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-        console.log('   ID:', user.id || 'N/A');
-        console.log('   Username:', user.username || 'N/A');
-        console.log('   Email:', user.email || 'N/A');
-        console.log('   Role:', user.role?.toUpperCase() || 'N/A');
-        console.log('   Employee ID:', user.employee_id || 'N/A');
-        console.log('   Active:', user.is_active ? '✅' : '❌');
-        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-        console.log('Full User Object:', user);
-        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+   
       }
     });
   }

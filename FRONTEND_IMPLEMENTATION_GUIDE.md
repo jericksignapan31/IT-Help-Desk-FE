@@ -95,7 +95,6 @@ loadDashboardStats(): void {
       setTimeout(() => this.initializeCharts(), 100); // Initialize charts
     },
     error: (err) => {
-      console.error('Failed to load dashboard stats:', err);
       this.loading = false;
       this.useMockData();          // Fallback to mock data
       setTimeout(() => this.initializeCharts(), 100);
@@ -347,9 +346,7 @@ ngOnInit(): void {
 Remove console.log statements:
 ```typescript
 // REMOVE THIS:
-console.log('📊 Dashboard - Current User:');
-console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-console.log('   Username:', currentUser.username || 'N/A');
+
 // ... etc
 ```
 

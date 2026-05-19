@@ -78,18 +78,14 @@ export class AccountSettingsComponent {
 
         // Debug: Check if token exists
         const token = localStorage.getItem('access_token');
-        console.log('🔑 Token exists:', !!token);
         if (token) {
-          console.log('🔑 Token preview:', token.substring(0, 20) + '...');
         }
-        console.log('📤 Sending change password request...');
 
         this.authService
           .changePassword({ currentPassword, newPassword })
           .subscribe({
             next: (response) => {
               this.loading = false;
-              console.log('✅ Password changed successfully:', response);
               Swal.fire({
                 icon: 'success',
                 title: 'Success!',
@@ -100,9 +96,7 @@ export class AccountSettingsComponent {
             },
             error: (err) => {
               this.loading = false;
-              console.error('❌ Password change failed:', err);
-              console.error('❌ Error status:', err.status);
-              console.error('❌ Error details:', err.error);
+            
               Swal.fire({
                 icon: 'error',
                 title: 'Error',

@@ -38,12 +38,9 @@ const apiCacheConfig = {
  * Install event - cache essential files
  */
 self.addEventListener('install', (event) => {
-  console.log('Service Worker installing...');
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('Caching app shell');
       return cache.addAll(urlsToCache).catch((err) => {
-        console.warn('Some files could not be cached:', err);
       });
     })
   );
@@ -54,7 +51,6 @@ self.addEventListener('install', (event) => {
  * Activate event - clean up old caches
  */
 self.addEventListener('activate', (event) => {
-  console.log('Service Worker activating...');
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
@@ -62,7 +58,6 @@ self.addEventListener('activate', (event) => {
           if (cacheName !== CACHE_NAME && 
               cacheName !== RUNTIME_CACHE && 
               cacheName !== API_CACHE) {
-            console.log('Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }
         })
@@ -125,7 +120,6 @@ self.addEventListener('fetch', (event) => {
         }
         return response;
       }).catch((error) => {
-        console.error('Fetch failed:', error);
         // Return a custom offline page or response
         return new Response('Offline - Resource not available', {
           status: 503,
@@ -277,4 +271,3 @@ self.addEventListener('message', (event) => {
   }
 });
 
-console.log('Service Worker loaded');

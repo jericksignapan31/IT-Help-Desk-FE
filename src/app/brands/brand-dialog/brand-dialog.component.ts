@@ -58,7 +58,6 @@ export class BrandDialogComponent implements OnInit {
     public dialogRef: MatDialogRef<BrandDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: BrandDialogData,
   ) {
-    console.log('BrandDialogComponent constructor called with data:', data);
     this.isEditMode = data.isEditMode;
     this.brandForm = this.fb.group({
       brand_name: ['', [Validators.required, Validators.maxLength(100)]],
@@ -69,15 +68,11 @@ export class BrandDialogComponent implements OnInit {
       ],
       status: [true],
     });
-    console.log('Brand form initialized:', this.brandForm.value);
   }
 
   ngOnInit(): void {
-    console.log('BrandDialogComponent ngOnInit, isEditMode:', this.isEditMode);
     if (this.isEditMode && this.data.brand) {
-      console.log('Patching form with brand data:', this.data.brand);
       this.brandForm.patchValue(this.data.brand);
-      console.log('Form after patch:', this.brandForm.value);
     }
   }
 
@@ -110,7 +105,6 @@ export class BrandDialogComponent implements OnInit {
         this.dialogRef.close(result);
       },
       error: (error) => {
-        console.error('Error saving brand:', error);
         Swal.fire({
           icon: 'error',
           title: 'Error!',

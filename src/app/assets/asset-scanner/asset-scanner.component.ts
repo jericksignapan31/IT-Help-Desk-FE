@@ -90,7 +90,6 @@ export class AssetScannerComponent implements OnInit {
 
     const tryCamera = (index: number) => {
       if (index >= constraints.length) {
-        console.error('No camera constraints worked');
         Swal.fire({
           icon: 'error',
           title: 'Camera Error',
@@ -124,7 +123,6 @@ export class AssetScannerComponent implements OnInit {
           }
         })
         .catch((error) => {
-          console.warn(`Camera constraint ${index} failed:`, error);
           tryCamera(index + 1);
         });
     };
@@ -232,7 +230,6 @@ export class AssetScannerComponent implements OnInit {
         }
       },
       error: (err) => {
-        console.error('Error searching asset:', err);
         Swal.fire({
           icon: 'error',
           title: 'Search Error',
@@ -254,7 +251,6 @@ export class AssetScannerComponent implements OnInit {
         this.loadingAsset = false;
       },
       error: (error) => {
-        console.error('Failed to load asset history:', error);
         // Fallback to mock data if API fails
         this.assetHistory = [
           {
@@ -331,7 +327,6 @@ export class AssetScannerComponent implements OnInit {
               });
             },
             error: (err) => {
-              console.error('Error updating asset:', err);
               Swal.fire({
                 icon: 'error',
                 title: 'Error',
@@ -370,7 +365,6 @@ export class AssetScannerComponent implements OnInit {
               this.clearScan();
             },
             error: (err) => {
-              console.error('Error assigning asset:', err);
               Swal.fire({
                 icon: 'error',
                 title: 'Error',

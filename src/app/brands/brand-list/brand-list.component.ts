@@ -79,7 +79,6 @@ export class BrandListComponent implements OnInit {
         this.isLoading = false;
       },
       error: (error) => {
-        console.error('Error searching brands:', error);
         this.isLoading = false;
       },
     });
@@ -87,17 +86,12 @@ export class BrandListComponent implements OnInit {
 
   loadBrands(): void {
     this.isLoading = true;
-    console.log('Loading brands from API...');
     this.brandService.getAllBrands().subscribe({
       next: (brands) => {
-        console.log('Brands received from API:', brands);
-        console.log('Number of brands:', brands.length);
         this.brands = brands;
         this.isLoading = false;
       },
       error: (error) => {
-        console.error('Error loading brands:', error);
-        console.error('Error details:', JSON.stringify(error));
         Swal.fire({
           icon: 'error',
           title: 'Error!',
@@ -109,7 +103,6 @@ export class BrandListComponent implements OnInit {
   }
 
   createBrand(): void {
-    console.log('Opening create brand dialog...');
     const dialogRef = this.dialog.open(BrandDialogComponent, {
       width: '600px',
       data: {
@@ -118,7 +111,6 @@ export class BrandListComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      console.log('Dialog closed with result:', result);
       if (result) {
         this.loadBrands();
       }
@@ -165,7 +157,6 @@ export class BrandListComponent implements OnInit {
             this.loadBrands();
           },
           error: (error) => {
-            console.error('Error deleting brand:', error);
             Swal.fire({
               icon: 'error',
               title: 'Error!',
@@ -193,7 +184,6 @@ export class BrandListComponent implements OnInit {
         this.loadBrands();
       },
       error: (error) => {
-        console.error('Error updating brand status:', error);
         Swal.fire({
           icon: 'error',
           title: 'Error!',

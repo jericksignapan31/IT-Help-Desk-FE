@@ -78,14 +78,8 @@ export class AssetDialogComponent implements OnInit {
     public dialogRef: MatDialogRef<AssetDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: AssetDialogData | null = null,
   ) {
-    console.log('AssetDialogComponent constructor - data received:', data);
-    console.log('BrandService instance:', this.brandService);
-    console.log(
-      'BrandService getAllBrands method:',
-      typeof this.brandService?.getAllBrands,
-    );
+ 
     this.isEditMode = data?.isEditMode ?? false;
-    console.log('isEditMode set to:', this.isEditMode);
     this.assetForm = this.fb.group({
       asset_tag: ['', [Validators.required, Validators.maxLength(50)]],
       category: ['', Validators.required],
@@ -111,7 +105,6 @@ export class AssetDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log('AssetDialogComponent ngOnInit called');
     this.loadData();
 
     // Disable employee dropdown initially
@@ -123,7 +116,6 @@ export class AssetDialogComponent implements OnInit {
     });
 
     if (this.isEditMode && this.data?.asset) {
-      console.log('Edit mode - Asset data received:', this.data.asset);
 
       // Map backend field names to form field names if needed
       const assetData: any = this.data.asset;
@@ -133,7 +125,6 @@ export class AssetDialogComponent implements OnInit {
         employee_id: this.data.asset.assigned_to || assetData.assigned_to, // Map assigned_to to employee_id
       };
 
-      console.log('Mapped form data:', formData);
       this.assetForm.patchValue(formData);
 
       // Disable asset_tag in edit mode
@@ -148,19 +139,15 @@ export class AssetDialogComponent implements OnInit {
 
   loadData(): void {
     this.loadingData = true;
-    console.log('Loading branches and brands...');
-    console.log('BrandService check in loadData:', this.brandService);
-    console.log('getAllBrands check:', this.brandService?.getAllBrands);
+ 
 
     // Verify services are available
     if (!this.brandService) {
-      console.error('BrandService is not available!');
       this.loadingData = false;
       return;
     }
 
     if (!this.employeeService) {
-      console.error('EmployeeService is not available!');
       this.loadingData = false;
       return;
     }
@@ -173,13 +160,10 @@ export class AssetDialogComponent implements OnInit {
       next: (result) => {
         this.branches = result.branches;
         this.brands = result.brands;
-        console.log('Data loaded successfully:');
-        console.log('- Branches:', result.branches.length);
-        console.log('- Brands:', result.brands.length);
+      
         this.loadingData = false;
       },
       error: (error) => {
-        console.error('Failed to load data:', error);
         Swal.fire({
           icon: 'error',
           title: 'Error!',
@@ -218,10 +202,7 @@ export class AssetDialogComponent implements OnInit {
           this.loadingEmployees = false;
           this.assetForm.get('employee_id')?.enable();
 
-          console.log(
-            `Loaded ${employees.length} active employees for branch ${branchId}`,
-          );
-
+       
           if (employees.length === 0) {
             Swal.fire({
               icon: 'info',
@@ -233,7 +214,6 @@ export class AssetDialogComponent implements OnInit {
           }
         },
         error: (error) => {
-          console.error('Failed to load employees for branch:', error);
           this.loadingEmployees = false;
           this.employees = [];
 
@@ -260,8 +240,7 @@ export class AssetDialogComponent implements OnInit {
     this.isSaving = true;
     const formValue = this.assetForm.getRawValue();
 
-    console.log('Form values:', formValue);
-    console.log('Is edit mode?:', this.isEditMode);
+ 
 
     // Transform form data to match backend JSON structure
     const assetData: any = {
@@ -303,7 +282,6 @@ export class AssetDialogComponent implements OnInit {
       };
     }
 
-    console.log('Asset data to be sent to backend:', assetData);
 
     // Check if token exists
     const token = localStorage.getItem('access_token');
@@ -342,7 +320,6 @@ export class AssetDialogComponent implements OnInit {
         }
       },
       error: (error) => {
-        console.error('Asset save FAILED:', error);
 
         let errorMessage = 'Unknown error';
         if (error.error?.message) {
@@ -389,7 +366,6 @@ export class AssetDialogComponent implements OnInit {
         this.showQRCode = true;
       })
       .catch((err) => {
-        console.error('QR Code generation failed:', err);
         Swal.fire({
           icon: 'success',
           title: 'Asset Created!',

@@ -74,7 +74,6 @@ export class EmployeeListComponent implements OnInit {
         this.loading = false;
       },
       error: (err) => {
-        console.error('Failed to load employees:', err);
         Swal.fire({
           icon: 'error',
           title: 'Error!',
@@ -148,8 +147,7 @@ export class EmployeeListComponent implements OnInit {
   }
 
   deleteEmployee(employee: Employee): void {
-    console.log('Delete button clicked for employee:', employee);
-    console.log('Employee ID:', employee.employee_id);
+   
 
     Swal.fire({
       title: 'Delete Employee',
@@ -161,17 +159,12 @@ export class EmployeeListComponent implements OnInit {
       confirmButtonText: 'Delete',
       cancelButtonText: 'Cancel',
     }).then((result) => {
-      console.log('SweetAlert result:', result);
       if (result.isConfirmed && employee.employee_id) {
-        console.log(
-          'Calling deleteEmployee API with ID:',
-          employee.employee_id,
-        );
+       
         this.employeeService
           .deleteEmployee(employee.employee_id as number)
           .subscribe({
             next: (response) => {
-              console.log('Delete SUCCESS - Response:', response);
               Swal.fire({
                 icon: 'success',
                 title: 'Deleted!',
@@ -182,7 +175,6 @@ export class EmployeeListComponent implements OnInit {
               this.loadEmployees();
             },
             error: (error) => {
-              console.error('Delete FAILED - Full error:', error);
               Swal.fire({
                 icon: 'error',
                 title: 'Error!',
@@ -226,7 +218,6 @@ export class EmployeeListComponent implements OnInit {
               this.loadEmployees();
             },
             error: (error) => {
-              console.error('Verify failed:', error);
               Swal.fire({
                 icon: 'error',
                 title: 'Error!',

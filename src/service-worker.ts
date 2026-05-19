@@ -35,12 +35,9 @@ const apiCacheConfig = {
  * Install event - cache essential files
  */
 self.addEventListener('install', (event) => {
-  console.log('Service Worker installing...');
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('Caching app shell');
       return cache.addAll(urlsToCache).catch((err) => {
-        console.warn('Some files could not be cached:', err);
       });
     })
   );
@@ -51,7 +48,6 @@ self.addEventListener('install', (event) => {
  * Activate event - clean up old caches
  */
 self.addEventListener('activate', (event) => {
-  console.log('Service Worker activating...');
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
@@ -59,7 +55,6 @@ self.addEventListener('activate', (event) => {
           if (cacheName !== CACHE_NAME && 
               cacheName !== RUNTIME_CACHE && 
               cacheName !== API_CACHE) {
-            console.log('Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }
         })
@@ -104,7 +99,6 @@ self.addEventListener('fetch', (event) => {
                 cache.put(request, responseClone);
               });
             } catch (e) {
-              console.warn('Failed to cache response:', e);
             }
           }
           return fetchResponse;
@@ -133,12 +127,10 @@ self.addEventListener('fetch', (event) => {
               cache.put(request, responseClone);
             });
           } catch (e) {
-            console.warn('Failed to cache response:', e);
           }
         }
         return fetchResponse;
       }).catch((error) => {
-        console.error('Fetch failed:', error);
         // Return a custom offline page or response
         return new Response('Offline - Resource not available', {
           status: 503,
@@ -199,13 +191,11 @@ function cacheThenNetwork(request, config) {
             // Clone BEFORE returning to avoid body consumption
             const responseClone = networkResponse.clone();
             cache.put(request, responseClone).catch((e) => {
-              console.warn('Failed to cache response:', e);
             });
           }
           return networkResponse;
         })
         .catch((error) => {
-          console.error('Fetch failed:', error);
           return cachedResponse || new Response(JSON.stringify({ 
             error: 'Offline - Data not available' 
           }), {
@@ -228,14 +218,12 @@ function networkThenCache(request, config) {
         const responseClone = networkResponse.clone();
         caches.open(API_CACHE).then((cache) => {
           cache.put(request, responseClone).catch((e) => {
-            console.warn('Failed to cache response:', e);
           });
         });
       }
       return networkResponse;
     })
     .catch((error) => {
-      console.error('Network request failed:', error);
       // Try cache on network failure
       return caches.open(API_CACHE).then((cache) => {
         return cache.match(request) || new Response(JSON.stringify({ 
@@ -261,13 +249,11 @@ function staleWhileRevalidate(request, config) {
             // Clone BEFORE caching to avoid body consumption
             const responseClone = networkResponse.clone();
             cache.put(request, responseClone).catch((e) => {
-              console.warn('Failed to update cached response:', e);
             });
           }
           return networkResponse;
         })
         .catch((error) => {
-          console.error('Background fetch failed:', error);
           // Return cached response if network fails
           return cachedResponse;
         });
@@ -292,9 +278,7 @@ self.addEventListener('message', (event) => {
         cacheNames.map((cacheName) => caches.delete(cacheName))
       );
     }).catch((e) => {
-      console.warn('Failed to clear caches:', e);
     });
   }
 });
 
-console.log('✓ Service Worker loaded');

@@ -37,7 +37,6 @@ export class PwaStatusComponent implements OnInit, OnDestroy {
 
       this.setupUpdateNotification();
     } catch (error) {
-      console.warn('PwaStatusComponent init error:', (error as Error).message);
     }
   }
 
@@ -52,11 +51,9 @@ export class PwaStatusComponent implements OnInit, OnDestroy {
         .pipe(takeUntil(this.destroy$))
         .subscribe((available) => {
           if (available) {
-            console.log('✓ Update available - refresh to get the latest version');
           }
         });
     } catch (error) {
-      console.warn('PWA Status setup note:', (error as Error).message);
     }
   }
 
@@ -64,10 +61,8 @@ export class PwaStatusComponent implements OnInit, OnDestroy {
     try {
       const success = await this.pwaService.installApp();
       if (success) {
-        console.log('✓ App installed successfully');
       }
     } catch (error) {
-      console.warn('Install note:', (error as Error).message);
     }
   }
 

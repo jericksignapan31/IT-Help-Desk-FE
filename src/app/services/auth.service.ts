@@ -74,8 +74,7 @@ export class AuthService {
           updated_at: backendUser?.updated_at || new Date().toISOString(),
         };
 
-        console.log('🔄 Backend User:', backendUser);
-        console.log('✅ Transformed User:', transformedUser);
+       
 
         if (this.isBrowser) {
           localStorage.setItem('access_token', response.access_token);

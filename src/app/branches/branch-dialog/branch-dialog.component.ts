@@ -82,9 +82,7 @@ export class BranchDialogComponent implements OnInit {
     this.isSaving = true;
     const branchData = this.branchForm.value;
 
-    console.log('Saving branch - Edit Mode:', this.isEditMode);
-    console.log('Branch ID:', this.data.branch?.branch_id);
-    console.log('Branch Data:', branchData);
+   
 
     const operation =
       this.isEditMode && this.data.branch?.branch_id
@@ -96,7 +94,6 @@ export class BranchDialogComponent implements OnInit {
 
     operation.subscribe({
       next: (result) => {
-        console.log('Branch save SUCCESS:', result);
         Swal.fire({
           icon: 'success',
           title: 'Success!',
@@ -107,10 +104,7 @@ export class BranchDialogComponent implements OnInit {
         this.dialogRef.close(result);
       },
       error: (error) => {
-        console.error('Branch save FAILED - Full error:', error);
-        console.error('Error status:', error.status);
-        console.error('Error message:', error.message);
-        console.error('Error body:', error.error);
+      
         Swal.fire({
           icon: 'error',
           title: 'Error!',

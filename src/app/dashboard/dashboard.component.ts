@@ -64,12 +64,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     // Log current user information
     const currentUser = this.authService.currentUserValue;
     if (currentUser) {
-      console.log('📊 Dashboard - Current User:');
-      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      console.log('   Username:', currentUser.username || 'N/A');
-      console.log('   Role:', currentUser.role?.toUpperCase() || 'N/A');
-      console.log('   Email:', currentUser.email || 'N/A');
-      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    
     }
     this.loadDashboardStats();
   }
@@ -87,7 +82,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         setTimeout(() => this.initializeCharts(), 100);
       },
       error: (err) => {
-        console.error('Failed to load dashboard stats:', err);
         this.loading = false;
         // Use mock data for development
         this.useMockData();

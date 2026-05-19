@@ -78,10 +78,7 @@ export class DepartmentDialogComponent implements OnInit {
     this.isSaving = true;
     const departmentData = this.departmentForm.value;
 
-    console.log('Saving department - Edit Mode:', this.isEditMode);
-    console.log('Department ID:', this.data.department?.department_id);
-    console.log('Department Data:', departmentData);
-
+    
     const operation =
       this.isEditMode && this.data.department?.department_id
         ? this.departmentService.updateDepartment(
@@ -94,7 +91,6 @@ export class DepartmentDialogComponent implements OnInit {
 
     operation.subscribe({
       next: (result) => {
-        console.log('Department save SUCCESS:', result);
         Swal.fire({
           icon: 'success',
           title: 'Success!',
@@ -105,10 +101,7 @@ export class DepartmentDialogComponent implements OnInit {
         this.dialogRef.close(result);
       },
       error: (error) => {
-        console.error('Department save FAILED - Full error:', error);
-        console.error('Error status:', error.status);
-        console.error('Error message:', error.message);
-        console.error('Error body:', error.error);
+      
         Swal.fire({
           icon: 'error',
           title: 'Error!',

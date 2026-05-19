@@ -375,7 +375,6 @@ app.get('/assets/:assetId/history', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Error fetching asset history:', error);
     res.status(500).json({
       success: false,
       error: 'Failed to retrieve asset history',
@@ -436,7 +435,6 @@ loadAssetHistory(assetId: number | string): void {
       this.loadingAsset = false;
     },
     error: (error) => {
-      console.error('Failed to load asset history:', error);
       this.assetHistory = [];
       this.loadingAsset = false;
     }

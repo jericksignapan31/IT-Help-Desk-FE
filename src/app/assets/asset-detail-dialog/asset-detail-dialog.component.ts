@@ -52,7 +52,6 @@ export class AssetDetailDialogComponent {
           margin: 1,
         });
       } catch (error) {
-        console.error('Error generating QR code:', error);
       }
     }
   }

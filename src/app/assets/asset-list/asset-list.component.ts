@@ -145,7 +145,6 @@ export class AssetListComponent implements OnInit {
   }
 
   addAsset(): void {
-    console.log('Opening asset dialog for creation...');
     const dialogRef = this.dialog.open(AssetDialogComponent, {
       width: '800px',
       data: { isEditMode: false },
@@ -153,7 +152,6 @@ export class AssetListComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      console.log('Asset dialog closed with result:', result);
       if (result) {
         this.loadAssets();
       }
@@ -247,7 +245,6 @@ export class AssetListComponent implements OnInit {
         });
       })
       .catch((err) => {
-        console.error('QR Code generation failed:', err);
         Swal.fire({
           icon: 'error',
           title: 'Error!',

@@ -11,7 +11,6 @@ export class MyComponent {
   constructor(private authService: AuthService) {
     // Get current user immediately
     const user = this.authService.getCurrentUser();
-    console.log("Current User:", user);
   }
 }
 ```
@@ -30,7 +29,6 @@ export class MyComponent implements OnInit {
     // Subscribe to user changes
     this.authService.getCurrentUser$().subscribe((user) => {
       this.currentUser = user;
-      console.log("User changed:", user);
     });
   }
 }
@@ -44,7 +42,6 @@ import { AuthService } from "./services/auth.service";
 export class MyComponent {
   constructor(private authService: AuthService) {
     const userInfo = this.authService.getUserInfo();
-    console.log("User Info:", userInfo);
     // Returns: { id, username, email, role, employeeId, isActive }
   }
 }
@@ -61,8 +58,7 @@ Returns the current user immediately. Use when you need instant access.
 ```typescript
 const user = this.authService.getCurrentUser();
 if (user) {
-  console.log("Username:", user.username);
-  console.log("Role:", user.role);
+ 
 }
 ```
 
@@ -73,7 +69,6 @@ Returns Observable that emits when user changes. Use for reactive updates.
 ```typescript
 this.authService.getCurrentUser$().subscribe((user) => {
   if (user) {
-    console.log("User updated:", user);
   }
 });
 ```
@@ -113,7 +108,6 @@ const name = this.authService.getUserDisplayName();
 
 ```typescript
 if (this.authService.isAuthenticated()) {
-  console.log("User is logged in");
 }
 ```
 
@@ -121,7 +115,6 @@ if (this.authService.isAuthenticated()) {
 
 ```typescript
 if (this.authService.isAdmin()) {
-  console.log("User is admin");
 }
 ```
 
@@ -129,7 +122,6 @@ if (this.authService.isAdmin()) {
 
 ```typescript
 if (this.authService.isTechnician()) {
-  console.log("User is technician");
 }
 ```
 
@@ -137,7 +129,6 @@ if (this.authService.isTechnician()) {
 
 ```typescript
 if (this.authService.hasRole([UserRole.ADMIN, UserRole.TECHNICIAN])) {
-  console.log("User is admin or technician");
 }
 ```
 
@@ -145,7 +136,6 @@ if (this.authService.hasRole([UserRole.ADMIN, UserRole.TECHNICIAN])) {
 
 ```typescript
 if (this.authService.hasSpecificRole(UserRole.ADMIN)) {
-  console.log("User is exactly admin");
 }
 ```
 
@@ -153,7 +143,6 @@ if (this.authService.hasSpecificRole(UserRole.ADMIN)) {
 
 ```typescript
 this.authService.refreshUserProfile().subscribe((user) => {
-  console.log("User profile refreshed:", user);
 });
 ```
 
@@ -337,7 +326,6 @@ export class TicketService {
    ```typescript
    const user = this.authService.getCurrentUser();
    if (user) {
-     console.log(user.username);
    }
    ```
 

@@ -19,8 +19,7 @@ export class BrandService {
 
   // Transform backend response to frontend model (handles both old and new backend formats)
   private transformBrand(data: any): Brand {
-    console.log('Transforming brand data:', data);
-    console.log('Available keys:', Object.keys(data));
+
     const transformed = {
       id: data.id || data._id || data.brand_id,
       brand_name: data.brand_name || data.name,
@@ -30,16 +29,13 @@ export class BrandService {
       created_at: data.created_at,
       updated_at: data.updated_at,
     };
-    console.log('Transformed to:', transformed);
     return transformed;
   }
 
   // Get all brands
   getAllBrands(): Observable<Brand[]> {
-    console.log('Calling API:', `${this.API_URL}`);
     return this.http.get<any[]>(this.API_URL).pipe(
       map((brands) => {
-        console.log('Raw API response:', brands);
         return brands.map((brand) => this.transformBrand(brand));
       }),
     );

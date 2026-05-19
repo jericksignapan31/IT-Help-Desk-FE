@@ -97,10 +97,8 @@ export class EmployeeDialogComponent implements OnInit {
     this.employeeService.getBranches().subscribe({
       next: (branches) => {
         this.branches = branches;
-        console.log('Loaded branches:', this.branches);
       },
       error: (error) => {
-        console.error('Failed to load branches:', error);
         Swal.fire({
           icon: 'error',
           title: 'Error!',
@@ -113,11 +111,9 @@ export class EmployeeDialogComponent implements OnInit {
     this.employeeService.getDepartments().subscribe({
       next: (departments) => {
         this.departments = departments;
-        console.log('Loaded departments:', this.departments);
         this.loadingData = false;
       },
       error: (error) => {
-        console.error('Failed to load departments:', error);
         Swal.fire({
           icon: 'error',
           title: 'Error!',
@@ -137,23 +133,17 @@ export class EmployeeDialogComponent implements OnInit {
     this.isSaving = true;
     let employeeData = this.employeeForm.value;
 
-    console.log('Saving employee - Edit Mode:', this.isEditMode);
-    console.log('Employee ID:', this.data.employee?.employee_id);
-    console.log('Employee Data (raw):', employeeData);
 
     // In edit mode, remove employee_id from the data being sent
     // because employee_id is usually immutable and shouldn't be updated
     if (this.isEditMode) {
       const { employee_id, ...updateData } = employeeData;
-      console.log('Employee Data (for update, without ID):', updateData);
       employeeData = updateData;
     }
 
-    console.log('Employee Data (final):', employeeData);
 
     // Check if token exists
     const token = localStorage.getItem('access_token');
-    console.log('🔐 Token exists:', !!token);
     if (!token) {
       Swal.fire({
         icon: 'error',
@@ -176,7 +166,6 @@ export class EmployeeDialogComponent implements OnInit {
 
     operation.subscribe({
       next: (result) => {
-        console.log('Employee save SUCCESS:', result);
         Swal.fire({
           icon: 'success',
           title: 'Success!',
@@ -187,14 +176,9 @@ export class EmployeeDialogComponent implements OnInit {
         this.dialogRef.close(result);
       },
       error: (error) => {
-        console.error('Employee save FAILED - Full error:', error);
-        console.error('Error status:', error.status);
-        console.error('Error message:', error.message);
-        console.error('Error body:', error.error);
-
+ 
         // Log detailed validation errors if available
         if (error.error?.message && Array.isArray(error.error.message)) {
-          console.error('Validation errors:', error.error.message);
         }
 
         let errorMessage = 'Unknown error';

@@ -58,7 +58,6 @@ export class BranchListComponent implements OnInit {
         this.isLoading = false;
       },
       error: (error) => {
-        console.error('Error loading branches:', error);
         Swal.fire({
           icon: 'error',
           title: 'Error!',
@@ -101,9 +100,7 @@ export class BranchListComponent implements OnInit {
   }
 
   deleteBranch(branch: Branch): void {
-    console.log('Delete button clicked for branch:', branch);
-    console.log('Branch ID:', branch.branch_id);
-    console.log('Branch object:', JSON.stringify(branch, null, 2));
+ ;
 
     Swal.fire({
       title: 'Delete Branch',
@@ -115,20 +112,13 @@ export class BranchListComponent implements OnInit {
       confirmButtonText: 'Delete',
       cancelButtonText: 'Cancel',
     }).then((result) => {
-      console.log('SweetAlert result:', result);
-      console.log('Is confirmed:', result.isConfirmed);
-      console.log('Has branch.branch_id:', !!branch.branch_id);
+     
 
       if (result.isConfirmed && branch.branch_id) {
-        console.log('Calling deleteBranch API with ID:', branch.branch_id);
-        console.log(
-          'API URL will be:',
-          `${this.branchService['API_URL']}/${branch.branch_id}`,
-        );
+     
 
         this.branchService.deleteBranch(branch.branch_id).subscribe({
           next: (response) => {
-            console.log('Delete SUCCESS - Response:', response);
             Swal.fire({
               icon: 'success',
               title: 'Deleted!',
@@ -139,10 +129,7 @@ export class BranchListComponent implements OnInit {
             this.loadBranches();
           },
           error: (error) => {
-            console.error('Delete FAILED - Full error:', error);
-            console.error('Error status:', error.status);
-            console.error('Error message:', error.message);
-            console.error('Error body:', error.error);
+         
             Swal.fire({
               icon: 'error',
               title: 'Error!',
@@ -151,33 +138,27 @@ export class BranchListComponent implements OnInit {
           },
         });
       } else {
-        console.log('Delete cancelled or no branch ID');
       }
     });
   }
 
   toggleStatus(branch: Branch): void {
     if (!branch.branch_id) {
-      console.log('No branch_id found:', branch);
       return;
     }
 
-    console.log('Toggle status for branch:', branch);
-    console.log('Current status:', branch.status);
+   
 
     const oldStatus = branch.status;
     const newStatus = branch.status === 'active' ? 'inactive' : 'active';
 
     // Optimistic UI update - change status immediately
     branch.status = newStatus;
-    console.log('Updated UI to new status:', newStatus);
-    console.log('Calling API with branch_id:', branch.branch_id);
 
     this.branchService
       .toggleBranchStatus(branch.branch_id, newStatus)
       .subscribe({
         next: (response) => {
-          console.log('Toggle status SUCCESS:', response);
           // Update with response data to ensure sync with backend
           if (response.status) {
             branch.status = response.status;
@@ -191,14 +172,10 @@ export class BranchListComponent implements OnInit {
           });
         },
         error: (error) => {
-          console.error('Toggle status FAILED - Full error:', error);
-          console.error('Error status:', error.status);
-          console.error('Error message:', error.message);
-          console.error('Error body:', error.error);
+          
 
           // Revert status on error
           branch.status = oldStatus;
-          console.log('Reverted status back to:', oldStatus);
 
           Swal.fire({
             icon: 'error',

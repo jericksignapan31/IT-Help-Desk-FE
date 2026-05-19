@@ -63,7 +63,6 @@ export class DepartmentListComponent implements OnInit {
         this.isLoading = false;
       },
       error: (error) => {
-        console.error('Error loading departments:', error);
         Swal.fire({
           icon: 'error',
           title: 'Error!',
@@ -106,8 +105,6 @@ export class DepartmentListComponent implements OnInit {
   }
 
   deleteDepartment(department: Department): void {
-    console.log('Delete button clicked for department:', department);
-    console.log('Department ID:', department.department_id);
 
     Swal.fire({
       title: 'Delete Department',
@@ -119,17 +116,12 @@ export class DepartmentListComponent implements OnInit {
       confirmButtonText: 'Delete',
       cancelButtonText: 'Cancel',
     }).then((result) => {
-      console.log('SweetAlert result:', result);
       if (result.isConfirmed && department.department_id) {
-        console.log(
-          'Calling deleteDepartment API with ID:',
-          department.department_id,
-        );
+      
         this.departmentService
           .deleteDepartment(department.department_id)
           .subscribe({
             next: (response) => {
-              console.log('Delete SUCCESS - Response:', response);
               Swal.fire({
                 icon: 'success',
                 title: 'Deleted!',
@@ -140,7 +132,6 @@ export class DepartmentListComponent implements OnInit {
               this.loadDepartments();
             },
             error: (error) => {
-              console.error('Delete FAILED - Full error:', error);
               Swal.fire({
                 icon: 'error',
                 title: 'Error!',
@@ -154,7 +145,6 @@ export class DepartmentListComponent implements OnInit {
 
   toggleStatus(department: Department): void {
     if (!department.department_id) {
-      console.log('No department department_id found:', department);
       return;
     }
 
