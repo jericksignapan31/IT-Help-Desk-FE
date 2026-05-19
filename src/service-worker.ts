@@ -187,37 +187,30 @@ function handleApiRequest(request) {
  */
 function cacheThenNetwork(request, config) {
   return caches.open(API_CACHE).then((cache) => {
-    return cache.match(request).then((response) => {
-      if (response) {
-        // Check if cached response is still fresh
-        const cacheDate = new Date(response.headers.get('sw-fetch-time'));
-        const now = new Date();
-        if (now - cacheDate < config.maxAge) {
-          return response;
-        }
+    return cache.match(request).then((cachedResponse) => {
+      if (cachedResponse) {
+        return cachedResponse;
       }
 
       // Fetch from network
       return fetch(request)
-        .then((response) => {
-          if (response.status === 200) {
-            // Clone response and add fetch time
-            const responseToCache = response.clone();
-            const headers = new Headers(responseToCache.headers);
-            headers.set('sw-fetch-time', new Date().toISOString());
-
-            cache.put(request, new Response(responseToCache.body, {
-              status: responseToCache.status,
-              statusText: responseToCache.statusText,
-              headers: headers,
-            }));
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            // Clone BEFORE returning to avoid body consumption
+            const responseClone = networkResponse.clone();
+            cache.put(request, responseClone).catch((e) => {
+              console.warn('Failed to cache response:', e);
+            });
           }
-          return response;
+          return networkResponse;
         })
-        .catch(() => {
-          // Return cached response even if stale
-          return response || new Response('Offline - Data not available', {
+        .catch((error) => {
+          console.error('Fetch failed:', error);
+          return cachedResponse || new Response(JSON.stringify({ 
+            error: 'Offline - Data not available' 
+          }), {
             status: 503,
+            headers: new Headers({ 'Content-Type': 'application/json' }),
           });
         });
     });
@@ -229,26 +222,27 @@ function cacheThenNetwork(request, config) {
  */
 function networkThenCache(request, config) {
   return fetch(request)
-    .then((response) => {
-      if (response.status === 200) {
-        // Cache successful response
+    .then((networkResponse) => {
+      if (networkResponse && networkResponse.status === 200) {
+        // Clone BEFORE returning to avoid body consumption
+        const responseClone = networkResponse.clone();
         caches.open(API_CACHE).then((cache) => {
-          const headers = new Headers(response.headers);
-          headers.set('sw-fetch-time', new Date().toISOString());
-          cache.put(request, new Response(response.clone().body, {
-            status: response.status,
-            statusText: response.statusText,
-            headers: headers,
-          }));
+          cache.put(request, responseClone).catch((e) => {
+            console.warn('Failed to cache response:', e);
+          });
         });
       }
-      return response;
+      return networkResponse;
     })
-    .catch(() => {
+    .catch((error) => {
+      console.error('Network request failed:', error);
       // Try cache on network failure
       return caches.open(API_CACHE).then((cache) => {
-        return cache.match(request) || new Response('Offline - Data not available', {
+        return cache.match(request) || new Response(JSON.stringify({ 
+          error: 'Offline - Data not available' 
+        }), {
           status: 503,
+          headers: new Headers({ 'Content-Type': 'application/json' }),
         });
       });
     });
@@ -259,16 +253,27 @@ function networkThenCache(request, config) {
  */
 function staleWhileRevalidate(request, config) {
   return caches.open(API_CACHE).then((cache) => {
-    return cache.match(request).then((response) => {
-      // Revalidate in background
-      const fetchPromise = fetch(request).then((networkResponse) => {
-        if (networkResponse.status === 200) {
-          cache.put(request, networkResponse.clone());
-        }
-        return networkResponse;
-      });
+    return cache.match(request).then((cachedResponse) => {
+      // Start fetching in background
+      const fetchPromise = fetch(request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            // Clone BEFORE caching to avoid body consumption
+            const responseClone = networkResponse.clone();
+            cache.put(request, responseClone).catch((e) => {
+              console.warn('Failed to update cached response:', e);
+            });
+          }
+          return networkResponse;
+        })
+        .catch((error) => {
+          console.error('Background fetch failed:', error);
+          // Return cached response if network fails
+          return cachedResponse;
+        });
 
-      return response || fetchPromise;
+      // Return cached immediately if available, otherwise wait for network
+      return cachedResponse || fetchPromise;
     });
   });
 }
@@ -286,8 +291,10 @@ self.addEventListener('message', (event) => {
       return Promise.all(
         cacheNames.map((cacheName) => caches.delete(cacheName))
       );
+    }).catch((e) => {
+      console.warn('Failed to clear caches:', e);
     });
   }
 });
 
-console.log('Service Worker loaded');
+console.log('✓ Service Worker loaded');
