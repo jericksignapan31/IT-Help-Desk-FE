@@ -1,7 +1,10 @@
+/// <reference lib="webworker" />
 /**
  * IT Help Desk PWA Service Worker
  * Handles caching, offline support, and service worker lifecycle
  */
+
+declare const self: ServiceWorkerGlobalScope;
 
 const CACHE_VERSION = 'v1.0.1';
 const CACHE_NAME = `ithelp-desk-${CACHE_VERSION}`;
@@ -34,7 +37,7 @@ const apiCacheConfig = {
 /**
  * Install event - cache essential files
  */
-self.addEventListener('install', (event) => {
+self.addEventListener('install', (event: ExtendableEvent) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(urlsToCache).catch((err) => {
@@ -47,7 +50,7 @@ self.addEventListener('install', (event) => {
 /**
  * Activate event - clean up old caches
  */
-self.addEventListener('activate', (event) => {
+self.addEventListener('activate', (event: ExtendableEvent) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
@@ -57,6 +60,7 @@ self.addEventListener('activate', (event) => {
               cacheName !== API_CACHE) {
             return caches.delete(cacheName);
           }
+          return Promise.resolve();
         })
       );
     })
@@ -67,7 +71,7 @@ self.addEventListener('activate', (event) => {
 /**
  * Fetch event - implement caching strategies
  */
-self.addEventListener('fetch', (event) => {
+self.addEventListener('fetch', (event: FetchEvent) => {
   const { request } = event;
   const url = new URL(request.url);
 
@@ -147,12 +151,12 @@ self.addEventListener('fetch', (event) => {
 /**
  * Handle API requests with configured caching strategies
  */
-function handleApiRequest(request) {
+function handleApiRequest(request: Request): Promise<Response> {
   const url = new URL(request.url);
   const pathname = url.pathname;
 
   // Find matching cache config
-  let config = null;
+  let config: any = null;
   for (const [pattern, cfg] of Object.entries(apiCacheConfig)) {
     if (pathname.includes(pattern)) {
       config = cfg;
@@ -177,7 +181,7 @@ function handleApiRequest(request) {
 /**
  * Cache-first strategy: try cache first, fallback to network
  */
-function cacheThenNetwork(request, config) {
+function cacheThenNetwork(request: Request, config: any): Promise<Response> {
   return caches.open(API_CACHE).then((cache) => {
     return cache.match(request).then((cachedResponse) => {
       if (cachedResponse) {
@@ -210,7 +214,7 @@ function cacheThenNetwork(request, config) {
 /**
  * Network-first strategy: try network first, fallback to cache
  */
-function networkThenCache(request, config) {
+function networkThenCache(request: Request, config: any): Promise<Response> {
   return fetch(request)
     .then((networkResponse) => {
       if (networkResponse && networkResponse.status === 200) {
@@ -239,7 +243,7 @@ function networkThenCache(request, config) {
 /**
  * Stale-while-revalidate strategy
  */
-function staleWhileRevalidate(request, config) {
+function staleWhileRevalidate(request: Request, config: any): Promise<Response> {
   return caches.open(API_CACHE).then((cache) => {
     return cache.match(request).then((cachedResponse) => {
       // Start fetching in background
@@ -267,7 +271,7 @@ function staleWhileRevalidate(request, config) {
 /**
  * Message event - handle messages from clients
  */
-self.addEventListener('message', (event) => {
+self.addEventListener('message', (event: ExtendableMessageEvent) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
   }
