@@ -5,7 +5,7 @@
     <span class="status-text">You are offline</span>
   </div>
 
-  <!-- Install Prompt -->
+  <!-- Install Prompt (from browser) -->
   <div class="status-item" *ngIf="installPrompt$ | async as prompt">
     <button
       mat-raised-button
@@ -18,12 +18,17 @@
     </button>
   </div>
 
-  <!-- Development Mode: Show Install Info on Localhost -->
-  <div class="status-item development-info" *ngIf="isDevMode">
-    <mat-icon>info</mat-icon>
-    <span class="dev-text">
-      Install button will appear on HTTPS or after production deployment
-    </span>
+  <!-- Manual Install Button (for development/HTTP) -->
+  <div class="status-item" *ngIf="!(installPrompt$ | async) && isDevMode">
+    <button
+      mat-raised-button
+      color="accent"
+      (click)="showInstallInstructions()"
+      class="install-button dev-install"
+    >
+      <mat-icon>download</mat-icon>
+      Install App
+    </button>
   </div>
 
   <!-- Update Available with Action Button -->
