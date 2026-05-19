@@ -95,13 +95,19 @@ self.addEventListener('fetch', (event) => {
   if (request.mode === 'navigate') {
     event.respondWith(
       caches.match(request).then((response) => {
-        return response || fetch(request).then((response) => {
-          // Cache successful navigations
-          if (response.status === 200) {
-            const cache = caches.open(RUNTIME_CACHE);
-            cache.then((c) => c.put(request, response.clone()));
+        return response || fetch(request).then((fetchResponse) => {
+          // Clone before using to avoid "body already used" errors
+          if (fetchResponse.status === 200) {
+            try {
+              const responseClone = fetchResponse.clone();
+              caches.open(RUNTIME_CACHE).then((cache) => {
+                cache.put(request, responseClone);
+              });
+            } catch (e) {
+              console.warn('Failed to cache response:', e);
+            }
           }
-          return response;
+          return fetchResponse;
         }).catch(() => {
           // Return index.html as fallback for failed navigation
           return caches.match('/index.html');
@@ -114,13 +120,23 @@ self.addEventListener('fetch', (event) => {
   // Handle other requests with cache-first strategy
   event.respondWith(
     caches.match(request).then((response) => {
-      return response || fetch(request).then((response) => {
-        // Cache successful responses
-        if (response.status === 200 && response.type !== 'error') {
-          const cache = caches.open(RUNTIME_CACHE);
-          cache.then((c) => c.put(request, response.clone()));
-        }
+      if (response) {
         return response;
+      }
+      
+      return fetch(request).then((fetchResponse) => {
+        // Clone before using to avoid "body already used" errors
+        if (fetchResponse.status === 200 && fetchResponse.type !== 'error') {
+          try {
+            const responseClone = fetchResponse.clone();
+            caches.open(RUNTIME_CACHE).then((cache) => {
+              cache.put(request, responseClone);
+            });
+          } catch (e) {
+            console.warn('Failed to cache response:', e);
+          }
+        }
+        return fetchResponse;
       }).catch((error) => {
         console.error('Fetch failed:', error);
         // Return a custom offline page or response
