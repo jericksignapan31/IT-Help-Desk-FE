@@ -3,7 +3,7 @@
  * Handles caching, offline support, and service worker lifecycle
  */
 
-const CACHE_VERSION = 'v1.0.0';
+const CACHE_VERSION = 'v1.0.1';
 const CACHE_NAME = `ithelp-desk-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `ithelp-desk-runtime-${CACHE_VERSION}`;
 const API_CACHE = `ithelp-desk-api-${CACHE_VERSION}`;
