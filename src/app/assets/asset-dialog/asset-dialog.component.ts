@@ -68,6 +68,19 @@ export class AssetDialogComponent implements OnInit {
   assetTypes = Object.values(AssetType);
   statusOptions = Object.values(AssetStatus);
 
+  // Asset type abbreviations for auto-generated tags
+  private assetTypeAbbreviations: { [key: string]: string } = {
+    'computer': 'COM',
+    'laptop': 'LAP',
+    'printer': 'PRI',
+    'monitor': 'MON',
+    'phone': 'PHN',
+    'tablet': 'TAB',
+    'keyboard': 'KBD',
+    'mouse': 'MSE',
+    'other': 'OTH',
+  };
+
   // Use inject() for BrandService to avoid DI ordering issues
   private brandService = inject(BrandService);
 
@@ -114,6 +127,13 @@ export class AssetDialogComponent implements OnInit {
     this.assetForm.get('branch_id')?.valueChanges.subscribe((branchId) => {
       this.onBranchChange(branchId);
     });
+
+    // Watch for category changes to auto-generate asset tag (in add mode only)
+    if (!this.isEditMode) {
+      this.assetForm.get('category')?.valueChanges.subscribe((category) => {
+        this.generateAssetTag(category);
+      });
+    }
 
     if (this.isEditMode && this.data?.asset) {
 
@@ -384,6 +404,38 @@ export class AssetDialogComponent implements OnInit {
     link.download = `QR_${this.createdAsset.asset_tag}.png`;
     link.href = this.qrCodeDataUrl;
     link.click();
+  }
+
+  generateAssetTag(category: string): void {
+    if (!category) {
+      this.assetForm.get('asset_tag')?.setValue('');
+      return;
+    }
+
+    // Get the abbreviation for the selected category
+    const abbreviation = this.assetTypeAbbreviations[category] || 'AST';
+
+    // Get today's date in YYYYMMDD format
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    const dateStr = `${year}${month}${day}`;
+
+    // Query assets of this category to determine next sequence number
+    this.assetService.getAssets({ category }).subscribe({
+      next: (assets) => {
+        const nextSequence = assets.length + 1;
+        const sequenceStr = String(nextSequence).padStart(4, '0');
+        const generatedTag = `${abbreviation}-${sequenceStr}-${dateStr}`;
+        this.assetForm.get('asset_tag')?.setValue(generatedTag);
+      },
+      error: () => {
+        // If query fails, start with 0001
+        const generatedTag = `${abbreviation}-0001-${dateStr}`;
+        this.assetForm.get('asset_tag')?.setValue(generatedTag);
+      },
+    });
   }
 
   closeWithQRCode(): void {

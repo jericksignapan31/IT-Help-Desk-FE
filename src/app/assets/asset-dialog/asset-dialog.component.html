@@ -19,8 +19,10 @@
                 <input
                   matInput
                   formControlName="asset_tag"
-                  placeholder="e.g., LAP-001"
+                  placeholder="e.g., LAP-0001-20260520"
+                  [readonly]="!isEditMode"
                 />
+                <mat-hint *ngIf="!isEditMode">Auto-generated based on asset type</mat-hint>
                 <mat-error
                   *ngIf="assetForm.get('asset_tag')?.hasError('required')"
                 >
