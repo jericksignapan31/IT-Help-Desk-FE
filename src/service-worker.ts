@@ -42,7 +42,7 @@ self.addEventListener('install', ((event: ExtendableEvent) => {
       });
     })
   );
-  self.skipWaiting();
+  (self as unknown as ServiceWorkerGlobalScope).skipWaiting();
 }) as EventListener);
 
 /**
@@ -63,7 +63,7 @@ self.addEventListener('activate', ((event: ExtendableEvent) => {
       );
     })
   );
-  self.clients.claim();
+  (self as unknown as ServiceWorkerGlobalScope).clients.claim();
 }) as EventListener);
 
 /**
@@ -289,7 +289,7 @@ function staleWhileRevalidate(request: Request, config: any): Promise<Response> 
  */
 self.addEventListener('message', ((event: ExtendableMessageEvent) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
-    self.skipWaiting();
+    (self as unknown as ServiceWorkerGlobalScope).skipWaiting();
   }
 
   if (event.data && event.data.type === 'CLEAR_CACHE') {
