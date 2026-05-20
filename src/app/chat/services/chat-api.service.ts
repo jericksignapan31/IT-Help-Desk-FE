@@ -31,6 +31,14 @@ export class ChatApiService {
   }
 
   /**
+   * Get ALL conversations with ALL their messages in one call
+   * Perfect for initial chat UI load - no multiple API calls needed
+   */
+  getAllConversationsWithMessages(): Observable<Conversation[]> {
+    return this.http.get<Conversation[]>(`${this.apiUrl}/all-conversations-with-messages`);
+  }
+
+  /**
    * Get specific conversation by ID
    */
   getConversation(conversationId: string): Observable<Conversation> {
@@ -71,7 +79,8 @@ export class ChatApiService {
    * Get messages for a conversation (paginated)
    */
   getMessages(conversationId: string, page: number = 1, limit: number = 50): Observable<MessagesResponse> {
-    const params = new HttpParams().set('page', page.toString()).set('limit', limit.toString());
+    const offset = (page - 1) * limit;
+    const params = new HttpParams().set('offset', offset.toString()).set('limit', limit.toString());
     return this.http.get<MessagesResponse>(`${this.apiUrl}/conversations/${conversationId}/messages`, { params });
   }
 

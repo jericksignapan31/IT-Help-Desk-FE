@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
@@ -117,32 +117,44 @@ import { UnreadBadgeComponent } from '../unread-badge/unread-badge.component';
       }
 
       .search-field {
-        width: calc(100% - 32px);
-        margin: 12px 16px;
-        flex-shrink: 0;
+        width: calc(100% - 16px);
+        margin: 3px 8px;
       }
 
       .search-field ::ng-deep {
         .mdc-text-field {
           background-color: #f0f0f0 !important;
-          border-radius: 24px !important;
+          border-radius: 16px !important;
         }
         
         .mdc-text-field__input {
-          border-radius: 24px;
-          padding: 12px 16px !important;
+          border-radius: 16px;
+          padding: 2px 6px !important;
+          font-size: 11px !important;
+          min-height: 24px !important;
+          line-height: 1.2 !important;
+        }
+
+        .mat-mdc-form-field-label {
+          font-size: 10px !important;
         }
 
         .mat-mdc-form-field-hint-wrapper {
           display: none;
         }
 
+        mat-icon {
+          width: 14px !important;
+          height: 14px !important;
+          font-size: 14px !important;
+        }
+
         .mdc-notched-outline__leading {
-          border-radius: 24px 0 0 24px;
+          border-radius: 16px 0 0 16px;
         }
 
         .mdc-notched-outline__trailing {
-          border-radius: 0 24px 24px 0;
+          border-radius: 0 16px 16px 0;
         }
       }
 
@@ -270,7 +282,7 @@ import { UnreadBadgeComponent } from '../unread-badge/unread-badge.component';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ConversationListComponent {
+export class ConversationListComponent implements OnChanges {
   @Input() conversations: Conversation[] = [];
   @Input() currentConversation: Conversation | null = null;
   @Input() loading: boolean = false;
@@ -279,6 +291,14 @@ export class ConversationListComponent {
   @Output() createNew = new EventEmitter<void>();
 
   searchText: string = '';
+
+  constructor(private cdr: ChangeDetectorRef) {}
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['conversations'] || changes['currentConversation']) {
+      this.cdr.markForCheck();
+    }
+  }
 
   get filteredConversations(): Conversation[] {
     return this.conversations.filter((conv) => {

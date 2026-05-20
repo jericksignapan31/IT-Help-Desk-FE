@@ -174,12 +174,23 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
   private loadConversations(): void {
     this.chatStore.setLoading(true);
     this.chatApi
-      .getConversations(1, 50)
+      .getAllConversationsWithMessages()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (response) => {
-          this.chatStore.setConversations(response.data);
+        next: (conversations) => {
+          console.log(`✅ Loaded ${conversations.length} conversations with all messages in one call`);
+          this.chatStore.setConversations(conversations);
           this.chatStore.setLoading(false);
+          
+          // Restore previously selected conversation from localStorage
+          const savedConvId = localStorage.getItem('lastSelectedConversation');
+          if (savedConvId) {
+            const savedConv = conversations.find((c) => c.conversation_id === savedConvId);
+            if (savedConv) {
+              console.log('📌 Restoring conversation from localStorage:', savedConvId);
+              this.onSelectConversation(savedConv);
+            }
+          }
         },
         error: (error) => {
           console.error('Error loading conversations:', error);
@@ -289,6 +300,9 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
   onSelectConversation(conversation: Conversation): void {
     console.log('🔄 Selecting conversation:', { id: conversation.conversation_id, type: conversation.type });
     
+    // Save selected conversation to localStorage for persistence on refresh
+    localStorage.setItem('lastSelectedConversation', conversation.conversation_id);
+    
     // Check if messages are already loaded to avoid unnecessary API calls
     const cachedMessages = this.chatStore.getConversationMessages(conversation.conversation_id);
     if (cachedMessages && cachedMessages.length > 0) {
@@ -378,6 +392,12 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
+          // Clear localStorage if this was the selected conversation
+          const savedConvId = localStorage.getItem('lastSelectedConversation');
+          if (savedConvId === conversation.conversation_id) {
+            localStorage.removeItem('lastSelectedConversation');
+          }
+          
           this.chatStore.deleteConversation(conversation.conversation_id);
           Swal.fire('Success', 'Conversation deleted', 'success');
           this.loadConversations();

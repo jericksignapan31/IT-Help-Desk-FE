@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -176,7 +176,7 @@ import { TypingIndicatorComponent } from '../typing-indicator/typing-indicator.c
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ConversationDetailComponent {
+export class ConversationDetailComponent implements OnChanges {
   @Input() conversation: Conversation | null = null;
   @Input() messages: Message[] = [];
   @Input() typingUsers: string[] = [];
@@ -189,6 +189,14 @@ export class ConversationDetailComponent {
   @Output() stoppedTyping = new EventEmitter<void>();
   @Output() deleteConversation = new EventEmitter<Conversation>();
   @Output() info = new EventEmitter<Conversation>();
+
+  constructor(private cdr: ChangeDetectorRef) {}
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['messages'] || changes['conversation'] || changes['typingUsers']) {
+      this.cdr.markForCheck();
+    }
+  }
 
   getConversationTitle(): string {
     if (!this.conversation) return '';

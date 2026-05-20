@@ -136,19 +136,25 @@ export class ChatStoreService {
   addMessage(conversationId: string, message: Message): void {
     const state = this.getState();
     const messagesMap = new Map(state.messages);
-    const messages = messagesMap.get(conversationId) || [];
-    messages.push(message);
+    const existingMessages = messagesMap.get(conversationId) || [];
+    const messages = [...existingMessages, message]; // Create NEW array with message
     messagesMap.set(conversationId, messages);
     this.stateSubject.next({ ...state, messages: messagesMap });
+    console.log('📦 Message added to store:', {
+      conversationId,
+      messageId: (message as any).message_id,
+      totalMessages: messages.length,
+    });
   }
 
   updateMessage(conversationId: string, messageId: string, updates: Partial<Message>): void {
     const state = this.getState();
-    const messages = state.messages.get(conversationId) || [];
+    const existingMessages = state.messages.get(conversationId) || [];
     // Look for both 'id' and 'message_id' field names to be safe
-    const index = messages.findIndex((m) => (m as any).message_id === messageId || (m as any).id === messageId);
+    const index = existingMessages.findIndex((m) => (m as any).message_id === messageId || (m as any).id === messageId);
     if (index > -1) {
-      messages[index] = { ...messages[index], ...updates };
+      const messages = [...existingMessages]; // Create NEW array
+      messages[index] = { ...messages[index], ...updates }; // Update copy
       const messagesMap = new Map(state.messages);
       messagesMap.set(conversationId, messages);
       this.stateSubject.next({ ...state, messages: messagesMap });

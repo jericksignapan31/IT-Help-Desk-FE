@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, ViewChild, AfterViewChecked, SimpleChanges, OnChanges, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewChild, AfterViewChecked, SimpleChanges, OnChanges, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -342,11 +342,14 @@ export class MessageListComponent implements OnInit, OnChanges, AfterViewChecked
 
   private shouldScroll = true;
 
+  constructor(private cdr: ChangeDetectorRef) {}
+
   ngOnInit(): void {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['messages'] && !changes['messages'].firstChange) {
       this.shouldScroll = true;
+      this.cdr.markForCheck();
     }
   }
 
