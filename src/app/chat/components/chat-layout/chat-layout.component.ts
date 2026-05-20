@@ -375,7 +375,10 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
 
           // Create dropdown options
           const userOptions = otherUsers
-            .map((user) => `<option value="${user.id}">${user.username} (${user.email})</option>`)
+            .map((user) => {
+              const displayName = user.email ? `${user.username} (${user.email})` : user.username;
+              return `<option value="${user.id}">${displayName}</option>`;
+            })
             .join('');
 
           Swal.fire({
