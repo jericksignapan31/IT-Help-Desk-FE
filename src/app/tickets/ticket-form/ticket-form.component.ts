@@ -50,6 +50,9 @@ export class TicketFormComponent implements OnInit {
   selectedImageFile: File | null = null;
   imagePreview: string | null = null;
 
+  // File size limit: 20MB
+  private readonly MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB in bytes
+
   categoryOptions = Object.values(TicketCategory);
   priorityOptions = Object.values(TicketPriority);
 
@@ -452,9 +455,9 @@ export class TicketFormComponent implements OnInit {
         return;
       }
 
-      // Validate file size (5MB limit)
-      if (file.size > 5 * 1024 * 1024) {
-        alert('Image size must be less than 5MB');
+      // Validate file size (20MB limit)
+      if (file.size > this.MAX_FILE_SIZE) {
+        alert('Image size must be less than 20MB');
         return;
       }
 
