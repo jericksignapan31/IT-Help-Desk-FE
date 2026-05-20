@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser, CommonModule } from '@angular/common';
 import {
   FormBuilder,
   FormGroup,
@@ -25,11 +25,6 @@ import { AuthService } from '../services/auth.service';
 import { RepairLog } from '../models/repair-log.model';
 import { Ticket } from '../models/ticket.model';
 import Swal from 'sweetalert2';
-
-declare var require: any;
-const pdfMake = require('pdfmake/build/pdfmake');
-const pdfFonts = require('pdfmake/build/vfs_fonts');
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 @Component({
   selector: 'app-reports',
@@ -93,11 +88,33 @@ export class ReportsComponent implements OnInit {
     private repairLogService: RepairLogService,
     private ticketService: TicketService,
     public authService: AuthService,
+    @Inject(PLATFORM_ID) private platformId: Object,
   ) {
     this.filterForm = this.fb.group({
       startDate: ['', Validators.required],
       endDate: ['', Validators.required],
     });
+
+    // Initialize pdfMake in browser environment
+    if (isPlatformBrowser(this.platformId)) {
+      this.initializePdfMake();
+    }
+  }
+
+  private initializePdfMake(): void {
+    try {
+      // Access pdfMake from window
+      const pdfMakeModule = (window as any).pdfMake;
+      if (pdfMakeModule && !pdfMakeModule.vfs) {
+        // Try to require pdfFonts
+        const pdfFonts = require('pdfmake/build/vfs_fonts');
+        if (pdfFonts && pdfFonts.pdfMake && pdfFonts.pdfMake.vfs) {
+          pdfMakeModule.vfs = pdfFonts.pdfMake.vfs;
+        }
+      }
+    } catch (e) {
+      console.warn('pdfMake initialization warning:', e);
+    }
   }
 
   ngOnInit(): void {
@@ -218,6 +235,15 @@ export class ReportsComponent implements OnInit {
     const startDate = this.filterForm.get('startDate')?.value;
     const endDate = this.filterForm.get('endDate')?.value;
 
+    if (!startDate || !endDate) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Please ensure dates are selected.',
+      });
+      return;
+    }
+
     if (this.selectedReport === 'repair_logs') {
       this.generateRepairLogsPDF(startDate, endDate);
     } else if (this.selectedReport === 'tickets') {
@@ -304,7 +330,17 @@ export class ReportsComponent implements OnInit {
       pageMargins: [40, 40, 40, 40],
     };
 
-    pdfMake.createPdf(docDefinition).download(`repair-logs-${startDate}-to-${endDate}.pdf`);
+    try {
+      (window as any).pdfMake.createPdf(docDefinition).download(`repair-logs-${startDate}-to-${endDate}.pdf`);
+    } catch (e) {
+      console.error('PDF generation error:', e);
+      Swal.fire({
+        icon: 'error',
+        title: 'PDF Error',
+        text: 'Failed to generate PDF. Please try again.',
+      });
+      return;
+    }
 
     Swal.fire({
       icon: 'success',
@@ -370,7 +406,17 @@ export class ReportsComponent implements OnInit {
       pageMargins: [40, 40, 40, 40],
     };
 
-    pdfMake.createPdf(docDefinition).download(`tickets-${startDate}-to-${endDate}.pdf`);
+    try {
+      (window as any).pdfMake.createPdf(docDefinition).download(`tickets-${startDate}-to-${endDate}.pdf`);
+    } catch (e) {
+      console.error('PDF generation error:', e);
+      Swal.fire({
+        icon: 'error',
+        title: 'PDF Error',
+        text: 'Failed to generate PDF. Please try again.',
+      });
+      return;
+    }
 
     Swal.fire({
       icon: 'success',
@@ -494,7 +540,17 @@ export class ReportsComponent implements OnInit {
       pageMargins: [40, 40, 40, 40],
     };
 
-    pdfMake.createPdf(docDefinition).download(`comprehensive-report-${startDate}-to-${endDate}.pdf`);
+    try {
+      (window as any).pdfMake.createPdf(docDefinition).download(`comprehensive-report-${startDate}-to-${endDate}.pdf`);
+    } catch (e) {
+      console.error('PDF generation error:', e);
+      Swal.fire({
+        icon: 'error',
+        title: 'PDF Error',
+        text: 'Failed to generate PDF. Please try again.',
+      });
+      return;
+    }
 
     Swal.fire({
       icon: 'success',
