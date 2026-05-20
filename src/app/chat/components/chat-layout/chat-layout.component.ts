@@ -323,6 +323,7 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
   onSendMessage(text: string): void {
     console.log('========= onSendMessage CALLED =========');
     const currentConv = this.chatStore.getCurrentConversation();
+    const currentUser = this.authService.currentUserValue;
     
     if (!currentConv) {
       console.error('ERROR: No conversation selected');
@@ -341,7 +342,12 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
       content: text,
     };
 
-    console.log('Creating message request:', { conversationId: currentConv.conversation_id, content: text });
+    console.log('Creating message request:', { 
+      conversationId: currentConv.conversation_id, 
+      content: text,
+      currentUserId: currentUser?.id,
+      conversationParticipants: currentConv.participant_ids,
+    });
 
     this.chatApi
       .sendMessage(request)
@@ -361,6 +367,8 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
           console.error('Status:', error.status);
           console.error('Error Details:', error.error);
           console.error('Request Sent:', JSON.stringify(request, null, 2));
+          console.error('Current User ID:', currentUser?.id);
+          console.error('Conversation Participants:', currentConv.participant_ids);
           
           Swal.fire('Error', errorMsg, 'error');
         },

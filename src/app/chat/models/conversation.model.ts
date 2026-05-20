@@ -17,6 +17,7 @@ export interface Conversation {
   last_message?: string;
   last_message_at?: string;
   unread_count?: number;
+  messages?: any[]; // Messages included from getAllConversationsWithMessages endpoint
   created_at: string;
   updated_at: string;
   created_by?: string;

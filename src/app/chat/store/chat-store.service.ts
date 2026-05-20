@@ -101,19 +101,38 @@ export class ChatStoreService {
 
   setConversations(conversations: Conversation[]): void {
     const state = this.getState();
-    this.stateSubject.next({ ...state, conversations });
+    const messagesMap = new Map(state.messages);
+    
+    // Extract and cache messages from each conversation
+    conversations.forEach((conv) => {
+      if (conv.messages && conv.messages.length > 0) {
+        messagesMap.set(conv.conversation_id, conv.messages);
+        console.log(`💾 Cached ${conv.messages.length} messages for conversation ${conv.conversation_id}`);
+      }
+    });
+    
+    this.stateSubject.next({ ...state, conversations, messages: messagesMap });
   }
 
   addConversation(conversation: Conversation): void {
     const state = this.getState();
     const conversations = [...state.conversations];
     const index = conversations.findIndex((c) => c.conversation_id === conversation.conversation_id);
+    
     if (index > -1) {
       conversations[index] = conversation;
     } else {
       conversations.unshift(conversation);
     }
-    this.stateSubject.next({ ...state, conversations });
+    
+    // Cache messages if included
+    const messagesMap = new Map(state.messages);
+    if (conversation.messages && conversation.messages.length > 0) {
+      messagesMap.set(conversation.conversation_id, conversation.messages);
+      console.log(`💾 Cached ${conversation.messages.length} messages for conversation ${conversation.conversation_id}`);
+    }
+    
+    this.stateSubject.next({ ...state, conversations, messages: messagesMap });
   }
 
   setCurrentConversation(conversation: Conversation | null): void {
