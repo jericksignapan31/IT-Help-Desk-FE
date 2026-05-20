@@ -106,6 +106,11 @@ export class ChatStoreService {
   }
 
   setCurrentConversation(conversation: Conversation | null): void {
+    if (conversation) {
+      console.log('📦 Storing current conversation:', { id: conversation.id, type: conversation.type, name: conversation.name });
+    } else {
+      console.log('📦 Clearing current conversation');
+    }
     const state = this.getState();
     this.stateSubject.next({ ...state, currentConversation: conversation });
   }

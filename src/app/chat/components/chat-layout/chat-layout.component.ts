@@ -269,28 +269,26 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
 
   onSendMessage(text: string): void {
     console.log('========= onSendMessage CALLED =========');
-    console.log('Text parameter:', text);
-    
     const currentConv = this.chatStore.getCurrentConversation();
-    console.log('Current conversation from store:', currentConv);
     
     if (!currentConv) {
-      console.error('ERROR: No current conversation!');
-      Swal.fire('Error', 'No conversation selected', 'error');
+      console.error('ERROR: No conversation selected');
+      Swal.fire('Error', 'No conversation selected. Please select a conversation first.', 'error');
       return;
     }
 
-    console.log('Conversation ID:', currentConv.id);
-    console.log('Conversation object:', JSON.stringify(currentConv, null, 2));
+    if (!currentConv.id) {
+      console.error('ERROR: Conversation ID is missing. Conversation:', currentConv);
+      Swal.fire('Error', 'Conversation ID is missing. Please try selecting the conversation again.', 'error');
+      return;
+    }
 
     const request: CreateMessageRequest = {
       conversation_id: currentConv.id,
       content: text,
     };
 
-    console.log('Request object created:', JSON.stringify(request, null, 2));
-    console.log('Request type check - conversation_id type:', typeof request.conversation_id);
-    console.log('Request type check - content type:', typeof request.content);
+    console.log('Creating message request:', { conversationId: currentConv.id, content: text });
 
     this.chatApi
       .sendMessage(request)
@@ -308,8 +306,8 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
 
           console.error('========= MESSAGE ERROR =========');
           console.error('Status:', error.status);
-          console.error('Error:', error.error);
-          console.error('Request was:', JSON.stringify(request, null, 2));
+          console.error('Error Details:', error.error);
+          console.error('Request Sent:', JSON.stringify(request, null, 2));
           
           Swal.fire('Error', errorMsg, 'error');
         },
