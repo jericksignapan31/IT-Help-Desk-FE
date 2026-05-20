@@ -4,8 +4,6 @@
  * Handles caching, offline support, and service worker lifecycle
  */
 
-declare const self: ServiceWorkerGlobalScope;
-
 const CACHE_VERSION = 'v1.0.1';
 const CACHE_NAME = `ithelp-desk-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `ithelp-desk-runtime-${CACHE_VERSION}`;
@@ -267,12 +265,21 @@ function staleWhileRevalidate(request: Request, config: any): Promise<Response> 
           return networkResponse;
         })
         .catch((error) => {
-          // Return cached response if network fails
-          return cachedResponse;
+          // Return cached response if network fails, or error response
+          if (cachedResponse) return cachedResponse;
+          return new Response(JSON.stringify({ 
+            error: 'Offline - Data not available' 
+          }), {
+            status: 503,
+            headers: new Headers({ 'Content-Type': 'application/json' }),
+          });
         });
 
       // Return cached immediately if available, otherwise wait for network
-      return cachedResponse || fetchPromise;
+      if (cachedResponse) {
+        return cachedResponse;
+      }
+      return fetchPromise;
     });
   });
 }
