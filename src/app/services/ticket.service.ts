@@ -26,6 +26,11 @@ export class TicketService {
     });
   }
 
+  // Get all tickets without filters (for reports)
+  getAllTickets(): Observable<Ticket[]> {
+    return this.getTickets();
+  }
+
   getTicket(id: number): Observable<Ticket> {
     return this.http.get<Ticket>(`${this.API_URL}/tickets/${id}`);
   }

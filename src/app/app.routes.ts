@@ -279,6 +279,21 @@ export const routes: Routes = [
           },
         ],
       },
+      // Reports Routes (Admin only)
+      {
+        path: 'reports',
+        canActivate: [roleGuard],
+        data: { roles: [UserRole.ADMIN] },
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./reports/reports.component').then(
+                (m) => m.ReportsComponent,
+              ),
+          },
+        ],
+      },
       // User Account Routes (Admin only)
       {
         path: 'user-accounts',
