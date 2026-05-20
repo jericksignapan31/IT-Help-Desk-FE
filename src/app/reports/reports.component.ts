@@ -56,6 +56,7 @@ export class ReportsComponent implements OnInit {
   tickets: Ticket[] = [];
   filteredRepairLogs: RepairLog[] = [];
   filteredTickets: Ticket[] = [];
+  private pdfMake: any;
 
   // Table columns
   repairLogColumns = [
@@ -103,17 +104,14 @@ export class ReportsComponent implements OnInit {
 
   private initializePdfMake(): void {
     try {
-      // Access pdfMake from window
-      const pdfMakeModule = (window as any).pdfMake;
-      if (pdfMakeModule && !pdfMakeModule.vfs) {
-        // Try to require pdfFonts
-        const pdfFonts = require('pdfmake/build/vfs_fonts');
-        if (pdfFonts && pdfFonts.pdfMake && pdfFonts.pdfMake.vfs) {
-          pdfMakeModule.vfs = pdfFonts.pdfMake.vfs;
-        }
+      // Dynamically require pdfMake and configure it
+      this.pdfMake = require('pdfmake/build/pdfmake');
+      const pdfFonts = require('pdfmake/build/vfs_fonts');
+      if (this.pdfMake && pdfFonts && pdfFonts.pdfMake && pdfFonts.pdfMake.vfs) {
+        this.pdfMake.vfs = pdfFonts.pdfMake.vfs;
       }
     } catch (e) {
-      console.warn('pdfMake initialization warning:', e);
+      console.error('Failed to initialize pdfMake:', e);
     }
   }
 
@@ -331,7 +329,10 @@ export class ReportsComponent implements OnInit {
     };
 
     try {
-      (window as any).pdfMake.createPdf(docDefinition).download(`repair-logs-${startDate}-to-${endDate}.pdf`);
+      if (!this.pdfMake) {
+        throw new Error('pdfMake library not initialized');
+      }
+      this.pdfMake.createPdf(docDefinition).download(`repair-logs-${startDate}-to-${endDate}.pdf`);
     } catch (e) {
       console.error('PDF generation error:', e);
       Swal.fire({
@@ -407,7 +408,10 @@ export class ReportsComponent implements OnInit {
     };
 
     try {
-      (window as any).pdfMake.createPdf(docDefinition).download(`tickets-${startDate}-to-${endDate}.pdf`);
+      if (!this.pdfMake) {
+        throw new Error('pdfMake library not initialized');
+      }
+      this.pdfMake.createPdf(docDefinition).download(`tickets-${startDate}-to-${endDate}.pdf`);
     } catch (e) {
       console.error('PDF generation error:', e);
       Swal.fire({
@@ -541,7 +545,10 @@ export class ReportsComponent implements OnInit {
     };
 
     try {
-      (window as any).pdfMake.createPdf(docDefinition).download(`comprehensive-report-${startDate}-to-${endDate}.pdf`);
+      if (!this.pdfMake) {
+        throw new Error('pdfMake library not initialized');
+      }
+      this.pdfMake.createPdf(docDefinition).download(`comprehensive-report-${startDate}-to-${endDate}.pdf`);
     } catch (e) {
       console.error('PDF generation error:', e);
       Swal.fire({
