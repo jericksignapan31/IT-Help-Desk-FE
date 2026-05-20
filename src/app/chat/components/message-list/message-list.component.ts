@@ -83,12 +83,20 @@ import { Message } from '../../models';
   `,
   styles: [
     `
+      :host {
+        display: block;
+        height: 100%;
+        width: 100%;
+      }
+
       .message-list-container {
         display: flex;
         flex-direction: column;
         height: 100%;
+        width: 100%;
         background: linear-gradient(180deg, #fff 0%, #f8f9fa 100%);
         overflow: hidden;
+        min-height: 0;
       }
 
       .loading {
@@ -96,6 +104,7 @@ import { Message } from '../../models';
         align-items: center;
         justify-content: center;
         flex: 1;
+        min-height: 0;
       }
 
       .empty-state {
@@ -104,8 +113,10 @@ import { Message } from '../../models';
         align-items: center;
         justify-content: center;
         flex: 1;
+        width: 100%;
         color: #999;
         padding: 20px;
+        min-height: 0;
       }
 
       .empty-state mat-icon {
@@ -125,12 +136,14 @@ import { Message } from '../../models';
       .messages {
         flex: 1;
         overflow-y: auto;
+        overflow-x: hidden;
         padding: 16px;
         display: flex;
         flex-direction: column;
         gap: 8px;
         scrollbar-width: thin;
         scrollbar-color: #ccc transparent;
+        min-height: 0;
       }
 
       .messages::-webkit-scrollbar {
@@ -285,6 +298,7 @@ import { Message } from '../../models';
         height: 28px;
         opacity: 0.6;
         transition: opacity 0.2s;
+        flex-shrink: 0;
       }
 
       .message-menu:hover {

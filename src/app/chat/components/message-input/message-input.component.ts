@@ -47,6 +47,11 @@ import { takeUntil } from 'rxjs/operators';
   `,
   styles: [
     `
+      :host {
+        display: block;
+        width: 100%;
+      }
+
       .message-input-container {
         display: flex;
         gap: 8px;
@@ -55,6 +60,7 @@ import { takeUntil } from 'rxjs/operators';
         border-top: 1px solid #e5e5e5;
         align-items: flex-end;
         box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.04);
+        flex-shrink: 0;
       }
 
       .message-field {

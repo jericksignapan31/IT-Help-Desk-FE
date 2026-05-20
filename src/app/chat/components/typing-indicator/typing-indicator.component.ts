@@ -19,15 +19,21 @@ import { CommonModule } from '@angular/common';
   `,
   styles: [
     `
+      :host {
+        display: block;
+        width: 100%;
+      }
+
       .typing-container {
         display: flex;
         align-items: center;
         gap: 4px;
-        padding: 8px;
+        padding: 8px 16px;
         background-color: #f0f0f0;
-        border-radius: 4px;
+        border-radius: 0;
         font-size: 13px;
         color: #666;
+        flex-shrink: 0;
       }
 
       .typing-text {

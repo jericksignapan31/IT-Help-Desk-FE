@@ -61,7 +61,7 @@ import { ConversationDetailComponent } from '../conversation-detail/conversation
 
       .chat-container {
         display: flex;
-        height: 100%;
+        height: 90vh;
         width: 100%;
         gap: 0;
         background-color: #fff;

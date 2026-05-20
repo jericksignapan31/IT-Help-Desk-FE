@@ -77,12 +77,20 @@ import { TypingIndicatorComponent } from '../typing-indicator/typing-indicator.c
   `,
   styles: [
     `
+      :host {
+        display: block;
+        height: 100%;
+        width: 100%;
+      }
+
       .conversation-detail-container {
         display: flex;
         flex-direction: column;
         height: 100%;
+        width: 100%;
         background-color: #fff;
         overflow: hidden;
+        min-height: 0;
       }
 
       .conversation-header {
@@ -93,6 +101,7 @@ import { TypingIndicatorComponent } from '../typing-indicator/typing-indicator.c
         border-bottom: 1px solid #e5e5e5;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+        flex-shrink: 0;
       }
 
       .header-content {
@@ -122,6 +131,7 @@ import { TypingIndicatorComponent } from '../typing-indicator/typing-indicator.c
       .header-actions {
         display: flex;
         gap: 4px;
+        flex-shrink: 0;
       }
 
       .header-actions button {
@@ -134,6 +144,8 @@ import { TypingIndicatorComponent } from '../typing-indicator/typing-indicator.c
         align-items: center;
         justify-content: center;
         height: 100%;
+        width: 100%;
+        flex: 1;
         color: #999;
         background: linear-gradient(135deg, #f5f7fa 0%, #f8f9fa 100%);
       }
