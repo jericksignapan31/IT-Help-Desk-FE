@@ -785,6 +785,11 @@ export class ReportsComponent implements OnInit {
           pageBreak: 'before',
         },
         {
+          text: `From: ${startDate}    To: ${endDate}`,
+          fontSize: 11,
+          margin: [0, 0, 0, 10],
+        },
+        {
           table: {
             headerRows: 1,
             widths: ['auto', '*', 'auto', 'auto', 'auto', 'auto', 'auto'],
