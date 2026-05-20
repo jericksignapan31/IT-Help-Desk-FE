@@ -373,14 +373,10 @@ export class ReportsComponent implements OnInit {
           alignment: 'center',
         },
         {
-          text: `Date Range: ${startDate} to ${endDate}`,
+          text: `From: ${startDate}    To: ${endDate}`,
           style: 'subheader',
           alignment: 'center',
           margin: [0, 0, 0, 20],
-        },
-        {
-          text: `Total Records: ${this.filteredRepairLogs.length}`,
-          margin: [0, 0, 0, 10],
         },
         {
           table: {
@@ -560,14 +556,10 @@ export class ReportsComponent implements OnInit {
           alignment: 'center',
         },
         {
-          text: `Date Range: ${startDate} to ${endDate}`,
+          text: `From: ${startDate}    To: ${endDate}`,
           style: 'subheader',
           alignment: 'center',
           margin: [0, 0, 0, 20],
-        },
-        {
-          text: `Total Records: ${this.filteredTickets.length}`,
-          margin: [0, 0, 0, 10],
         },
         {
           table: {
@@ -633,6 +625,7 @@ export class ReportsComponent implements OnInit {
       }
       this.pdfMake.createPdf(docDefinition).download(`tickets-${startDate}-to-${endDate}.pdf`);
     } catch (e) {
+
       console.error('PDF generation error:', e);
       Swal.fire({
         icon: 'error',
@@ -673,7 +666,7 @@ export class ReportsComponent implements OnInit {
           alignment: 'center',
         },
         {
-          text: `Date Range: ${startDate} to ${endDate}`,
+          text: `From: ${startDate}    To: ${endDate}`,
           style: 'subheader',
           alignment: 'center',
           margin: [0, 0, 0, 20],
@@ -682,10 +675,6 @@ export class ReportsComponent implements OnInit {
           text: 'Repair & Maintenance Logs',
           style: 'sectionHeader',
           margin: [0, 20, 0, 10],
-        },
-        {
-          text: `Total Records: ${this.filteredRepairLogs.length}`,
-          margin: [0, 0, 0, 10],
         },
         {
           table: {
@@ -796,10 +785,6 @@ export class ReportsComponent implements OnInit {
           pageBreak: 'before',
         },
         {
-          text: `Total Records: ${this.filteredTickets.length}`,
-          margin: [0, 0, 0, 10],
-        },
-        {
           table: {
             headerRows: 1,
             widths: ['auto', '*', 'auto', 'auto', 'auto', 'auto', 'auto'],
@@ -875,12 +860,12 @@ export class ReportsComponent implements OnInit {
                 {
                   text: '___________________________',
                   alignment: 'center',
-                  margin: [0, 128, 0, 10],
+                  margin: [0, 128, 0, 2],
                 },
                 {
                   text: '___________________________',
                   alignment: 'center',
-                  margin: [0, 128, 0, 10],
+                  margin: [0, 128, 0, 2],
                 },
               ],
               [
@@ -888,13 +873,13 @@ export class ReportsComponent implements OnInit {
                   text: 'Signature',
                   alignment: 'center',
                   fontSize: 10,
-                  margin: [0, 5, 0, 0],
+                  margin: [0, 1, 0, 0],
                 },
                 {
                   text: 'Signature',
                   alignment: 'center',
                   fontSize: 10,
-                  margin: [0, 5, 0, 0],
+                  margin: [0, 1, 0, 0],
                 },
               ],
             ],
