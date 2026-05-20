@@ -212,7 +212,7 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
       .subscribe((message) => {
         if (message) {
           const currentConv = this.chatStore.getCurrentConversation();
-          if (currentConv && message.conversation_id === currentConv.id) {
+          if (currentConv && message.conversation_id === currentConv.conversation_id) {
             this.chatStore.addMessage(message.conversation_id, message);
           }
         }
@@ -224,7 +224,7 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
       .subscribe((data) => {
         if (data) {
           const currentConv = this.chatStore.getCurrentConversation();
-          if (currentConv && data.conversationId === currentConv.id) {
+          if (currentConv && data.conversationId === currentConv.conversation_id) {
             this.chatStore.addTypingUser(data.conversationId, data.userId);
           }
         }
@@ -237,7 +237,7 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
         if (userId) {
           const currentConv = this.chatStore.getCurrentConversation();
           if (currentConv) {
-            this.chatStore.removeTypingUser(currentConv.id, userId);
+            this.chatStore.removeTypingUser(currentConv.conversation_id, userId);
           }
         }
       });
@@ -256,7 +256,7 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe((state) => {
         if (state.currentConversation) {
-          const typingUsers = state.typingUsers.get(state.currentConversation.id) || [];
+          const typingUsers = state.typingUsers.get(state.currentConversation.conversation_id) || [];
           (this.typingUsers$ as Subject<string[]>).next(typingUsers);
         }
       });
@@ -264,7 +264,7 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
 
   onSelectConversation(conversation: Conversation): void {
     this.chatStore.setCurrentConversation(conversation);
-    this.loadMessages(conversation.id);
+    this.loadMessages(conversation.conversation_id);
   }
 
   onSendMessage(text: string): void {
@@ -277,18 +277,18 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
       return;
     }
 
-    if (!currentConv.id) {
+    if (!currentConv.conversation_id) {
       console.error('ERROR: Conversation ID is missing. Conversation:', currentConv);
       Swal.fire('Error', 'Conversation ID is missing. Please try selecting the conversation again.', 'error');
       return;
     }
 
     const request: CreateMessageRequest = {
-      conversation_id: currentConv.id,
+      conversation_id: currentConv.conversation_id,
       content: text,
     };
 
-    console.log('Creating message request:', { conversationId: currentConv.id, content: text });
+    console.log('Creating message request:', { conversationId: currentConv.conversation_id, content: text });
 
     this.chatApi
       .sendMessage(request)
@@ -296,8 +296,8 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (message) => {
           console.log('✅ Message sent successfully:', message);
-          this.chatStore.addMessage(currentConv.id, message);
-          this.chatSocket.emitStopTyping(currentConv.id);
+          this.chatStore.addMessage(currentConv.conversation_id, message);
+          this.chatSocket.emitStopTyping(currentConv.conversation_id);
         },
         error: (error) => {
           const errorMsg = Array.isArray(error.error?.message)
@@ -323,7 +323,7 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
-          this.chatStore.deleteMessage(currentConv.id, message.id);
+          this.chatStore.deleteMessage(currentConv.conversation_id, message.id);
           Swal.fire('Success', 'Message deleted', 'success');
         },
         error: (error) => {
@@ -335,11 +335,11 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
 
   onDeleteConversation(conversation: Conversation): void {
     this.chatApi
-      .deleteConversation(conversation.id)
+      .deleteConversation(conversation.conversation_id)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
-          this.chatStore.deleteConversation(conversation.id);
+          this.chatStore.deleteConversation(conversation.conversation_id);
           Swal.fire('Success', 'Conversation deleted', 'success');
           this.loadConversations();
         },
@@ -360,7 +360,7 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
     const currentConv = this.chatStore.getCurrentConversation();
     if (!currentConv) return;
 
-    this.chatSocket.emitTyping(currentConv.id);
+    this.chatSocket.emitTyping(currentConv.conversation_id);
 
     // Reset typing timeout
     if (this.typingTimeout) {
@@ -368,7 +368,7 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
     }
 
     this.typingTimeout = setTimeout(() => {
-      this.chatSocket.emitStopTyping(currentConv.id);
+      this.chatSocket.emitStopTyping(currentConv.conversation_id);
     }, 3000);
   }
 
@@ -380,7 +380,7 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
       clearTimeout(this.typingTimeout);
     }
 
-    this.chatSocket.emitStopTyping(currentConv.id);
+    this.chatSocket.emitStopTyping(currentConv.conversation_id);
   }
 
   onCreateNew(): void {
@@ -547,7 +547,7 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
           console.log('✅ Conversation created successfully:', conversation);
           this.chatStore.addConversation(conversation);
           this.chatStore.setCurrentConversation(conversation);
-          this.loadMessages(conversation.id);
+          this.loadMessages(conversation.conversation_id);
           Swal.fire('Success', 'Conversation created', 'success');
         },
         error: (error) => {

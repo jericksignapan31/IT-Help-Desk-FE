@@ -46,7 +46,7 @@ export class ChatStoreService {
       this.unreadCount$.next(state.unreadCount);
 
       if (state.currentConversation) {
-        const messages = state.messages.get(state.currentConversation.id) || [];
+        const messages = state.messages.get(state.currentConversation.conversation_id) || [];
         this.currentMessages$.next(messages);
       }
     });
@@ -69,7 +69,7 @@ export class ChatStoreService {
   getCurrentMessages(): Message[] {
     const state = this.getState();
     if (state.currentConversation) {
-      return state.messages.get(state.currentConversation.id) || [];
+      return state.messages.get(state.currentConversation.conversation_id) || [];
     }
     return [];
   }
@@ -96,7 +96,7 @@ export class ChatStoreService {
   addConversation(conversation: Conversation): void {
     const state = this.getState();
     const conversations = [...state.conversations];
-    const index = conversations.findIndex((c) => c.id === conversation.id);
+    const index = conversations.findIndex((c) => c.conversation_id === conversation.conversation_id);
     if (index > -1) {
       conversations[index] = conversation;
     } else {
@@ -107,7 +107,7 @@ export class ChatStoreService {
 
   setCurrentConversation(conversation: Conversation | null): void {
     if (conversation) {
-      console.log('📦 Storing current conversation:', { id: conversation.id, type: conversation.type, name: conversation.name });
+      console.log('📦 Storing current conversation:', { id: conversation.conversation_id, type: conversation.type, name: conversation.name });
     } else {
       console.log('📦 Clearing current conversation');
     }
@@ -201,12 +201,12 @@ export class ChatStoreService {
 
   deleteConversation(conversationId: string): void {
     const state = this.getState();
-    const conversations = state.conversations.filter((c) => c.id !== conversationId);
+    const conversations = state.conversations.filter((c) => c.conversation_id !== conversationId);
     const messagesMap = new Map(state.messages);
     messagesMap.delete(conversationId);
 
     let currentConversation = state.currentConversation;
-    if (currentConversation?.id === conversationId) {
+    if (currentConversation?.conversation_id === conversationId) {
       currentConversation = null;
     }
 
@@ -220,9 +220,9 @@ export class ChatStoreService {
 
   updateConversation(conversation: Conversation): void {
     const state = this.getState();
-    const conversations = state.conversations.map((c) => (c.id === conversation.id ? conversation : c));
+    const conversations = state.conversations.map((c) => (c.conversation_id === conversation.conversation_id ? conversation : c));
     let currentConversation = state.currentConversation;
-    if (currentConversation?.id === conversation.id) {
+    if (currentConversation?.conversation_id === conversation.conversation_id) {
       currentConversation = conversation;
     }
     this.stateSubject.next({ ...state, conversations, currentConversation });

@@ -9,7 +9,7 @@ export interface Participant {
 }
 
 export interface Conversation {
-  id: string;
+  conversation_id: string;
   type: ConversationType;
   participant_ids: string[];
   participants?: Participant[];

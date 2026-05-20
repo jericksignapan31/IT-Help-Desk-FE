@@ -238,7 +238,7 @@ export class ConversationListComponent {
   }
 
   isActive(conversation: Conversation): boolean {
-    return this.currentConversation?.id === conversation.id;
+    return this.currentConversation?.conversation_id === conversation.conversation_id;
   }
 
   onSelectConversation(conversation: Conversation): void {
