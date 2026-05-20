@@ -408,7 +408,7 @@ export class ReportsComponent implements OnInit {
           text: 'Authorized Signatories:',
           fontSize: 12,
           bold: true,
-          margin: [0, 40, 0, 30],
+          margin: [0, 20, 0, 30],
         },
         {
           table: {
@@ -418,12 +418,12 @@ export class ReportsComponent implements OnInit {
                 {
                   text: '___________________________',
                   alignment: 'center',
-                  margin: [0, 20, 0, 10],
+                  margin: [0, 10, 0, 10],
                 },
                 {
                   text: '___________________________',
                   alignment: 'center',
-                  margin: [0, 20, 0, 10],
+                  margin: [0, 10, 0, 10],
                 },
               ],
               [
@@ -595,7 +595,7 @@ export class ReportsComponent implements OnInit {
           text: 'Authorized Signatories:',
           fontSize: 12,
           bold: true,
-          margin: [0, 40, 0, 30],
+          margin: [0, 20, 0, 30],
         },
         {
           table: {
@@ -605,12 +605,12 @@ export class ReportsComponent implements OnInit {
                 {
                   text: '___________________________',
                   alignment: 'center',
-                  margin: [0, 20, 0, 10],
+                  margin: [0, 10, 0, 10],
                 },
                 {
                   text: '___________________________',
                   alignment: 'center',
-                  margin: [0, 20, 0, 10],
+                  margin: [0, 10, 0, 10],
                 },
               ],
               [
@@ -895,7 +895,7 @@ export class ReportsComponent implements OnInit {
           text: 'Authorized Signatories:',
           fontSize: 12,
           bold: true,
-          margin: [0, 40, 0, 30],
+          margin: [0, 20, 0, 30],
         },
         {
           table: {
@@ -905,12 +905,12 @@ export class ReportsComponent implements OnInit {
                 {
                   text: '___________________________',
                   alignment: 'center',
-                  margin: [0, 20, 0, 10],
+                  margin: [0, 10, 0, 10],
                 },
                 {
                   text: '___________________________',
                   alignment: 'center',
-                  margin: [0, 20, 0, 10],
+                  margin: [0, 10, 0, 10],
                 },
               ],
               [
