@@ -369,8 +369,14 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: ([users, employees]) => {
-          // Filter out current user
-          const otherUsers = users.filter((user) => String(user.id) !== this.currentUserId);
+          console.log('Users from API:', users);
+          console.log('First user keys:', users.length > 0 ? Object.keys(users[0]) : 'No users');
+          
+          // Filter out current user - try multiple ID field names
+          const otherUsers = users.filter((user: any) => {
+            const userId = user.id || user.user_id || user.userId;
+            return String(userId) !== this.currentUserId;
+          });
 
           if (otherUsers.length === 0) {
             Swal.fire('Info', 'No other users available', 'info');
@@ -382,8 +388,12 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
 
           // Create dropdown options with full names
           const userOptions = otherUsers
-            .map((user) => {
+            .map((user: any) => {
+              // Try to get the user ID from multiple possible field names
+              const userId = user.id || user.user_id || user.userId || user.username;
               let displayName = user.username;
+              
+              console.log('User dropdown:', { userId, username: user.username, id: user.id });
               
               // Try to get employee data
               const employee = employeeMap.get(String(user.employee_id));
@@ -396,7 +406,7 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
                 }
               }
               
-              return `<option value="${user.id}">${displayName}</option>`;
+              return `<option value="${userId}">${displayName}</option>`;
             })
             .join('');
 
