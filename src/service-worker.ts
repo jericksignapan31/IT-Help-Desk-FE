@@ -37,7 +37,7 @@ const apiCacheConfig = {
 /**
  * Install event - cache essential files
  */
-self.addEventListener('install', (event: ExtendableEvent) => {
+self.addEventListener('install', ((event: ExtendableEvent) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(urlsToCache).catch((err) => {
@@ -45,12 +45,12 @@ self.addEventListener('install', (event: ExtendableEvent) => {
     })
   );
   self.skipWaiting();
-});
+}) as EventListener);
 
 /**
  * Activate event - clean up old caches
  */
-self.addEventListener('activate', (event: ExtendableEvent) => {
+self.addEventListener('activate', ((event: ExtendableEvent) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
@@ -66,12 +66,12 @@ self.addEventListener('activate', (event: ExtendableEvent) => {
     })
   );
   self.clients.claim();
-});
+}) as EventListener);
 
 /**
  * Fetch event - implement caching strategies
  */
-self.addEventListener('fetch', (event: FetchEvent) => {
+self.addEventListener('fetch', ((event: FetchEvent) => {
   const { request } = event;
   const url = new URL(request.url);
 
@@ -94,7 +94,8 @@ self.addEventListener('fetch', (event: FetchEvent) => {
   if (request.mode === 'navigate') {
     event.respondWith(
       caches.match(request).then((response) => {
-        return response || fetch(request).then((fetchResponse) => {
+        if (response) return response;
+        return fetch(request).then((fetchResponse) => {
           // Clone before using to avoid "body already used" errors
           if (fetchResponse.status === 200) {
             try {
@@ -108,7 +109,15 @@ self.addEventListener('fetch', (event: FetchEvent) => {
           return fetchResponse;
         }).catch(() => {
           // Return index.html as fallback for failed navigation
-          return caches.match('/index.html');
+          return caches.match('/index.html').then((fallbackResponse) => {
+            if (fallbackResponse) return fallbackResponse;
+            // Last resort: return a generic offline response
+            return new Response('Application unavailable offline', {
+              status: 503,
+              statusText: 'Service Unavailable',
+              headers: new Headers({ 'Content-Type': 'text/plain' }),
+            });
+          });
         });
       })
     );
@@ -146,7 +155,7 @@ self.addEventListener('fetch', (event: FetchEvent) => {
       });
     })
   );
-});
+}) as EventListener);
 
 /**
  * Handle API requests with configured caching strategies
@@ -271,7 +280,7 @@ function staleWhileRevalidate(request: Request, config: any): Promise<Response> 
 /**
  * Message event - handle messages from clients
  */
-self.addEventListener('message', (event: ExtendableMessageEvent) => {
+self.addEventListener('message', ((event: ExtendableMessageEvent) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
   }
@@ -284,5 +293,5 @@ self.addEventListener('message', (event: ExtendableMessageEvent) => {
     }).catch((e) => {
     });
   }
-});
+}) as EventListener);
 
