@@ -479,19 +479,37 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
   }
 
   private createDirectConversation(otherUserId: string, type: string): void {
+    // Try to determine the current user's ID
+    let currentUserId = this.currentUserId;
+    
+    // For DIRECT conversations, ensure we have valid user IDs
+    if (!otherUserId || otherUserId === 'undefined') {
+      Swal.fire('Error', 'Invalid user selected', 'error');
+      return;
+    }
+    
+    if (!currentUserId || currentUserId === 'undefined') {
+      Swal.fire('Error', 'Current user not identified', 'error');
+      return;
+    }
+
+    // Create the request payload
     const request: CreateConversationRequest = {
       type: type as 'DIRECT' | 'GROUP',
-      participant_ids: [this.currentUserId, otherUserId],
+      participant_ids: [currentUserId, otherUserId],
     };
 
-    console.log('Creating conversation with request:', JSON.stringify(request, null, 2));
-    console.log('Current User ID:', this.currentUserId, '|  Other User ID:', otherUserId);
+    console.log('========= CREATING CONVERSATION =========');
+    console.log('Current User ID:', currentUserId, 'Type:', typeof currentUserId);
+    console.log('Other User ID:', otherUserId, 'Type:', typeof otherUserId);
+    console.log('Request Payload:', JSON.stringify(request, null, 2));
 
     this.chatApi
       .createConversation(request)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (conversation) => {
+          console.log('Conversation created successfully:', conversation);
           this.chatStore.addConversation(conversation);
           this.chatStore.setCurrentConversation(conversation);
           this.loadMessages(conversation.id);
@@ -502,17 +520,26 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
             status: error.status,
             statusText: error.statusText,
             response: error.error,
-            request: error.error?.error ? { type: 'error string' } : 'See response above'
+            requestPayload: request
           };
           
           localStorage.setItem('chatErrorDebug', JSON.stringify(errorDebug, null, 2));
-          console.error('HTTP Error creating conversation:');
+          console.error('========= HTTP ERROR =========');
           console.error('Status:', error.status);
           console.error('StatusText:', error.statusText);
           console.error('Response:', error.error);
-          console.error('Full error object:', JSON.stringify(error, null, 2));
+          console.error('Request was:', JSON.stringify(request, null, 2));
           
-          const errorMsg = error.error?.message || error.error?.error || 'Failed to create conversation';
+          let errorMsg = 'Failed to create conversation';
+          if (error.error?.message) {
+            errorMsg = error.error.message;
+          } else if (error.error?.error) {
+            errorMsg = error.error.error;
+          } else if (typeof error.error === 'string') {
+            errorMsg = error.error;
+          }
+          
+          console.error('Error message to show:', errorMsg);
           Swal.fire('Error', errorMsg, 'error');
         },
       });
