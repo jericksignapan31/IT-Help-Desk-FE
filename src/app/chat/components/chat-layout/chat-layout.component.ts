@@ -451,6 +451,10 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
       participant_ids: [this.currentUserId, otherUserId],
     };
 
+    console.log('Creating conversation with request:', request);
+    console.log('Current User ID:', this.currentUserId, typeof this.currentUserId);
+    console.log('Other User ID:', otherUserId, typeof otherUserId);
+
     this.chatApi
       .createConversation(request)
       .pipe(takeUntil(this.destroy$))
@@ -463,6 +467,7 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
         },
         error: (error) => {
           console.error('Error creating conversation:', error);
+          console.error('Error response:', error.error);
           Swal.fire('Error', 'Failed to create conversation', 'error');
         },
       });
