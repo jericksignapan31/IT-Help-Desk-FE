@@ -133,7 +133,7 @@ export class ReportsComponent implements OnInit {
   }
 
   private loadLogo(): void {
-    this.http.get('/logo.png', { responseType: 'blob' }).subscribe({
+    this.http.get('/logoo.png', { responseType: 'blob' }).subscribe({
       next: (blob) => {
         const reader = new FileReader();
         reader.onload = () => {
@@ -337,6 +337,66 @@ export class ReportsComponent implements OnInit {
           },
           layout: 'lightHorizontalLines',
         },
+        {
+          text: '',
+          margin: [0, 20, 0, 0],
+        },
+        {
+          table: {
+            widths: ['*', '*'],
+            body: [
+              [
+                {
+                  text: '___________________________',
+                  alignment: 'center',
+                  margin: [0, 10, 0, 0],
+                },
+                {
+                  text: '___________________________',
+                  alignment: 'center',
+                  margin: [0, 10, 0, 0],
+                },
+              ],
+              [
+                {
+                  text: 'Signature',
+                  alignment: 'center',
+                  fontSize: 10,
+                },
+                {
+                  text: 'Signature',
+                  alignment: 'center',
+                  fontSize: 10,
+                },
+              ],
+              [
+                {
+                  text: '___________________________',
+                  alignment: 'center',
+                  margin: [0, 10, 0, 0],
+                },
+                {
+                  text: '___________________________',
+                  alignment: 'center',
+                  margin: [0, 10, 0, 0],
+                },
+              ],
+              [
+                {
+                  text: 'Name/Date',
+                  alignment: 'center',
+                  fontSize: 10,
+                },
+                {
+                  text: 'Name/Date',
+                  alignment: 'center',
+                  fontSize: 10,
+                },
+              ],
+            ],
+          },
+          layout: 'noBorders',
+        },
       ],
       styles: {
         header: {
@@ -428,6 +488,66 @@ export class ReportsComponent implements OnInit {
             body: tableData,
           },
           layout: 'lightHorizontalLines',
+        },
+        {
+          text: '',
+          margin: [0, 20, 0, 0],
+        },
+        {
+          table: {
+            widths: ['*', '*'],
+            body: [
+              [
+                {
+                  text: '___________________________',
+                  alignment: 'center',
+                  margin: [0, 10, 0, 0],
+                },
+                {
+                  text: '___________________________',
+                  alignment: 'center',
+                  margin: [0, 10, 0, 0],
+                },
+              ],
+              [
+                {
+                  text: 'Signature',
+                  alignment: 'center',
+                  fontSize: 10,
+                },
+                {
+                  text: 'Signature',
+                  alignment: 'center',
+                  fontSize: 10,
+                },
+              ],
+              [
+                {
+                  text: '___________________________',
+                  alignment: 'center',
+                  margin: [0, 10, 0, 0],
+                },
+                {
+                  text: '___________________________',
+                  alignment: 'center',
+                  margin: [0, 10, 0, 0],
+                },
+              ],
+              [
+                {
+                  text: 'Name/Date',
+                  alignment: 'center',
+                  fontSize: 10,
+                },
+                {
+                  text: 'Name/Date',
+                  alignment: 'center',
+                  fontSize: 10,
+                },
+              ],
+            ],
+          },
+          layout: 'noBorders',
         },
       ],
       styles: {
@@ -574,6 +694,66 @@ export class ReportsComponent implements OnInit {
             ],
           },
           layout: 'lightHorizontalLines',
+        },
+        {
+          text: '',
+          margin: [0, 20, 0, 0],
+        },
+        {
+          table: {
+            widths: ['*', '*'],
+            body: [
+              [
+                {
+                  text: '___________________________',
+                  alignment: 'center',
+                  margin: [0, 10, 0, 0],
+                },
+                {
+                  text: '___________________________',
+                  alignment: 'center',
+                  margin: [0, 10, 0, 0],
+                },
+              ],
+              [
+                {
+                  text: 'Signature',
+                  alignment: 'center',
+                  fontSize: 10,
+                },
+                {
+                  text: 'Signature',
+                  alignment: 'center',
+                  fontSize: 10,
+                },
+              ],
+              [
+                {
+                  text: '___________________________',
+                  alignment: 'center',
+                  margin: [0, 10, 0, 0],
+                },
+                {
+                  text: '___________________________',
+                  alignment: 'center',
+                  margin: [0, 10, 0, 0],
+                },
+              ],
+              [
+                {
+                  text: 'Name/Date',
+                  alignment: 'center',
+                  fontSize: 10,
+                },
+                {
+                  text: 'Name/Date',
+                  alignment: 'center',
+                  fontSize: 10,
+                },
+              ],
+            ],
+          },
+          layout: 'noBorders',
         },
       ],
       styles: {
