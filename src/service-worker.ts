@@ -237,11 +237,14 @@ function networkThenCache(request: Request, config: any): Promise<Response> {
     .catch((error) => {
       // Try cache on network failure
       return caches.open(API_CACHE).then((cache) => {
-        return cache.match(request) || new Response(JSON.stringify({ 
-          error: 'Offline - Data not available' 
-        }), {
-          status: 503,
-          headers: new Headers({ 'Content-Type': 'application/json' }),
+        return cache.match(request).then((cachedResponse) => {
+          if (cachedResponse) return cachedResponse;
+          return new Response(JSON.stringify({ 
+            error: 'Offline - Data not available' 
+          }), {
+            status: 503,
+            headers: new Headers({ 'Content-Type': 'application/json' }),
+          });
         });
       });
     });
