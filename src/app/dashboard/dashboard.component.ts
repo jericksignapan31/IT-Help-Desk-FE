@@ -16,6 +16,7 @@ import { RouterModule } from '@angular/router';
 import { DashboardService } from '../services/dashboard.service';
 import { DashboardStats } from '../models/dashboard.model';
 import { AuthService } from '../services/auth.service';
+import { ChatWidgetComponent } from '../shared/chat-widget/chat-widget.component';
 import { Chart, registerables } from 'chart.js';
 
 Chart.register(...registerables);
@@ -30,6 +31,7 @@ Chart.register(...registerables);
     MatButtonModule,
     MatTableModule,
     RouterModule,
+    ChatWidgetComponent,
   ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],

@@ -34,6 +34,19 @@ import { Message } from '../../models';
             [class.own-message]="isOwnMessage(message)"
             [class.other-message]="!isOwnMessage(message)"
           >
+            <!-- Avatar for other messages -->
+            <div *ngIf="!isOwnMessage(message)" class="message-avatar">
+              <img
+                *ngIf="message.sender?.avatar"
+                [src]="message.sender?.avatar || ''"
+                [alt]="message.sender?.first_name || ''"
+                class="avatar-image"
+              />
+              <div *ngIf="!message.sender?.avatar" class="avatar-placeholder">
+                {{ (message.sender?.first_name || 'U')[0].toUpperCase() }}
+              </div>
+            </div>
+
             <div class="message-content">
               <div *ngIf="!isOwnMessage(message) && showSenderName(message, i)" class="sender-name">
                 {{ message.sender?.first_name || 'Unknown User' }}
@@ -44,6 +57,13 @@ import { Message } from '../../models';
                 <span *ngIf="isOwnMessage(message)" class="read-receipt" [class.read]="message.is_read">
                   <mat-icon>{{ message.is_read ? 'done_all' : 'done' }}</mat-icon>
                 </span>
+              </div>
+            </div>
+
+            <!-- Avatar for own messages -->
+            <div *ngIf="isOwnMessage(message)" class="message-avatar">
+              <div class="avatar-placeholder own">
+                Me
               </div>
             </div>
 
@@ -137,6 +157,40 @@ import { Message } from '../../models';
       .message.other-message .message-content {
         background-color: #e0e0e0;
         color: #333;
+      }
+
+      .message-avatar {
+        display: flex;
+        align-items: flex-end;
+        width: 32px;
+        height: 32px;
+        flex-shrink: 0;
+      }
+
+      .avatar-image {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #ddd;
+      }
+
+      .avatar-placeholder {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 600;
+        border: 2px solid transparent;
+      }
+
+      .avatar-placeholder.own {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
       }
 
       .message-content {

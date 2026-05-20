@@ -40,6 +40,10 @@
           *ngIf="!item.children"
           [routerLink]="item.route"
           routerLinkActive="active-link"
+          [matBadge]="item.label === 'Chat' ? (unreadChatCount$ | async) || 0 : null"
+          matBadgeSize="small"
+          matBadgeColor="warn"
+          [matBadgeHidden]="(item.label === 'Chat' ? (unreadChatCount$ | async) || 0 : 0) === 0"
         >
           <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
           <span matListItemTitle>{{ item.label }}</span>
