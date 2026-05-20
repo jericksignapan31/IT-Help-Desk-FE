@@ -273,20 +273,34 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
 
     const request: CreateMessageRequest = {
       conversation_id: currentConv.id,
+      sender_id: this.currentUserId,
       text,
     };
+
+    console.log('========= SENDING MESSAGE =========');
+    console.log('Current User ID:', this.currentUserId);
+    console.log('Message Request:', JSON.stringify(request, null, 2));
 
     this.chatApi
       .sendMessage(request)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (message) => {
+          console.log('✅ Message sent successfully:', message);
           this.chatStore.addMessage(currentConv.id, message);
           this.chatSocket.emitStopTyping(currentConv.id);
         },
         error: (error) => {
-          console.error('Error sending message:', error);
-          Swal.fire('Error', 'Failed to send message', 'error');
+          const errorMsg = Array.isArray(error.error?.message)
+            ? error.error.message.join(', ')
+            : error.error?.message || 'Failed to send message';
+
+          console.error('========= MESSAGE ERROR =========');
+          console.error('Status:', error.status);
+          console.error('Error:', error.error);
+          console.error('Request was:', JSON.stringify(request, null, 2));
+          
+          Swal.fire('Error', errorMsg, 'error');
         },
       });
   }
