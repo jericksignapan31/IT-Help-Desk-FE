@@ -493,15 +493,28 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
       return;
     }
 
+    // Generate conversation name for DIRECT conversations
+    let conversationName = 'Direct Message';
+    if (type === 'DIRECT') {
+      // Try to get the other user's display name from the DOM or use a default
+      const userDropdown = document.getElementById('user') as HTMLSelectElement;
+      if (userDropdown && userDropdown.selectedOptions.length > 0) {
+        const selectedText = userDropdown.selectedOptions[0].text;
+        conversationName = `Chat with ${selectedText}`;
+      }
+    }
+
     // Create the request payload
     const request: CreateConversationRequest = {
       type: type as 'DIRECT' | 'GROUP',
       participant_ids: [currentUserId, otherUserId],
+      name: conversationName,
     };
 
     console.log('========= CREATING CONVERSATION =========');
     console.log('Current User ID:', currentUserId, 'Type:', typeof currentUserId);
     console.log('Other User ID:', otherUserId, 'Type:', typeof otherUserId);
+    console.log('Conversation Name:', conversationName);
     console.log('Request Payload:', JSON.stringify(request, null, 2));
 
     this.chatApi
@@ -530,9 +543,14 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
           console.error('Response:', error.error);
           console.error('Request was:', JSON.stringify(request, null, 2));
           
+          // Handle error messages - could be array or string
           let errorMsg = 'Failed to create conversation';
           if (error.error?.message) {
-            errorMsg = error.error.message;
+            if (Array.isArray(error.error.message)) {
+              errorMsg = error.error.message.join(', ');
+            } else {
+              errorMsg = error.error.message;
+            }
           } else if (error.error?.error) {
             errorMsg = error.error.error;
           } else if (typeof error.error === 'string') {
