@@ -408,7 +408,7 @@ export class ReportsComponent implements OnInit {
           text: 'Authorized Signatories:',
           fontSize: 12,
           bold: true,
-          margin: [0, 0, 0, 10],
+          margin: [0, 40, 0, 30],
         },
         {
           table: {
@@ -418,12 +418,12 @@ export class ReportsComponent implements OnInit {
                 {
                   text: '___________________________',
                   alignment: 'center',
-                  margin: [0, 15, 0, 5],
+                  margin: [0, 20, 0, 10],
                 },
                 {
                   text: '___________________________',
                   alignment: 'center',
-                  margin: [0, 15, 0, 5],
+                  margin: [0, 20, 0, 10],
                 },
               ],
               [
@@ -431,49 +431,13 @@ export class ReportsComponent implements OnInit {
                   text: 'Signature',
                   alignment: 'center',
                   fontSize: 10,
+                  margin: [0, 5, 0, 0],
                 },
                 {
                   text: 'Signature',
                   alignment: 'center',
                   fontSize: 10,
-                },
-              ],
-            ],
-          },
-          layout: 'noBorders',
-        },
-      {
-          text: 'Authorized Signatories:',
-          fontSize: 12,
-          bold: true,
-          margin: [0, 0, 0, 10],
-        },
-        {
-          table: {
-            widths: ['*', '*'],
-            body: [
-              [
-                {
-                  text: '___________________________',
-                  alignment: 'center',
-                  margin: [0, 15, 0, 5],
-                },
-                {
-                  text: '___________________________',
-                  alignment: 'center',
-                  margin: [0, 15, 0, 5],
-                },
-              ],
-              [
-                {
-                  text: 'Signature',
-                  alignment: 'center',
-                  fontSize: 10,
-                },
-                {
-                  text: 'Signature',
-                  alignment: 'center',
-                  fontSize: 10,
+                  margin: [0, 5, 0, 0],
                 },
               ],
             ],
@@ -492,7 +456,7 @@ export class ReportsComponent implements OnInit {
           italics: true,
         },
       },
-      pageOrientation: 'portrait',
+      pageOrientation: 'landscape',
       pageMargins: [10, 10, 10, 10],
     };
 
@@ -631,7 +595,7 @@ export class ReportsComponent implements OnInit {
           text: 'Authorized Signatories:',
           fontSize: 12,
           bold: true,
-          margin: [0, 0, 0, 10],
+          margin: [0, 40, 0, 30],
         },
         {
           table: {
@@ -641,12 +605,12 @@ export class ReportsComponent implements OnInit {
                 {
                   text: '___________________________',
                   alignment: 'center',
-                  margin: [0, 15, 0, 5],
+                  margin: [0, 20, 0, 10],
                 },
                 {
                   text: '___________________________',
                   alignment: 'center',
-                  margin: [0, 15, 0, 5],
+                  margin: [0, 20, 0, 10],
                 },
               ],
               [
@@ -654,11 +618,13 @@ export class ReportsComponent implements OnInit {
                   text: 'Signature',
                   alignment: 'center',
                   fontSize: 10,
+                  margin: [0, 5, 0, 0],
                 },
                 {
                   text: 'Signature',
                   alignment: 'center',
                   fontSize: 10,
+                  margin: [0, 5, 0, 0],
                 },
               ],
             ],
@@ -929,7 +895,7 @@ export class ReportsComponent implements OnInit {
           text: 'Authorized Signatories:',
           fontSize: 12,
           bold: true,
-          margin: [0, 0, 0, 10],
+          margin: [0, 40, 0, 30],
         },
         {
           table: {
@@ -939,12 +905,12 @@ export class ReportsComponent implements OnInit {
                 {
                   text: '___________________________',
                   alignment: 'center',
-                  margin: [0, 15, 0, 5],
+                  margin: [0, 20, 0, 10],
                 },
                 {
                   text: '___________________________',
                   alignment: 'center',
-                  margin: [0, 15, 0, 5],
+                  margin: [0, 20, 0, 10],
                 },
               ],
               [
@@ -952,11 +918,13 @@ export class ReportsComponent implements OnInit {
                   text: 'Signature',
                   alignment: 'center',
                   fontSize: 10,
+                  margin: [0, 5, 0, 0],
                 },
                 {
                   text: 'Signature',
                   alignment: 'center',
                   fontSize: 10,
+                  margin: [0, 5, 0, 0],
                 },
               ],
             ],
