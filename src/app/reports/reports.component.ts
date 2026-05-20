@@ -1,5 +1,6 @@
 import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser, CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 import {
   FormBuilder,
   FormGroup,
@@ -56,6 +57,7 @@ export class ReportsComponent implements OnInit {
   tickets: Ticket[] = [];
   filteredRepairLogs: RepairLog[] = [];
   filteredTickets: Ticket[] = [];
+  logoBase64 = '';
 
   // Table columns
   repairLogColumns = [
@@ -85,6 +87,7 @@ export class ReportsComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
+    private http: HttpClient,
     private repairLogService: RepairLogService,
     private ticketService: TicketService,
     public authService: AuthService,
@@ -113,6 +116,9 @@ export class ReportsComponent implements OnInit {
       return;
     }
 
+    // Load logo
+    this.loadLogo();
+
     // Set default date range (last 30 days)
     const endDate = new Date();
     const startDate = new Date();
@@ -124,6 +130,21 @@ export class ReportsComponent implements OnInit {
     });
 
     this.loadReports();
+  }
+
+  private loadLogo(): void {
+    this.http.get('/logo.png', { responseType: 'blob' }).subscribe({
+      next: (blob) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          this.logoBase64 = reader.result as string;
+        };
+        reader.readAsDataURL(blob);
+      },
+      error: (err) => {
+        console.error('Error loading logo:', err);
+      },
+    });
   }
 
   loadReports(): void {
@@ -270,6 +291,19 @@ export class ReportsComponent implements OnInit {
 
     const docDefinition: any = {
       content: [
+        ...(this.logoBase64 ? [{
+          image: this.logoBase64,
+          width: 60,
+          height: 60,
+          alignment: 'center',
+          margin: [0, 0, 0, 10],
+        }] : []),
+        {
+          text: 'IT Help Desk',
+          style: 'title',
+          alignment: 'center',
+          margin: [0, 0, 0, 5],
+        },
         {
           text: 'Repair & Maintenance Logs Report',
           style: 'header',
@@ -359,6 +393,19 @@ export class ReportsComponent implements OnInit {
 
     const docDefinition: any = {
       content: [
+        ...(this.logoBase64 ? [{
+          image: this.logoBase64,
+          width: 60,
+          height: 60,
+          alignment: 'center',
+          margin: [0, 0, 0, 10],
+        }] : []),
+        {
+          text: 'IT Help Desk',
+          style: 'title',
+          alignment: 'center',
+          margin: [0, 0, 0, 5],
+        },
         {
           text: 'Tickets Report',
           style: 'header',
@@ -425,6 +472,19 @@ export class ReportsComponent implements OnInit {
   private generateComprehensiveReport(startDate: string, endDate: string): void {
     const docDefinition: any = {
       content: [
+        ...(this.logoBase64 ? [{
+          image: this.logoBase64,
+          width: 60,
+          height: 60,
+          alignment: 'center',
+          margin: [0, 0, 0, 10],
+        }] : []),
+        {
+          text: 'IT Help Desk',
+          style: 'title',
+          alignment: 'center',
+          margin: [0, 0, 0, 5],
+        },
         {
           text: 'Comprehensive Report',
           style: 'header',
