@@ -408,7 +408,7 @@ export class ReportsComponent implements OnInit {
           text: 'Authorized Signatories:',
           fontSize: 12,
           bold: true,
-          margin: [0, 0, 0, 20],
+          margin: [0, 0, 0, 10],
         },
         {
           table: {
@@ -418,12 +418,50 @@ export class ReportsComponent implements OnInit {
                 {
                   text: '___________________________',
                   alignment: 'center',
-                  margin: [0, 30, 0, 5],
+                  margin: [0, 15, 0, 5],
                 },
                 {
                   text: '___________________________',
                   alignment: 'center',
-                  margin: [0, 30, 0, 5],
+                  margin: [0, 15, 0, 5],
+                },
+              ],
+              [
+                {
+                  text: 'Signature',
+                  alignment: 'center',
+                  fontSize: 10,
+                },
+                {
+                  text: 'Signature',
+                  alignment: 'center',
+                  fontSize: 10,
+                },
+              ],
+            ],
+          },
+          layout: 'noBorders',
+        },
+      {
+          text: 'Authorized Signatories:',
+          fontSize: 12,
+          bold: true,
+          margin: [0, 0, 0, 10],
+        },
+        {
+          table: {
+            widths: ['*', '*'],
+            body: [
+              [
+                {
+                  text: '___________________________',
+                  alignment: 'center',
+                  margin: [0, 15, 0, 5],
+                },
+                {
+                  text: '___________________________',
+                  alignment: 'center',
+                  margin: [0, 15, 0, 5],
                 },
               ],
               [
@@ -454,15 +492,15 @@ export class ReportsComponent implements OnInit {
           italics: true,
         },
       },
-      pageOrientation: 'landscape',
-      pageMargins: [40, 40, 40, 40],
+      pageOrientation: 'portrait',
+      pageMargins: [10, 10, 10, 10],
     };
 
     try {
       if (!this.pdfMake) {
         throw new Error('pdfMake library not initialized');
       }
-      this.pdfMake.createPdf(docDefinition).download(`repair-logs-${startDate}-to-${endDate}.pdf`);
+      this.pdfMake.createPdf(docDefinition).download(`tickets-${startDate}-to-${endDate}.pdf`);
     } catch (e) {
       console.error('PDF generation error:', e);
       Swal.fire({
@@ -593,7 +631,7 @@ export class ReportsComponent implements OnInit {
           text: 'Authorized Signatories:',
           fontSize: 12,
           bold: true,
-          margin: [0, 0, 0, 20],
+          margin: [0, 0, 0, 10],
         },
         {
           table: {
@@ -603,12 +641,12 @@ export class ReportsComponent implements OnInit {
                 {
                   text: '___________________________',
                   alignment: 'center',
-                  margin: [0, 30, 0, 5],
+                  margin: [0, 15, 0, 5],
                 },
                 {
                   text: '___________________________',
                   alignment: 'center',
-                  margin: [0, 30, 0, 5],
+                  margin: [0, 15, 0, 5],
                 },
               ],
               [
@@ -891,7 +929,7 @@ export class ReportsComponent implements OnInit {
           text: 'Authorized Signatories:',
           fontSize: 12,
           bold: true,
-          margin: [0, 0, 0, 20],
+          margin: [0, 0, 0, 10],
         },
         {
           table: {
@@ -901,12 +939,12 @@ export class ReportsComponent implements OnInit {
                 {
                   text: '___________________________',
                   alignment: 'center',
-                  margin: [0, 30, 0, 5],
+                  margin: [0, 15, 0, 5],
                 },
                 {
                   text: '___________________________',
                   alignment: 'center',
-                  margin: [0, 30, 0, 5],
+                  margin: [0, 15, 0, 5],
                 },
               ],
               [
