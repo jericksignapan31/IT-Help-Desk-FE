@@ -10,6 +10,7 @@ import { ChatApiService } from '../../services/chat-api.service';
 import { ChatSocketService } from '../../services/chat-socket.service';
 import { ChatStoreService } from '../../store/chat-store.service';
 import { AuthService } from '../../../services/auth.service';
+import { UserAccountService } from '../../../services/user-account.service';
 import { Conversation, Message, CreateConversationRequest, CreateMessageRequest } from '../../models';
 import { ConversationListComponent } from '../conversation-list/conversation-list.component';
 import { ConversationDetailComponent } from '../conversation-detail/conversation-detail.component';
@@ -98,6 +99,7 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
   private chatSocket = inject(ChatSocketService);
   private chatStore = inject(ChatStoreService);
   private authService = inject(AuthService);
+  private userAccountService = inject(UserAccountService);
   private dialog = inject(MatDialog);
   private destroy$ = new Subject<void>();
 
@@ -357,34 +359,91 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
   }
 
   onCreateNew(): void {
-    Swal.fire({
-      title: 'New Conversation',
-      html: `
-        <input type="email" id="email" class="swal2-input" placeholder="Enter user email">
-        <select id="type" class="swal2-input">
-          <option value="DIRECT">Direct Message</option>
-          <option value="GROUP">Group Chat</option>
-        </select>
-      `,
-      confirmButtonText: 'Create',
-      showCancelButton: true,
-      preConfirm: () => {
-        const email = (document.getElementById('email') as HTMLInputElement).value;
-        const type = (document.getElementById('type') as HTMLSelectElement).value;
+    // Fetch all users for dropdown
+    this.userAccountService
+      .getUserAccounts()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (users) => {
+          // Filter out current user
+          const otherUsers = users.filter((user) => String(user.id) !== this.currentUserId);
 
-        if (!email) {
-          Swal.showValidationMessage('Please enter an email');
-          return null;
-        }
+          if (otherUsers.length === 0) {
+            Swal.fire('Info', 'No other users available', 'info');
+            return;
+          }
 
-        return { email, type };
-      },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        // TODO: Fetch user by email and create conversation
-        Swal.fire('Info', 'Feature coming soon', 'info');
-      }
-    });
+          // Create dropdown options
+          const userOptions = otherUsers
+            .map((user) => `<option value="${user.id}">${user.username} (${user.email})</option>`)
+            .join('');
+
+          Swal.fire({
+            title: 'Start New Conversation',
+            html: `
+              <label style="display: block; text-align: left; margin-bottom: 8px; font-weight: 500;">
+                Select User:
+              </label>
+              <select id="user" class="swal2-input">
+                <option value="">-- Choose a user --</option>
+                ${userOptions}
+              </select>
+              <label style="display: block; text-align: left; margin-bottom: 8px; font-weight: 500; margin-top: 16px;">
+                Conversation Type:
+              </label>
+              <select id="type" class="swal2-input">
+                <option value="DIRECT">Direct Message</option>
+                <option value="GROUP">Group Chat</option>
+              </select>
+            `,
+            confirmButtonText: 'Create',
+            showCancelButton: true,
+            preConfirm: () => {
+              const userId = (document.getElementById('user') as HTMLSelectElement).value;
+              const type = (document.getElementById('type') as HTMLSelectElement).value;
+
+              if (!userId) {
+                Swal.showValidationMessage('Please select a user');
+                return null;
+              }
+
+              return { userId, type };
+            },
+          }).then((result) => {
+            if (result.isConfirmed) {
+              const { userId, type } = result.value;
+              this.createDirectConversation(userId, type);
+            }
+          });
+        },
+        error: (error) => {
+          console.error('Error loading users:', error);
+          Swal.fire('Error', 'Failed to load users', 'error');
+        },
+      });
+  }
+
+  private createDirectConversation(otherUserId: string, type: string): void {
+    const request: CreateConversationRequest = {
+      type: type as 'DIRECT' | 'GROUP',
+      participant_ids: [this.currentUserId, otherUserId],
+    };
+
+    this.chatApi
+      .createConversation(request)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (conversation) => {
+          this.chatStore.addConversation(conversation);
+          this.chatStore.setCurrentConversation(conversation);
+          this.loadMessages(conversation.id);
+          Swal.fire('Success', 'Conversation created', 'success');
+        },
+        error: (error) => {
+          console.error('Error creating conversation:', error);
+          Swal.fire('Error', 'Failed to create conversation', 'error');
+        },
+      });
   }
 
   onConversationInfo(conversation: Conversation): void {
