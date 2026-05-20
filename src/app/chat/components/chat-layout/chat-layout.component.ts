@@ -388,12 +388,19 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
 
           // Create dropdown options with full names
           const userOptions = otherUsers
-            .map((user: any) => {
+            .map((user: any, index: number) => {
               // Try to get the user ID from multiple possible field names
-              const userId = user.id || user.user_id || user.userId || user.username;
+              // Fallback to username if ID fields not found
+              const userId = user.id ?? user.user_id ?? user.userId ?? user.username ?? String(index);
               let displayName = user.username;
               
-              console.log('User dropdown:', { userId, username: user.username, id: user.id });
+              console.log(`User[${index}]:`, { 
+                userId, 
+                username: user.username, 
+                id: user.id, 
+                user_id: user.user_id,
+                allKeys: Object.keys(user)
+              });
               
               // Try to get employee data
               const employee = employeeMap.get(String(user.employee_id));
@@ -461,9 +468,8 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
       participant_ids: [this.currentUserId, otherUserId],
     };
 
-    console.log('Creating conversation with request:', request);
-    console.log('Current User ID:', this.currentUserId, typeof this.currentUserId);
-    console.log('Other User ID:', otherUserId, typeof otherUserId);
+    console.log('Creating conversation with request:', JSON.stringify(request, null, 2));
+    console.log('Current User ID:', this.currentUserId, '|  Other User ID:', otherUserId);
 
     this.chatApi
       .createConversation(request)
@@ -476,9 +482,14 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
           Swal.fire('Success', 'Conversation created', 'success');
         },
         error: (error) => {
-          console.error('Error creating conversation:', error);
-          console.error('Error response:', error.error);
-          Swal.fire('Error', 'Failed to create conversation', 'error');
+          console.error('HTTP Error creating conversation:');
+          console.error('Status:', error.status);
+          console.error('StatusText:', error.statusText);
+          console.error('Response:', error.error);
+          console.error('Full error object:', JSON.stringify(error, null, 2));
+          
+          const errorMsg = error.error?.message || error.error?.error || 'Failed to create conversation';
+          Swal.fire('Error', errorMsg, 'error');
         },
       });
   }
