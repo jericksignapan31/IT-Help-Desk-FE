@@ -401,12 +401,6 @@ export class ReportsComponent implements OnInit {
           layout: 'lightHorizontalLines',
         },
         {
-          text: 'Authorized Signatories:',
-          fontSize: 12,
-          bold: true,
-          margin: [0, 20, 0, 30],
-        },
-        {
           table: {
             widths: ['*', '*'],
             body: [
@@ -582,12 +576,6 @@ export class ReportsComponent implements OnInit {
             body: tableData,
           },
           layout: 'lightHorizontalLines',
-        },
-        {
-          text: 'Authorized Signatories:',
-          fontSize: 12,
-          bold: true,
-          margin: [0, 20, 0, 30],
         },
         {
           table: {
@@ -878,12 +866,6 @@ export class ReportsComponent implements OnInit {
             ],
           },
           layout: 'lightHorizontalLines',
-        },
-        {
-          text: 'Authorized Signatories:',
-          fontSize: 12,
-          bold: true,
-          margin: [0, 20, 0, 30],
         },
         {
           table: {
