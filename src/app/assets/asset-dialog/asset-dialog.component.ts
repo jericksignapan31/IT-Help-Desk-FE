@@ -128,6 +128,9 @@ export class AssetDialogComponent implements OnInit {
       this.onBranchChange(branchId);
     });
 
+    // Disable asset_tag field always (cannot be edited by user)
+    this.assetForm.get('asset_tag')?.disable();
+
     // Watch for category changes to auto-generate asset tag (in add mode only)
     if (!this.isEditMode) {
       this.assetForm.get('category')?.valueChanges.subscribe((category) => {
@@ -146,9 +149,6 @@ export class AssetDialogComponent implements OnInit {
       };
 
       this.assetForm.patchValue(formData);
-
-      // Disable asset_tag in edit mode
-      this.assetForm.get('asset_tag')?.disable();
 
       // Load employees for the asset's branch if in edit mode
       if (this.data.asset.branch_id) {
