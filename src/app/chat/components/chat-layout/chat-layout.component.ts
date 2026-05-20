@@ -398,8 +398,8 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
           // Create dropdown options with full names
           const userOptions = otherUsers
             .map((user: any, index: number) => {
-              // Try to get the user ID from multiple possible field names
-              // Fallback to username if ID fields not found
+              // Use username as the unique identifier (guaranteed to exist)
+              // Fallback to numeric index if even username is missing
               const userId = user.id ?? user.user_id ?? user.userId ?? user.username ?? String(index);
               let displayName = user.username;
               
@@ -410,6 +410,12 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
                 user_id: user.user_id,
                 allKeys: Object.keys(user)
               });
+              
+              // Validate that userId is not undefined or "undefined" string
+              if (!userId || userId === "undefined") {
+                console.warn(`Skipping user with invalid ID:`, user);
+                return null;
+              }
               
               // Try to get employee data
               const employee = employeeMap.get(String(user.employee_id));
@@ -424,6 +430,7 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
               
               return `<option value="${userId}">${displayName}</option>`;
             })
+            .filter(Boolean) // Remove null entries
             .join('');
 
           Swal.fire({
