@@ -268,18 +268,29 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
   }
 
   onSendMessage(text: string): void {
+    console.log('========= onSendMessage CALLED =========');
+    console.log('Text parameter:', text);
+    
     const currentConv = this.chatStore.getCurrentConversation();
-    if (!currentConv) return;
+    console.log('Current conversation from store:', currentConv);
+    
+    if (!currentConv) {
+      console.error('ERROR: No current conversation!');
+      Swal.fire('Error', 'No conversation selected', 'error');
+      return;
+    }
+
+    console.log('Conversation ID:', currentConv.id);
+    console.log('Conversation object:', JSON.stringify(currentConv, null, 2));
 
     const request: CreateMessageRequest = {
       conversation_id: currentConv.id,
       content: text,
     };
 
-    console.log('========= SENDING MESSAGE =========');
-    console.log('Conversation ID:', currentConv.id);
-    console.log('Message Content:', text);
-    console.log('Request Payload:', JSON.stringify(request, null, 2));
+    console.log('Request object created:', JSON.stringify(request, null, 2));
+    console.log('Request type check - conversation_id type:', typeof request.conversation_id);
+    console.log('Request type check - content type:', typeof request.content);
 
     this.chatApi
       .sendMessage(request)
