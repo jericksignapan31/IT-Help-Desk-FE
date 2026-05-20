@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef, inject } from '@an
 import { CommonModule } from '@angular/common';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { Subject } from 'rxjs';
+import { Subject, forkJoin } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import Swal from 'sweetalert2';
 
@@ -11,6 +11,7 @@ import { ChatSocketService } from '../../services/chat-socket.service';
 import { ChatStoreService } from '../../store/chat-store.service';
 import { AuthService } from '../../../services/auth.service';
 import { UserAccountService } from '../../../services/user-account.service';
+import { EmployeeService } from '../../../services/employee.service';
 import { Conversation, Message, CreateConversationRequest, CreateMessageRequest } from '../../models';
 import { ConversationListComponent } from '../conversation-list/conversation-list.component';
 import { ConversationDetailComponent } from '../conversation-detail/conversation-detail.component';
@@ -100,6 +101,7 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
   private chatStore = inject(ChatStoreService);
   private authService = inject(AuthService);
   private userAccountService = inject(UserAccountService);
+  private employeeService = inject(EmployeeService);
   private dialog = inject(MatDialog);
   private destroy$ = new Subject<void>();
 
@@ -359,12 +361,14 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
   }
 
   onCreateNew(): void {
-    // Fetch all users for dropdown
-    this.userAccountService
-      .getUserAccounts()
+    // Fetch both users and employees in parallel
+    forkJoin([
+      this.userAccountService.getUserAccounts(),
+      this.employeeService.getEmployees(),
+    ])
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (users) => {
+        next: ([users, employees]) => {
           // Filter out current user
           const otherUsers = users.filter((user) => String(user.id) !== this.currentUserId);
 
@@ -373,19 +377,25 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
             return;
           }
 
-          // Create dropdown options
+          // Create a map of employees by ID for quick lookup
+          const employeeMap = new Map(employees.map((emp) => [String(emp.employee_id), emp]));
+
+          // Create dropdown options with full names
           const userOptions = otherUsers
             .map((user) => {
-              // Build full name from employee data if available
               let displayName = user.username;
-              if (user.employee) {
-                const firstName = user.employee.first_name || '';
-                const lastName = user.employee.last_name || '';
+              
+              // Try to get employee data
+              const employee = employeeMap.get(String(user.employee_id));
+              if (employee) {
+                const firstName = employee.first_name || '';
+                const lastName = employee.last_name || '';
                 const fullName = `${firstName} ${lastName}`.trim();
                 if (fullName) {
                   displayName = fullName;
                 }
               }
+              
               return `<option value="${user.id}">${displayName}</option>`;
             })
             .join('');
