@@ -408,7 +408,7 @@ export class ReportsComponent implements OnInit {
           text: 'Authorized Signatories:',
           fontSize: 12,
           bold: true,
-          margin: [0, 10, 0, 30],
+          margin: [0, 0, 0, 30],
         },
         {
           table: {
@@ -595,7 +595,7 @@ export class ReportsComponent implements OnInit {
           text: 'Authorized Signatories:',
           fontSize: 12,
           bold: true,
-          margin: [0, 10, 0, 30],
+          margin: [0, 0, 0, 30],
         },
         {
           table: {
@@ -895,7 +895,7 @@ export class ReportsComponent implements OnInit {
           text: 'Authorized Signatories:',
           fontSize: 12,
           bold: true,
-          margin: [0, 10, 0, 30],
+          margin: [0, 0, 0, 30],
         },
         {
           table: {
