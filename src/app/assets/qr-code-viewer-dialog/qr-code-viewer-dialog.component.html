@@ -1,0 +1,50 @@
+<div class="qr-code-viewer-container">
+  <div class="dialog-header">
+    <h2 mat-dialog-title>QR Code - {{ asset.asset_tag }}</h2>
+    <button
+      mat-icon-button
+      (click)="close()"
+      class="close-button"
+      aria-label="Close"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div class="dialog-content">
+    <div *ngIf="loading" class="loading">
+      <mat-icon class="spinner">refresh</mat-icon>
+      <p>Generating QR Code...</p>
+    </div>
+
+    <div *ngIf="!loading && qrCodeDataUrl" class="qr-code-display">
+      <img [src]="qrCodeDataUrl" alt="QR Code for {{ asset.asset_tag }}" />
+    </div>
+
+    <div class="asset-info">
+      <p>
+        <strong>Asset Tag:</strong>
+        <span>{{ asset.asset_tag }}</span>
+      </p>
+      <p>
+        <strong>Category:</strong>
+        <span>{{ asset.category }}</span>
+      </p>
+      <p *ngIf="asset.brand || asset.model">
+        <strong>Model:</strong>
+        <span>{{ asset.brand?.brand_name }} {{ asset.model }}</span>
+      </p>
+    </div>
+  </div>
+
+  <div class="dialog-actions">
+    <button mat-stroked-button (click)="close()">
+      <mat-icon>close</mat-icon>
+      Close
+    </button>
+    <button mat-raised-button color="primary" (click)="downloadQRCode()">
+      <mat-icon>download</mat-icon>
+      Download QR Code
+    </button>
+  </div>
+</div>

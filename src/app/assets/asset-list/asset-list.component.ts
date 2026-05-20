@@ -17,6 +17,7 @@ import { Asset, AssetStatus } from '../../models/asset.model';
 import { AuthService } from '../../services/auth.service';
 import { AssetDialogComponent } from '../asset-dialog/asset-dialog.component';
 import { AssetDetailDialogComponent } from '../asset-detail-dialog/asset-detail-dialog.component';
+import { QrCodeViewerDialogComponent } from '../qr-code-viewer-dialog/qr-code-viewer-dialog.component';
 import Swal from 'sweetalert2';
 import * as QRCode from 'qrcode';
 
@@ -215,6 +216,14 @@ export class AssetListComponent implements OnInit {
   }
 
   downloadQRCode(asset: Asset): void {
+    this.dialog.open(QrCodeViewerDialogComponent, {
+      width: '600px',
+      maxWidth: '95vw',
+      data: asset,
+    });
+  }
+
+  oldDownloadQRCode(asset: Asset): void {
     const qrData = JSON.stringify({
       asset_tag: asset.asset_tag,
       type: 'asset',
