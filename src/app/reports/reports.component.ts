@@ -174,13 +174,16 @@ export class ReportsComponent implements OnInit {
     return new Promise((resolve, reject) => {
       this.repairLogService.getRepairLogs().subscribe({
         next: (logs) => {
-          // Filter by date range
+          // Filter by date range based on requested_date
           this.filteredRepairLogs = logs.filter((log) => {
+            if (!log.requested_date) return false;
             const logDate = new Date(log.requested_date);
             const start = new Date(startDate);
             const end = new Date(endDate);
+            // Set end date to end of day
             end.setHours(23, 59, 59, 999);
-            return logDate >= start && logDate <= end;
+            // Compare in local timezone
+            return logDate.getTime() >= start.getTime() && logDate.getTime() <= end.getTime();
           });
           resolve();
         },
@@ -196,13 +199,16 @@ export class ReportsComponent implements OnInit {
     return new Promise((resolve, reject) => {
       this.ticketService.getAllTickets().subscribe({
         next: (tickets) => {
-          // Filter by date range
+          // Filter by date range based on created_at
           this.filteredTickets = tickets.filter((ticket) => {
+            if (!ticket.created_at) return false;
             const ticketDate = new Date(ticket.created_at);
             const start = new Date(startDate);
             const end = new Date(endDate);
+            // Set end date to end of day
             end.setHours(23, 59, 59, 999);
-            return ticketDate >= start && ticketDate <= end;
+            // Compare in local timezone
+            return ticketDate.getTime() >= start.getTime() && ticketDate.getTime() <= end.getTime();
           });
           resolve();
         },
