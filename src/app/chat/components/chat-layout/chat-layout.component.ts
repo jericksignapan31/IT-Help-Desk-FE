@@ -369,6 +369,15 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: ([users, employees]) => {
+          const debugInfo = {
+            userCount: users.length,
+            firstUserKeys: users.length > 0 ? Object.keys(users[0]) : [],
+            firstUser: users.length > 0 ? JSON.stringify(users[0]) : null,
+            currentUserId: this.currentUserId
+          };
+          
+          localStorage.setItem('chatDebug', JSON.stringify(debugInfo, null, 2));
+          console.log('Chat debug info saved to localStorage.chatDebug');
           console.log('Users from API:', users);
           console.log('First user keys:', users.length > 0 ? Object.keys(users[0]) : 'No users');
           
@@ -482,6 +491,14 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
           Swal.fire('Success', 'Conversation created', 'success');
         },
         error: (error) => {
+          const errorDebug = {
+            status: error.status,
+            statusText: error.statusText,
+            response: error.error,
+            request: error.error?.error ? { type: 'error string' } : 'See response above'
+          };
+          
+          localStorage.setItem('chatErrorDebug', JSON.stringify(errorDebug, null, 2));
           console.error('HTTP Error creating conversation:');
           console.error('Status:', error.status);
           console.error('StatusText:', error.statusText);
