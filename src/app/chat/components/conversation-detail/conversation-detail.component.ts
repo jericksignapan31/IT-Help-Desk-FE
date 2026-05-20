@@ -90,8 +90,9 @@ import { TypingIndicatorComponent } from '../typing-indicator/typing-indicator.c
         align-items: center;
         justify-content: space-between;
         padding: 12px 16px;
-        border-bottom: 1px solid #e0e0e0;
-        background-color: #fafafa;
+        border-bottom: 1px solid #e5e5e5;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
       }
 
       .header-content {
@@ -101,18 +102,18 @@ import { TypingIndicatorComponent } from '../typing-indicator/typing-indicator.c
 
       .conversation-title {
         margin: 0;
-        font-size: 16px;
+        font-size: 15px;
         font-weight: 600;
-        color: #333;
+        color: #fff;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
       }
 
       .conversation-subtitle {
-        margin: 4px 0 0 0;
-        font-size: 12px;
-        color: #999;
+        margin: 3px 0 0 0;
+        font-size: 11px;
+        color: rgba(255, 255, 255, 0.85);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -123,6 +124,10 @@ import { TypingIndicatorComponent } from '../typing-indicator/typing-indicator.c
         gap: 4px;
       }
 
+      .header-actions button {
+        color: #fff !important;
+      }
+
       .no-conversation {
         display: flex;
         flex-direction: column;
@@ -130,23 +135,30 @@ import { TypingIndicatorComponent } from '../typing-indicator/typing-indicator.c
         justify-content: center;
         height: 100%;
         color: #999;
+        background: linear-gradient(135deg, #f5f7fa 0%, #f8f9fa 100%);
       }
 
       .no-conversation mat-icon {
         font-size: 64px;
         width: 64px;
         height: 64px;
-        color: #ccc;
+        color: #ddd;
         margin-bottom: 16px;
       }
 
       .no-conversation p {
         margin: 0;
-        font-size: 16px;
+        font-size: 15px;
+        font-weight: 500;
       }
 
       ::ng-deep .mat-mdc-menu-content {
         padding: 0 !important;
+      }
+
+      ::ng-deep .mdc-divider {
+        margin: 0 !important;
+        border-color: #e5e5e5 !important;
       }
     `,
   ],

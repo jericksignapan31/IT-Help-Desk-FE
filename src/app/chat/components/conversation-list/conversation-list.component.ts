@@ -89,8 +89,9 @@ import { UnreadBadgeComponent } from '../unread-badge/unread-badge.component';
         display: flex;
         flex-direction: column;
         height: 100%;
+        width: 100%;
         background-color: #fff;
-        border-right: 1px solid #e0e0e0;
+        border-right: 1px solid #e5e5e5;
         overflow: hidden;
       }
 
@@ -99,18 +100,50 @@ import { UnreadBadgeComponent } from '../unread-badge/unread-badge.component';
         align-items: center;
         justify-content: space-between;
         padding: 16px;
-        border-bottom: 1px solid #e0e0e0;
+        border-bottom: 1px solid #e5e5e5;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        flex-shrink: 0;
       }
 
       .list-header h2 {
         margin: 0;
-        font-size: 20px;
-        font-weight: 600;
+        font-size: 22px;
+        font-weight: 700;
+        color: #fff;
+      }
+
+      .list-header button {
+        color: #fff !important;
       }
 
       .search-field {
         width: calc(100% - 32px);
-        margin: 8px 16px;
+        margin: 12px 16px;
+        flex-shrink: 0;
+      }
+
+      .search-field ::ng-deep {
+        .mdc-text-field {
+          background-color: #f0f0f0 !important;
+          border-radius: 24px !important;
+        }
+        
+        .mdc-text-field__input {
+          border-radius: 24px;
+          padding: 12px 16px !important;
+        }
+
+        .mat-mdc-form-field-hint-wrapper {
+          display: none;
+        }
+
+        .mdc-notched-outline__leading {
+          border-radius: 24px 0 0 24px;
+        }
+
+        .mdc-notched-outline__trailing {
+          border-radius: 0 24px 24px 0;
+        }
       }
 
       .loading {
@@ -118,6 +151,7 @@ import { UnreadBadgeComponent } from '../unread-badge/unread-badge.component';
         align-items: center;
         justify-content: center;
         flex: 1;
+        min-height: 0;
       }
 
       .empty-state {
@@ -127,13 +161,14 @@ import { UnreadBadgeComponent } from '../unread-badge/unread-badge.component';
         justify-content: center;
         flex: 1;
         color: #999;
+        min-height: 0;
       }
 
       .empty-state mat-icon {
         font-size: 48px;
         width: 48px;
         height: 48px;
-        color: #ccc;
+        color: #ddd;
         margin-bottom: 12px;
       }
 
@@ -145,16 +180,39 @@ import { UnreadBadgeComponent } from '../unread-badge/unread-badge.component';
       .conversations {
         flex: 1;
         overflow-y: auto;
+        overflow-x: hidden;
         padding: 0;
+        scrollbar-width: thin;
+        scrollbar-color: #ccc transparent;
+        min-height: 0;
+      }
+
+      .conversations::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .conversations::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      .conversations::-webkit-scrollbar-thumb {
+        background: #ccc;
+        border-radius: 3px;
+      }
+
+      .conversations::-webkit-scrollbar-thumb:hover {
+        background: #999;
       }
 
       .conversation-item {
         display: flex;
         align-items: center;
-        padding: 12px 16px !important;
+        padding: 10px 12px !important;
         border-bottom: 1px solid #f0f0f0;
         cursor: pointer;
-        transition: background-color 0.2s;
+        transition: all 0.2s ease;
+        height: auto !important;
+        background-color: #fff;
       }
 
       .conversation-item:hover {
@@ -162,14 +220,17 @@ import { UnreadBadgeComponent } from '../unread-badge/unread-badge.component';
       }
 
       .conversation-item.active {
-        background-color: #e3f2fd;
-        border-left: 4px solid #1976d2;
-        padding-left: 12px !important;
+        background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+        border-left: 4px solid #667eea;
+        padding-left: 8px !important;
+        box-shadow: inset 0 0 10px rgba(102, 126, 234, 0.1);
       }
 
       .conversation-content {
         flex: 1;
         min-width: 0;
+        display: flex;
+        flex-direction: column;
       }
 
       .conversation-header {
@@ -186,14 +247,16 @@ import { UnreadBadgeComponent } from '../unread-badge/unread-badge.component';
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        color: #333;
       }
 
       .conversation-preview {
         font-size: 12px;
-        color: #999;
+        color: #888;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        margin: 0;
       }
 
       ::ng-deep .mat-mdc-list-item {

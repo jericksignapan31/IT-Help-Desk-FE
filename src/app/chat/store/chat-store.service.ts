@@ -46,8 +46,19 @@ export class ChatStoreService {
       this.unreadCount$.next(state.unreadCount);
 
       if (state.currentConversation) {
-        const messages = state.messages.get(state.currentConversation.conversation_id) || [];
-        this.currentMessages$.next(messages);
+        const messages = state.messages.get(state.currentConversation.conversation_id);
+        // Only update if messages exist OR if we have a current conversation
+        // This prevents emitting empty array when switching conversations
+        if (messages !== undefined) {
+          this.currentMessages$.next(messages);
+        }
+        console.log('📦 Store updated for conversation:', {
+          conversationId: state.currentConversation.conversation_id,
+          messageCount: messages?.length || 0,
+        });
+      } else {
+        // Clear messages only when explicitly setting to null
+        this.currentMessages$.next([]);
       }
     });
   }
@@ -134,21 +145,28 @@ export class ChatStoreService {
   updateMessage(conversationId: string, messageId: string, updates: Partial<Message>): void {
     const state = this.getState();
     const messages = state.messages.get(conversationId) || [];
-    const index = messages.findIndex((m) => m.id === messageId);
+    // Look for both 'id' and 'message_id' field names to be safe
+    const index = messages.findIndex((m) => (m as any).message_id === messageId || (m as any).id === messageId);
     if (index > -1) {
       messages[index] = { ...messages[index], ...updates };
       const messagesMap = new Map(state.messages);
       messagesMap.set(conversationId, messages);
       this.stateSubject.next({ ...state, messages: messagesMap });
+      console.log('📦 Message updated:', { conversationId, messageId, updates });
+    } else {
+      console.warn('Message not found for update:', { conversationId, messageId });
     }
   }
 
   deleteMessage(conversationId: string, messageId: string): void {
     const state = this.getState();
-    const messages = (state.messages.get(conversationId) || []).filter((m) => m.id !== messageId);
+    const messages = (state.messages.get(conversationId) || []).filter(
+      (m) => (m as any).message_id !== messageId && (m as any).id !== messageId
+    );
     const messagesMap = new Map(state.messages);
     messagesMap.set(conversationId, messages);
     this.stateSubject.next({ ...state, messages: messagesMap });
+    console.log('📦 Message deleted:', { conversationId, messageId });
   }
 
   addTypingUser(conversationId: string, userId: string): void {

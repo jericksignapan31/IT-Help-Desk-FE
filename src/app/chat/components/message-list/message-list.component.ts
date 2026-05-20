@@ -51,7 +51,7 @@ import { Message } from '../../models';
               <div *ngIf="!isOwnMessage(message) && showSenderName(message, i)" class="sender-name">
                 {{ message.sender?.first_name || 'Unknown User' }}
               </div>
-              <div class="message-text">{{ message.text }}</div>
+              <div class="message-text">{{ message.content }}</div>
               <div class="message-footer">
                 <span class="timestamp">{{ formatTime(message.created_at) }}</span>
                 <span *ngIf="isOwnMessage(message)" class="read-receipt" [class.read]="message.is_read">
@@ -87,7 +87,7 @@ import { Message } from '../../models';
         display: flex;
         flex-direction: column;
         height: 100%;
-        background-color: #fff;
+        background: linear-gradient(180deg, #fff 0%, #f8f9fa 100%);
         overflow: hidden;
       }
 
@@ -105,19 +105,21 @@ import { Message } from '../../models';
         justify-content: center;
         flex: 1;
         color: #999;
+        padding: 20px;
       }
 
       .empty-state mat-icon {
-        font-size: 48px;
-        width: 48px;
-        height: 48px;
-        color: #ccc;
-        margin-bottom: 12px;
+        font-size: 56px;
+        width: 56px;
+        height: 56px;
+        color: #ddd;
+        margin-bottom: 16px;
       }
 
       .empty-state p {
         margin: 0;
         font-size: 14px;
+        font-weight: 500;
       }
 
       .messages {
@@ -127,27 +129,62 @@ import { Message } from '../../models';
         display: flex;
         flex-direction: column;
         gap: 8px;
+        scrollbar-width: thin;
+        scrollbar-color: #ccc transparent;
+      }
+
+      .messages::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .messages::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      .messages::-webkit-scrollbar-thumb {
+        background: #ccc;
+        border-radius: 3px;
+      }
+
+      .messages::-webkit-scrollbar-thumb:hover {
+        background: #999;
       }
 
       .message-group {
         display: flex;
         gap: 8px;
+        margin-bottom: 8px;
+        animation: slideIn 0.3s ease;
+      }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
 
       .message {
         display: flex;
         align-items: flex-end;
         gap: 8px;
-        max-width: 70%;
+        max-width: 65%;
       }
 
       .message.own-message {
         align-self: flex-end;
+        flex-direction: row-reverse;
       }
 
       .message.own-message .message-content {
-        background-color: #1976d2;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
+        border-bottom-right-radius: 4px;
+        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.25);
       }
 
       .message.other-message {
@@ -155,38 +192,42 @@ import { Message } from '../../models';
       }
 
       .message.other-message .message-content {
-        background-color: #e0e0e0;
+        background-color: #e8eaed;
         color: #333;
+        border-bottom-left-radius: 4px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
       }
 
       .message-avatar {
         display: flex;
         align-items: flex-end;
-        width: 32px;
-        height: 32px;
+        width: 28px;
+        height: 28px;
         flex-shrink: 0;
       }
 
       .avatar-image {
-        width: 32px;
-        height: 32px;
+        width: 28px;
+        height: 28px;
         border-radius: 50%;
         object-fit: cover;
-        border: 2px solid #ddd;
+        border: 2px solid #fff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       }
 
       .avatar-placeholder {
-        width: 32px;
-        height: 32px;
+        width: 28px;
+        height: 28px;
         border-radius: 50%;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 12px;
-        font-weight: 600;
-        border: 2px solid transparent;
+        font-size: 11px;
+        font-weight: 700;
+        border: 2px solid #fff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       }
 
       .avatar-placeholder.own {
@@ -194,31 +235,34 @@ import { Message } from '../../models';
       }
 
       .message-content {
-        padding: 10px 12px;
-        border-radius: 12px;
+        padding: 8px 12px;
+        border-radius: 18px;
         word-wrap: break-word;
         word-break: break-word;
+        overflow-wrap: break-word;
       }
 
       .sender-name {
         font-size: 11px;
         font-weight: 600;
-        margin-bottom: 4px;
-        opacity: 0.8;
+        margin-bottom: 3px;
+        opacity: 0.85;
+        color: #555;
       }
 
       .message-text {
         font-size: 14px;
-        line-height: 1.4;
+        line-height: 1.35;
+        margin: 0;
       }
 
       .message-footer {
         display: flex;
         align-items: center;
         gap: 4px;
-        margin-top: 4px;
+        margin-top: 3px;
         font-size: 11px;
-        opacity: 0.7;
+        opacity: 0.65;
       }
 
       .timestamp {
@@ -226,9 +270,9 @@ import { Message } from '../../models';
       }
 
       .read-receipt mat-icon {
-        font-size: 12px;
-        width: 12px;
-        height: 12px;
+        font-size: 11px;
+        width: 11px;
+        height: 11px;
       }
 
       .read-receipt.read mat-icon {
@@ -237,8 +281,14 @@ import { Message } from '../../models';
 
       .message-menu {
         visibility: hidden;
-        width: 32px;
-        height: 32px;
+        width: 28px;
+        height: 28px;
+        opacity: 0.6;
+        transition: opacity 0.2s;
+      }
+
+      .message-menu:hover {
+        opacity: 1;
       }
 
       .message:hover .message-menu {
@@ -247,6 +297,23 @@ import { Message } from '../../models';
 
       ::ng-deep .mat-mdc-menu-content {
         padding: 0 !important;
+      }
+
+      @media (max-width: 768px) {
+        .message {
+          max-width: 75%;
+        }
+
+        .messages {
+          padding: 12px;
+          gap: 6px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .message {
+          max-width: 85%;
+        }
       }
     `,
   ],

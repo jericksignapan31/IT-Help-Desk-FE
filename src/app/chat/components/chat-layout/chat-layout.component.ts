@@ -53,19 +53,30 @@ import { ConversationDetailComponent } from '../conversation-detail/conversation
   `,
   styles: [
     `
+      :host {
+        display: block;
+        height: 100%;
+        width: 100%;
+      }
+
       .chat-container {
         display: flex;
         height: 100%;
+        width: 100%;
         gap: 0;
         background-color: #fff;
+        overflow: hidden;
       }
 
       .chat-list-panel {
-        width: 300px;
+        width: 360px;
         height: 100%;
-        border-right: 1px solid #e0e0e0;
+        border-right: 1px solid #e5e5e5;
         display: flex;
         flex-direction: column;
+        background: #fff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
       }
 
       .chat-detail-panel {
@@ -73,11 +84,19 @@ import { ConversationDetailComponent } from '../conversation-detail/conversation
         height: 100%;
         display: flex;
         flex-direction: column;
+        background: #fff;
+        overflow: hidden;
+      }
+
+      @media (max-width: 1024px) {
+        .chat-list-panel {
+          width: 320px;
+        }
       }
 
       @media (max-width: 768px) {
         .chat-list-panel {
-          width: 250px;
+          width: 280px;
         }
       }
 
@@ -85,7 +104,8 @@ import { ConversationDetailComponent } from '../conversation-detail/conversation
         .chat-list-panel {
           width: 100%;
           border-right: none;
-          border-bottom: 1px solid #e0e0e0;
+          border-bottom: 1px solid #e5e5e5;
+          max-height: 40%;
         }
 
         .chat-container {
@@ -170,19 +190,23 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
   }
 
   private loadMessages(conversationId: string): void {
+    console.log('📥 Loading messages for conversation:', conversationId);
     (this.loadingMessages$ as Subject<boolean>).next(true);
     this.chatApi
       .getMessages(conversationId, 1, 50)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
-          this.chatStore.setMessages(conversationId, response.data);
+          console.log('✅ Messages loaded:', { conversationId, count: response.data?.length || 0 });
+          this.chatStore.setMessages(conversationId, response.data || []);
           (this.loadingMessages$ as Subject<boolean>).next(false);
           this.chatSocket.joinConversation(conversationId);
         },
         error: (error) => {
-          console.error('Error loading messages:', error);
+          console.error('❌ Error loading messages:', { conversationId, error });
+          this.chatStore.setMessages(conversationId, []); // Set empty messages on error
           (this.loadingMessages$ as Subject<boolean>).next(false);
+          Swal.fire('Error', 'Failed to load messages', 'error');
         },
       });
   }
@@ -263,8 +287,23 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
   }
 
   onSelectConversation(conversation: Conversation): void {
-    this.chatStore.setCurrentConversation(conversation);
-    this.loadMessages(conversation.conversation_id);
+    console.log('🔄 Selecting conversation:', { id: conversation.conversation_id, type: conversation.type });
+    
+    // Check if messages are already loaded to avoid unnecessary API calls
+    const cachedMessages = this.chatStore.getConversationMessages(conversation.conversation_id);
+    if (cachedMessages && cachedMessages.length > 0) {
+      console.log('✅ Using cached messages, count:', cachedMessages.length);
+      // Set conversation first, messages are already in store
+      this.chatStore.setCurrentConversation(conversation);
+      // Join socket conversation
+      this.chatSocket.joinConversation(conversation.conversation_id);
+    } else {
+      console.log('📡 Loading messages from API...');
+      // Set conversation before loading to update UI
+      this.chatStore.setCurrentConversation(conversation);
+      // Load messages from API
+      this.loadMessages(conversation.conversation_id);
+    }
   }
 
   onSendMessage(text: string): void {
@@ -285,10 +324,10 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
 
     const request: CreateMessageRequest = {
       conversation_id: currentConv.conversation_id,
-      text: text,
+      content: text,
     };
 
-    console.log('Creating message request:', { conversationId: currentConv.conversation_id, text: text });
+    console.log('Creating message request:', { conversationId: currentConv.conversation_id, content: text });
 
     this.chatApi
       .sendMessage(request)

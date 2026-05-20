@@ -5,7 +5,7 @@ export interface Message {
   conversation_id: string;
   sender_id: string;
   sender?: Participant;
-  text: string;
+  content: string;
   is_read: boolean;
   created_at: string;
   updated_at: string;
@@ -13,7 +13,7 @@ export interface Message {
 
 export interface CreateMessageRequest {
   conversation_id: string;
-  text: string;
+  content: string;
 }
 
 export interface MessagesResponse {

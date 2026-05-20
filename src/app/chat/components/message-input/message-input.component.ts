@@ -50,24 +50,70 @@ import { takeUntil } from 'rxjs/operators';
       .message-input-container {
         display: flex;
         gap: 8px;
-        padding: 12px;
-        background-color: #fafafa;
-        border-top: 1px solid #e0e0e0;
+        padding: 12px 16px;
+        background: linear-gradient(180deg, #fafafa 0%, #f5f5f5 100%);
+        border-top: 1px solid #e5e5e5;
         align-items: flex-end;
+        box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.04);
       }
 
       .message-field {
         flex: 1;
       }
 
+      .message-field ::ng-deep {
+        .mdc-text-field {
+          background-color: #fff !important;
+          border-radius: 20px !important;
+          border: 1px solid #e0e0e0 !important;
+        }
+
+        .mdc-text-field--focused {
+          border-color: #667eea !important;
+        }
+
+        .mat-mdc-form-field-focus-overlay {
+          background-color: transparent !important;
+        }
+
+        .mat-mdc-notched-outline__leading,
+        .mat-mdc-notched-outline__trailing {
+          border-radius: 20px !important;
+        }
+
+        textarea {
+          padding: 10px 14px !important;
+          border-radius: 20px;
+          font-family: inherit;
+          resize: none;
+        }
+
+        .mat-mdc-form-field-hint-wrapper {
+          display: none;
+        }
+      }
+
       .send-btn {
         height: 40px;
         width: 40px;
+        min-width: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        color: white !important;
+        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        transition: all 0.3s ease;
+      }
+
+      .send-btn:hover:not(:disabled) {
+        transform: scale(1.05);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
       }
 
       .send-btn:disabled {
         opacity: 0.5;
         cursor: not-allowed;
+        background: #ccc !important;
+        box-shadow: none;
       }
 
       .send-btn.sending {
@@ -77,12 +123,27 @@ import { takeUntil } from 'rxjs/operators';
       @keyframes pulse {
         0% {
           opacity: 1;
+          transform: scale(1);
         }
         50% {
-          opacity: 0.6;
+          opacity: 0.7;
+          transform: scale(0.95);
         }
         100% {
           opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      @media (max-width: 768px) {
+        .message-input-container {
+          padding: 10px 12px;
+          gap: 6px;
+        }
+
+        .send-btn {
+          height: 36px;
+          width: 36px;
         }
       }
     `,
