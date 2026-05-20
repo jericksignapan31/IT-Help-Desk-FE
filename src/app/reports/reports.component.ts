@@ -56,7 +56,6 @@ export class ReportsComponent implements OnInit {
   tickets: Ticket[] = [];
   filteredRepairLogs: RepairLog[] = [];
   filteredTickets: Ticket[] = [];
-  private pdfMake: any;
 
   // Table columns
   repairLogColumns = [
@@ -95,24 +94,10 @@ export class ReportsComponent implements OnInit {
       startDate: ['', Validators.required],
       endDate: ['', Validators.required],
     });
-
-    // Initialize pdfMake in browser environment
-    if (isPlatformBrowser(this.platformId)) {
-      this.initializePdfMake();
-    }
   }
 
-  private initializePdfMake(): void {
-    try {
-      // Dynamically require pdfMake and configure it
-      this.pdfMake = require('pdfmake/build/pdfmake');
-      const pdfFonts = require('pdfmake/build/vfs_fonts');
-      if (this.pdfMake && pdfFonts && pdfFonts.pdfMake && pdfFonts.pdfMake.vfs) {
-        this.pdfMake.vfs = pdfFonts.pdfMake.vfs;
-      }
-    } catch (e) {
-      console.error('Failed to initialize pdfMake:', e);
-    }
+  private get pdfMake(): any {
+    return (window as any).pdfMake;
   }
 
   ngOnInit(): void {
