@@ -13,7 +13,7 @@ export interface Message {
 
 export interface CreateMessageRequest {
   conversation_id: string;
-  content: string;
+  text: string;
 }
 
 export interface MessagesResponse {

@@ -285,10 +285,10 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
 
     const request: CreateMessageRequest = {
       conversation_id: currentConv.conversation_id,
-      content: text,
+      text: text,
     };
 
-    console.log('Creating message request:', { conversationId: currentConv.conversation_id, content: text });
+    console.log('Creating message request:', { conversationId: currentConv.conversation_id, text: text });
 
     this.chatApi
       .sendMessage(request)
