@@ -273,13 +273,13 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
 
     const request: CreateMessageRequest = {
       conversation_id: currentConv.id,
-      sender_id: this.currentUserId,
       text,
     };
 
     console.log('========= SENDING MESSAGE =========');
-    console.log('Current User ID:', this.currentUserId);
-    console.log('Message Request:', JSON.stringify(request, null, 2));
+    console.log('Conversation ID:', currentConv.id);
+    console.log('Message Text:', text);
+    console.log('Request Payload:', JSON.stringify(request, null, 2));
 
     this.chatApi
       .sendMessage(request)
