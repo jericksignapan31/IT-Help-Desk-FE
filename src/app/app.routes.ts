@@ -294,6 +294,14 @@ export const routes: Routes = [
           },
         ],
       },
+      // Chat Routes (All authenticated users)
+      {
+        path: 'chat',
+        loadComponent: () =>
+          import('./chat/components/chat-layout/chat-layout.component').then(
+            (m) => m.ChatLayoutComponent,
+          ),
+      },
       // User Account Routes (Admin only)
       {
         path: 'user-accounts',
