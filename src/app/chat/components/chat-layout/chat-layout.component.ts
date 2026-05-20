@@ -454,20 +454,24 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
             confirmButtonText: 'Create',
             showCancelButton: true,
             preConfirm: () => {
-              const userId = (document.getElementById('user') as HTMLSelectElement).value;
-              const type = (document.getElementById('type') as HTMLSelectElement).value;
+              const userSelect = (document.getElementById('user') as HTMLSelectElement);
+              const typeSelect = (document.getElementById('type') as HTMLSelectElement);
+              
+              const userId = userSelect.value;
+              const type = typeSelect.value;
+              const userDisplayName = userSelect.selectedOptions[0]?.textContent || 'User';
 
               if (!userId) {
                 Swal.showValidationMessage('Please select a user');
                 return null;
               }
 
-              return { userId, type };
+              return { userId, type, userDisplayName };
             },
           }).then((result) => {
             if (result.isConfirmed) {
-              const { userId, type } = result.value;
-              this.createDirectConversation(userId, type);
+              const { userId, type, userDisplayName } = result.value;
+              this.createDirectConversation(userId, type, userDisplayName);
             }
           });
         },
@@ -478,7 +482,7 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
       });
   }
 
-  private createDirectConversation(otherUserId: string, type: string): void {
+  private createDirectConversation(otherUserId: string, type: string, userDisplayName?: string): void {
     // Try to determine the current user's ID
     let currentUserId = this.currentUserId;
     
@@ -493,15 +497,10 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Generate conversation name for DIRECT conversations
+    // Generate conversation name
     let conversationName = 'Direct Message';
-    if (type === 'DIRECT') {
-      // Try to get the other user's display name from the DOM or use a default
-      const userDropdown = document.getElementById('user') as HTMLSelectElement;
-      if (userDropdown && userDropdown.selectedOptions.length > 0) {
-        const selectedText = userDropdown.selectedOptions[0].text;
-        conversationName = `Chat with ${selectedText}`;
-      }
+    if (type === 'DIRECT' && userDisplayName) {
+      conversationName = `Chat with ${userDisplayName}`;
     }
 
     // Create the request payload
@@ -522,7 +521,7 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (conversation) => {
-          console.log('Conversation created successfully:', conversation);
+          console.log('✅ Conversation created successfully:', conversation);
           this.chatStore.addConversation(conversation);
           this.chatStore.setCurrentConversation(conversation);
           this.loadMessages(conversation.id);
