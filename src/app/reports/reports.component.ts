@@ -408,12 +408,12 @@ export class ReportsComponent implements OnInit {
                 {
                   text: '___________________________',
                   alignment: 'center',
-                  margin: [0, 56, 0, 10],
+                  margin: [0, 128, 0, 10],
                 },
                 {
                   text: '___________________________',
                   alignment: 'center',
-                  margin: [0, 56, 0, 10],
+                  margin: [0, 128, 0, 10],
                 },
               ],
               [
@@ -585,12 +585,12 @@ export class ReportsComponent implements OnInit {
                 {
                   text: '___________________________',
                   alignment: 'center',
-                  margin: [0, 56, 0, 10],
+                  margin: [0, 128, 0, 10],
                 },
                 {
                   text: '___________________________',
                   alignment: 'center',
-                  margin: [0, 56, 0, 10],
+                  margin: [0, 128, 0, 10],
                 },
               ],
               [
@@ -875,12 +875,12 @@ export class ReportsComponent implements OnInit {
                 {
                   text: '___________________________',
                   alignment: 'center',
-                  margin: [0, 56, 0, 10],
+                  margin: [0, 128, 0, 10],
                 },
                 {
                   text: '___________________________',
                   alignment: 'center',
-                  margin: [0, 56, 0, 10],
+                  margin: [0, 128, 0, 10],
                 },
               ],
               [
