@@ -376,7 +376,16 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
           // Create dropdown options
           const userOptions = otherUsers
             .map((user) => {
-              const displayName = user.email ? `${user.username} (${user.email})` : user.username;
+              // Build full name from employee data if available
+              let displayName = user.username;
+              if (user.employee) {
+                const firstName = user.employee.first_name || '';
+                const lastName = user.employee.last_name || '';
+                const fullName = `${firstName} ${lastName}`.trim();
+                if (fullName) {
+                  displayName = fullName;
+                }
+              }
               return `<option value="${user.id}">${displayName}</option>`;
             })
             .join('');
