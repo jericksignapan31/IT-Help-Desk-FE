@@ -11,9 +11,9 @@
           "/favicon.ico",
           "/index.html",
           "/manifest.json",
-          "/styles.css",
-          "/polyfills.js",
-          "/main.js"
+          "/styles*.css",
+          "/polyfills-*.js",
+          "/main-*.js"
         ]
       }
     },
