@@ -95,9 +95,9 @@ export class GroupChatComponent implements OnInit, OnDestroy {
         ...msg,
         sender: {
           employee_id: msg.sender?.employee_id || msg.sender?.user_id || 'Unknown',
-          first_name: msg.sender?.first_name || msg.sender?.username || 'User',
-          last_name: msg.sender?.last_name || '',
-          email: msg.sender?.email || msg.sender?.username || ''
+          first_name: msg.sender?.employee?.first_name || msg.sender?.first_name || msg.sender?.username || 'User',
+          last_name: msg.sender?.employee?.last_name || msg.sender?.last_name || '',
+          email: msg.sender?.employee?.email || msg.sender?.email || msg.sender?.username || ''
         }
       })),
       created_at: conv.created_at,
