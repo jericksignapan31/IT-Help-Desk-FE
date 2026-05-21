@@ -1,7 +1,7 @@
 import { Injectable, PLATFORM_ID, Inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { BehaviorSubject, Observable, tap, switchMap, map, catchError, of } from 'rxjs';
 import { Router } from '@angular/router';
 import {
   LoginRequest,
@@ -43,7 +43,7 @@ export class AuthService {
 
   login(credentials: LoginRequest): Observable<LoginResponse> {
     return this.http.post<any>(`${this.API_URL}/auth/login`, credentials).pipe(
-      tap((response: any) => {
+      switchMap((response: any) => {
         // Check if user is verified
         const backendUser = response.user;
         if (backendUser?.is_verified === false) {
@@ -68,20 +68,51 @@ export class AuthService {
             backendUser?.employee?.employee_id ||
             backendUser?.employee_id ||
             '',
-          is_active: backendUser?.is_active !== false, // default to true
-          is_verified: backendUser?.is_verified !== false, // default to true
+          is_active: backendUser?.is_active !== false,
+          is_verified: backendUser?.is_verified !== false,
           created_at: backendUser?.created_at || new Date().toISOString(),
           updated_at: backendUser?.updated_at || new Date().toISOString(),
         };
 
-       
+        console.log('🔐 Employee ID from login:', transformedUser.employee_id);
 
+        // Store token FIRST so interceptor can use it for employee fetch
         if (this.isBrowser) {
           localStorage.setItem('access_token', response.access_token);
-          localStorage.setItem('currentUser', JSON.stringify(transformedUser));
         }
-        this.currentUserSubject.next(transformedUser);
-      }),
+
+        // Fetch employee data from /employees/{id}
+        const employeeId = transformedUser.employee_id;
+        if (employeeId) {
+          const employeeUrl = `${this.API_URL}/employees/${employeeId}`;
+          
+          return this.http.get<any>(employeeUrl).pipe(
+            map((employeeData) => {
+              transformedUser.employee = employeeData;
+
+              if (this.isBrowser) {
+                localStorage.setItem('currentUser', JSON.stringify(transformedUser));
+              }
+              
+              this.currentUserSubject.next(transformedUser);
+              return response;
+            }),
+            catchError((error) => {
+              if (this.isBrowser) {
+                localStorage.setItem('currentUser', JSON.stringify(transformedUser));
+              }
+              this.currentUserSubject.next(transformedUser);
+              return of(response);
+            })
+          );
+        } else {
+          if (this.isBrowser) {
+            localStorage.setItem('currentUser', JSON.stringify(transformedUser));
+          }
+          this.currentUserSubject.next(transformedUser);
+          return of(response);
+        }
+      })
     );
   }
 

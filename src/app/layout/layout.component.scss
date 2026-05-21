@@ -176,8 +176,29 @@
     align-items: center;
     gap: 0.5rem;
 
-    .username {
-      font-weight: 500;
+    .user-info {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.25rem;
+
+      .username {
+        font-weight: 500;
+        font-size: 0.95rem;
+      }
+
+      .employee-info {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .employee-id {
+        font-size: 0.75rem;
+        opacity: 0.8;
+        font-weight: 400;
+      }
     }
 
     .role-badge {
@@ -187,8 +208,8 @@
       font-weight: 500;
 
       &.role-admin {
-        background-color: #f44336;
-        color: white;
+        background-color: #0c6d03;
+        color: rgb(255, 255, 255);
       }
 
       &.role-technician {
@@ -215,7 +236,7 @@
     width: 200px;
   }
 
-  .user-button .username {
+  .user-button .user-info {
     display: none;
   }
 

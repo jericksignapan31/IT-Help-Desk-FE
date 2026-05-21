@@ -52,9 +52,6 @@ export class LayoutComponent {
     this.unreadChatCount$ = this.chatStore.unreadCount$;
     this.authService.currentUser.subscribe((user) => {
       this.currentUser = user;
-      if (user) {
-   
-      }
     });
   }
 
@@ -100,6 +97,23 @@ export class LayoutComponent {
 
   getRoleLabel(): string {
     return this.currentUser?.role || '';
+  }
+
+  getFullName(): string {
+    const user = this.currentUser as any;
+    const firstName = user?.employee?.first_name || user?.first_name || '';
+    const lastName = user?.employee?.last_name || user?.last_name || '';
+    return `${firstName} ${lastName}`.trim();
+  }
+
+  getPosition(): string {
+    const user = this.currentUser as any;
+    return user?.employee?.position || 'User';
+  }
+
+  getEmployeeId(): string {
+    const user = this.currentUser as any;
+    return user?.employee?.employee_id || user?.employee_id || '';
   }
 
   toggleSidenav(): void {
