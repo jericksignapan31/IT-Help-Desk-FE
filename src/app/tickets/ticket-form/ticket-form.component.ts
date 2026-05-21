@@ -615,12 +615,11 @@ export class TicketFormComponent implements OnInit {
     this.loading = true;
     const formData = this.ticketForm.value;
 
-    // Note: In production, you would upload the image to a storage service first
-    // and get the URL, then include that URL in the image_url field
-    // For now, we'll just use the preview URL or empty string
-    if (this.selectedImageFile && this.imagePreview) {
-      formData.image_url = this.imagePreview;
-    }
+    // IMPORTANT: Do NOT send base64 image data to server
+    // Base64 images are huge and cause 413 "Content Too Large" errors
+    // Image preview is for UI only, not for submission
+    // Always clear image_url before sending to server
+    formData.image_url = '';
 
     const operation =
       this.isEditMode && this.ticketId
