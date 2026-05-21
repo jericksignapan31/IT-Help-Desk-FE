@@ -298,8 +298,8 @@ export const routes: Routes = [
       {
         path: 'chat',
         loadComponent: () =>
-          import('./chat/components/chat-layout/chat-layout.component').then(
-            (m) => m.ChatLayoutComponent,
+          import('./shared/group-chat/group-chat.component').then(
+            (m) => m.GroupChatComponent,
           ),
       },
       // User Account Routes (Admin only)

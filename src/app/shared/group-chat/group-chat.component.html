@@ -1,0 +1,112 @@
+<div class="general-chat-container">
+  <!-- Conversations Sidebar -->
+  <div class="conversations-sidebar">
+    <h2 class="sidebar-header">
+      <mat-icon>forum</mat-icon>
+      All Chats
+    </h2>
+
+    <div *ngIf="loading" class="loading-state">
+      <mat-icon>hourglass_empty</mat-icon>
+      <p>Loading chats...</p>
+    </div>
+
+    <mat-list *ngIf="!loading && conversations.length > 0" class="conversations-list">
+      <mat-list-item
+        *ngFor="let conv of conversations"
+        [class.active]="selectedConversation?.conversation_id === conv.conversation_id"
+        (click)="selectConversation(conv)"
+        class="conversation-item"
+      >
+        <mat-icon matListItemIcon class="conv-icon" [ngClass]="conv.type.toLowerCase()">
+          {{ conv.type === 'GROUP' ? 'people' : 'person' }}
+        </mat-icon>
+        <div matListItemTitle class="conv-name">
+          {{ getConversationTitle(conv) }}
+        </div>
+        <div matListItemLine class="conv-preview">
+          {{ getLastMessagePreview(conv) }}
+        </div>
+        <div matListItemMeta class="conv-time">
+          {{ formatDate(conv.updated_at) | date:'short' }}
+        </div>
+      </mat-list-item>
+    </mat-list>
+
+    <div *ngIf="!loading && conversations.length === 0" class="empty-state">
+      <mat-icon>inbox</mat-icon>
+      <p>No conversations</p>
+    </div>
+  </div>
+
+  <!-- Chat Area -->
+  <div class="chat-area">
+    <!-- Chat Header -->
+    <div *ngIf="selectedConversation" class="chat-header">
+      <mat-icon class="header-icon">chat</mat-icon>
+      <h1>{{ getConversationTitle(selectedConversation) }}</h1>
+      <span class="conv-type-badge" [ngClass]="selectedConversation.type.toLowerCase()">
+        {{ selectedConversation.type }}
+      </span>
+    </div>
+
+    <div *ngIf="!selectedConversation && !loading" class="no-conversation">
+      <mat-icon>chat_bubble_outline</mat-icon>
+      <p>Select a chat to start messaging</p>
+    </div>
+
+    <!-- Messages -->
+    <div *ngIf="selectedConversation" class="messages-area">
+      <div class="messages-container">
+        <ng-container *ngFor="let message of messages">
+          <div 
+            *ngIf="message?.sender" 
+            class="message"
+            [class.own-message]="isOwnMessage(message)"
+            [class.other-message]="!isOwnMessage(message)"
+          >
+            <div class="message-header">
+              <strong class="sender-name">
+                {{ message.sender.first_name }} {{ message.sender.last_name }}
+              </strong>
+              <span class="message-time">{{ formatDate(message.created_at) | date:'short' }}</span>
+            </div>
+            <div class="message-content">
+              {{ message.content }}
+            </div>
+          </div>
+        </ng-container>
+
+        <div *ngIf="messages.length === 0" class="no-messages">
+          <mat-icon>inbox</mat-icon>
+          <p>No messages yet. Start the conversation! 👋</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Message Input -->
+    <div *ngIf="selectedConversation" class="input-area">
+      <mat-form-field class="message-input">
+        <mat-label>Type your message...</mat-label>
+        <input
+          matInput
+          [(ngModel)]="newMessage"
+          (keyup.enter)="sendMessage()"
+          [disabled]="sendingMessage"
+          placeholder="Share your thoughts..."
+        />
+      </mat-form-field>
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="sendMessage()"
+        [disabled]="!newMessage.trim() || sendingMessage"
+        class="send-button"
+      >
+        <mat-icon>send</mat-icon>
+        <span *ngIf="!sendingMessage">Send</span>
+        <span *ngIf="sendingMessage">Sending...</span>
+      </button>
+    </div>
+  </div>
+</div>
