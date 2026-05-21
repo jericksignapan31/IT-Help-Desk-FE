@@ -5,13 +5,25 @@
     {
       "name": "app",
       "installMode": "prefetch",
+      "updateMode": "prefetch",
       "resources": {
         "files": [
           "/favicon.ico",
           "/index.html",
           "/manifest.json",
-          "/*.css",
-          "/*.js"
+          "/styles.css",
+          "/polyfills.js",
+          "/main.js"
+        ]
+      }
+    },
+    {
+      "name": "lazy-chunks",
+      "installMode": "lazy",
+      "updateMode": "lazy",
+      "resources": {
+        "files": [
+          "/chunk-*.js"
         ]
       }
     },

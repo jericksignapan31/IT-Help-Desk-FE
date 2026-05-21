@@ -4,5 +4,25 @@
   "framework": null,
   "rewrites": [
     { "source": "/((?!.*\\.).*)", "destination": "/index.html" }
+  ],
+  "headers": [
+    {
+      "source": "/ngsw-worker.js",
+      "headers": [
+        { "key": "Service-Worker-Allowed", "value": "/" }
+      ]
+    },
+    {
+      "source": "/*.js",
+      "headers": [
+        { "key": "Content-Type", "value": "application/javascript" }
+      ]
+    },
+    {
+      "source": "/manifest.json",
+      "headers": [
+        { "key": "Content-Type", "value": "application/json" }
+      ]
+    }
   ]
 }

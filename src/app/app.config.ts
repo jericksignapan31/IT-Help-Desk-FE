@@ -6,6 +6,7 @@ import {
   withFetch,
 } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
+import { provideServiceWorker } from '@angular/service-worker';
 
 import { routes } from './app.routes';
 import {
@@ -13,6 +14,7 @@ import {
   withEventReplay,
 } from '@angular/platform-browser';
 import { authInterceptor } from './interceptors/auth.interceptor';
+import { environment } from '../environments/environment';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -21,5 +23,9 @@ export const appConfig: ApplicationConfig = {
     provideClientHydration(withEventReplay()),
     provideHttpClient(withInterceptors([authInterceptor]), withFetch()),
     provideAnimations(),
+    provideServiceWorker('ngsw-worker.js', {
+      enabled: environment.production,
+      registrationStrategy: 'registerWhenStable:30000'
+    })
   ],
 };
