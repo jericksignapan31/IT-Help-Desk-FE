@@ -5,8 +5,10 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "build:prod": "ng build --configuration production && ng run ITHelp-desk-fe:server:production",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
+    "serve:pwa": "node dist/ithelp-desk-fe/server/server.mjs",
     "serve:ssr:ITHelp-desk-fe": "node dist/ithelp-desk-fe/server/server.mjs"
   },
   "private": true,
