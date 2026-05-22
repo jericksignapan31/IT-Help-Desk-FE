@@ -140,11 +140,32 @@ export class SignupComponent implements OnInit {
     this.loading = true;
     this.error = '';
 
+    const formData = this.signupForm.value;
+    
+    console.log('📝 SIGNUP REQUEST');
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.log('Email:', formData.email);
+    console.log('First Name:', formData.first_name);
+    console.log('Last Name:', formData.last_name);
+    console.log('Middle Name:', formData.middle_name);
+    console.log('Branch ID:', formData.branch_id);
+    console.log('Department ID:', formData.department_id);
+    console.log('Position:', formData.position);
+    console.log('Contact Number:', formData.contact_number);
+    console.log('Role:', formData.role);
+    console.log('Full Payload:', formData);
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+
     // Submit form data directly to backend
     // Backend will auto-generate employee_id and handle password
-    this.authService.register(this.signupForm.value).subscribe({
+    this.authService.register(formData).subscribe({
       next: (response) => {
-        console.log('Registration successful:', response);
+        console.log('✅ REGISTRATION SUCCESSFUL');
+        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        console.log('Email:', response.email);
+        console.log('Temporary Password:', response.temporaryPassword);
+        console.log('Full Response:', response);
+        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
         this.loading = false;
 
         // Show temporary password modal
@@ -183,7 +204,16 @@ export class SignupComponent implements OnInit {
         });
       },
       error: (err) => {
-        console.error('Registration failed:', err);
+        console.error('❌ REGISTRATION FAILED');
+        console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        console.error('Status Code:', err.status);
+        console.error('Status Text:', err.statusText);
+        console.error('URL:', err.url);
+        console.error('Full Error Object:', err);
+        console.error('Error Body:', err.error);
+        console.error('Error Message:', err.error?.message);
+        console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        
         this.loading = false;
 
         if (err.status === 0) {
@@ -195,11 +225,13 @@ export class SignupComponent implements OnInit {
         } else if (err.status === 400) {
           this.error =
             err.error?.message || 'Invalid data. Please check your inputs.';
+        } else if (err.status === 500) {
+          this.error = `Server Error: ${err.error?.message || 'Internal server error. Please try again later.'}`;
         } else {
           this.error =
             err.error?.message ||
             err.message ||
-            'Registration failed. Please try again.';
+            `Registration failed (${err.status}). Please try again.`;
         }
       },
     });
