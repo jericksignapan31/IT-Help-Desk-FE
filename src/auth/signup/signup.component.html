@@ -6,8 +6,7 @@
         <h1>Create Account</h1>
         <p class="subtitle">Sign up to get started</p>
         <p class="info-note">
-          Your default password will be: YourEmployeeID&#64;Lastname (first
-          letter capitalized)
+          Account will be created with your email as username. Employee ID will be auto-generated.
         </p>
       </div>
     </mat-card-header>
@@ -17,21 +16,6 @@
         <div class="form-columns">
           <!-- Left Column -->
           <div class="form-column">
-            <!-- Employee ID -->
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Employee ID</mat-label>
-              <mat-icon matPrefix>badge</mat-icon>
-              <input
-                matInput
-                formControlName="employee_id"
-                placeholder="e.g., EMP001"
-                autocomplete="off"
-              />
-              <mat-error *ngIf="signupForm.get('employee_id')?.invalid">
-                {{ getErrorMessage("employee_id") }}
-              </mat-error>
-            </mat-form-field>
-
             <!-- First Name -->
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>First Name</mat-label>
@@ -87,6 +71,32 @@
               />
               <mat-error *ngIf="signupForm.get('email')?.invalid">
                 {{ getErrorMessage("email") }}
+              </mat-error>
+            </mat-form-field>
+
+            <!-- Password -->
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Password</mat-label>
+              <mat-icon matPrefix>lock</mat-icon>
+              <input
+                matInput
+                formControlName="password"
+                [type]="hidePassword ? 'password' : 'text'"
+                placeholder="Minimum 8 characters"
+                autocomplete="new-password"
+              />
+              <button
+                mat-icon-button
+                matSuffix
+                type="button"
+                (click)="hidePassword = !hidePassword"
+              >
+                <mat-icon>{{
+                  hidePassword ? "visibility_off" : "visibility"
+                }}</mat-icon>
+              </button>
+              <mat-error *ngIf="signupForm.get('password')?.invalid">
+                {{ getErrorMessage("password") }}
               </mat-error>
             </mat-form-field>
           </div>

@@ -10,16 +10,17 @@
     <mat-card-content>
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Employee ID</mat-label>
-          <mat-icon matPrefix>person</mat-icon>
+          <mat-label>Email</mat-label>
+          <mat-icon matPrefix>email</mat-icon>
           <input
             matInput
             formControlName="username"
-            type="text"
-            autocomplete="username"
+            type="email"
+            placeholder="e.g., admin@ithelp.com"
+            autocomplete="email"
           />
           <mat-error *ngIf="loginForm.get('username')?.hasError('required')">
-            Username is required
+            Email is required
           </mat-error>
         </mat-form-field>
 

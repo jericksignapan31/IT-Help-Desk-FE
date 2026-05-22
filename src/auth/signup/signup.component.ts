@@ -59,6 +59,7 @@ export class SignupComponent implements OnInit {
   signupForm: FormGroup;
   loading = false;
   error = '';
+  hidePassword = true;
   branches: Branch[] = [];
   departments: Department[] = [];
   loadingData = true;
@@ -70,7 +71,6 @@ export class SignupComponent implements OnInit {
     private router: Router,
   ) {
     this.signupForm = this.fb.group({
-      employee_id: ['', [Validators.required, Validators.maxLength(50)]],
       branch_id: ['', Validators.required],
       department_id: ['', Validators.required],
       first_name: ['', [Validators.required, Validators.maxLength(100)]],
@@ -80,6 +80,7 @@ export class SignupComponent implements OnInit {
         '',
         [Validators.required, Validators.email, Validators.maxLength(255)],
       ],
+      password: ['', [Validators.required, Validators.minLength(8)]],
       role: ['employee'],
       position: ['', [Validators.required, Validators.maxLength(100)]],
       contact_number: ['', Validators.maxLength(20)],
@@ -116,6 +117,22 @@ export class SignupComponent implements OnInit {
     });
   }
 
+  getErrorMessage(fieldName: string): string {
+    const control = this.signupForm.get(fieldName);
+    if (!control) return 'Invalid field';
+    if (control.hasError('required')) return 'This field is required';
+    if (control.hasError('email')) return 'Please enter a valid email';
+    if (control.hasError('minlength')) {
+      const minLength = control.getError('minlength').requiredLength;
+      return `Minimum length is ${minLength} characters`;
+    }
+    if (control.hasError('maxlength')) {
+      const maxLength = control.getError('maxlength').requiredLength;
+      return `Maximum length is ${maxLength} characters`;
+    }
+    return 'Invalid input';
+  }
+
   onSubmit(): void {
     if (this.signupForm.invalid) {
       this.signupForm.markAllAsTouched();
@@ -125,33 +142,18 @@ export class SignupComponent implements OnInit {
     this.loading = true;
     this.error = '';
 
-    // Set password to employee_id@Lastname (capitalize first letter of last name)
-    const lastName = this.signupForm.value.last_name;
-    const capitalizedLastName =
-      lastName.charAt(0).toUpperCase() + lastName.slice(1);
-
-    const formData = {
-      ...this.signupForm.value,
-      password: this.signupForm.value.employee_id + '@' + capitalizedLastName,
-    };
-
-    this.authService.register(formData).subscribe({
+    // Submit form data directly to backend
+    // Backend will auto-generate employee_id and handle password
+    this.authService.register(this.signupForm.value).subscribe({
       next: (response) => {
         console.log('Registration successful:', response);
         this.loading = false;
-
-        const lastName = this.signupForm.value.last_name;
-        const capitalizedLastName =
-          lastName.charAt(0).toUpperCase() + lastName.slice(1);
-        const displayPassword =
-          this.signupForm.value.employee_id + '@' + capitalizedLastName;
 
         Swal.fire({
           icon: 'success',
           title: 'Registration Successful!',
           html: `
             <p>Your account has been created successfully.</p>
-            <p><strong>Your default password is: ${displayPassword}</strong></p>
             <p><strong>Please wait for admin approval before logging in.</strong></p>
             <p>You will be notified once your account is verified.</p>
           `,
@@ -169,7 +171,7 @@ export class SignupComponent implements OnInit {
             'Cannot connect to server. Please check your connection.';
         } else if (err.status === 409) {
           this.error =
-            'Username or email already exists. Please use different credentials.';
+            'Email already exists. Please use a different email.';
         } else if (err.status === 400) {
           this.error =
             err.error?.message || 'Invalid data. Please check your inputs.';
@@ -181,20 +183,6 @@ export class SignupComponent implements OnInit {
         }
       },
     });
-  }
-
-  getErrorMessage(fieldName: string): string {
-    const control = this.signupForm.get(fieldName);
-    if (!control || !control.errors) return '';
-
-    if (control.errors['required']) return 'This field is required';
-    if (control.errors['email']) return 'Invalid email format';
-    if (control.errors['minLength'])
-      return `Minimum length is ${control.errors['minLength'].requiredLength}`;
-    if (control.errors['maxLength'])
-      return `Maximum length is ${control.errors['maxLength'].requiredLength}`;
-
-    return '';
   }
 
   navigateToLogin(): void {
