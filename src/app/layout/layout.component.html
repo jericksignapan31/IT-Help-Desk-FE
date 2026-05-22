@@ -67,7 +67,7 @@
         <mat-icon>account_circle</mat-icon>
         <div class="user-info">
           <div class="employee-info">
-            <span class="employee-id">({{ getEmployeeId() }})</span>
+            <span class="employee-id">{{ currentUser?.email }}</span>
             <span class="role-badge" [ngClass]="getRoleBadgeClass()">
               {{ getPosition() }}
             </span>
