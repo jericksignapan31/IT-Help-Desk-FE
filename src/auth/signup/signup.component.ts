@@ -59,7 +59,6 @@ export class SignupComponent implements OnInit {
   signupForm: FormGroup;
   loading = false;
   error = '';
-  hidePassword = true;
   branches: Branch[] = [];
   departments: Department[] = [];
   loadingData = true;
@@ -80,7 +79,6 @@ export class SignupComponent implements OnInit {
         '',
         [Validators.required, Validators.email, Validators.maxLength(255)],
       ],
-      password: ['', [Validators.required, Validators.minLength(8)]],
       role: ['employee'],
       position: ['', [Validators.required, Validators.maxLength(100)]],
       contact_number: ['', Validators.maxLength(20)],
@@ -149,15 +147,37 @@ export class SignupComponent implements OnInit {
         console.log('Registration successful:', response);
         this.loading = false;
 
+        // Show temporary password modal
         Swal.fire({
           icon: 'success',
-          title: 'Registration Successful!',
+          title: 'Registration Successful! 🎉',
           html: `
-            <p>Your account has been created successfully.</p>
-            <p><strong>Please wait for admin approval before logging in.</strong></p>
-            <p>You will be notified once your account is verified.</p>
+            <div style="text-align: left; line-height: 1.8;">
+              <p style="font-size: 16px; margin-bottom: 20px;">Your account has been created successfully!</p>
+              
+              <div style="background: #f0f4ff; border-left: 4px solid #3f51b5; padding: 15px; border-radius: 4px; margin: 15px 0;">
+                <p style="margin: 8px 0; font-size: 14px;"><strong>📧 Email:</strong></p>
+                <p style="margin: 8px 0; font-family: monospace; font-size: 16px; color: #3f51b5; font-weight: bold;">${response.email}</p>
+              </div>
+              
+              <div style="background: #fff3e0; border-left: 4px solid #ff9800; padding: 15px; border-radius: 4px; margin: 15px 0;">
+                <p style="margin: 8px 0; font-size: 14px;"><strong>🔑 Temporary Password:</strong></p>
+                <p style="margin: 8px 0; font-family: monospace; font-size: 20px; color: #ff6f00; font-weight: bold; letter-spacing: 2px;">${response.temporaryPassword}</p>
+              </div>
+              
+              <div style="background: #e8f5e9; border-left: 4px solid #4caf50; padding: 15px; border-radius: 4px; margin: 15px 0;">
+                <p style="margin: 8px 0; font-size: 13px;">✅ <strong>Next Steps:</strong></p>
+                <ul style="margin: 8px 0; padding-left: 20px; font-size: 13px;">
+                  <li>Save your temporary password securely</li>
+                  <li>Login with your email and temporary password</li>
+                  <li>You will be required to change your password immediately</li>
+                </ul>
+              </div>
+            </div>
           `,
-          confirmButtonText: 'Go to Login',
+          confirmButtonText: 'Proceed to Login',
+          allowOutsideClick: false,
+          allowEscapeKey: false,
         }).then(() => {
           this.router.navigate(['/login']);
         });

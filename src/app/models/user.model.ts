@@ -6,6 +6,7 @@ export interface User {
   employee_id?: number | string;
   is_active: boolean;
   is_verified?: boolean;
+  password_changed?: boolean;
   created_at: string;
   updated_at: string;
   employee?: {
@@ -75,6 +76,8 @@ export interface RegisterRequest {
 
 export interface RegisterResponse {
   message: string;
+  email?: string;
+  temporaryPassword?: string;
   user?: User;
 }
 

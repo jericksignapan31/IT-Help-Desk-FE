@@ -100,6 +100,7 @@ export class LoginComponent {
         console.log('🔍 Verification Check:');
         console.log('   is_verified:', response.user?.is_verified);
         console.log('   is_active:', response.user?.is_active);
+        console.log('   password_changed:', response.user?.password_changed);
         console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
         this.loading = false;
@@ -117,6 +118,13 @@ export class LoginComponent {
           this.error =
             'Your account has been deactivated by admin. Please contact support.';
           console.log('❌ Login blocked: Account deactivated');
+          return;
+        }
+
+        // Check if password needs to be changed (first login with temporary password)
+        if (response.user?.password_changed === false) {
+          console.log('⚠️ Password change required: First login detected');
+          this.router.navigate(['/change-password']);
           return;
         }
 
