@@ -88,6 +88,16 @@
       }
     },
     {
+      "name": "api-auth",
+      "urls": [
+        "/auth/**"
+      ],
+      "cacheConfig": {
+        "strategy": "freshness",
+        "timeoutMs": 5000
+      }
+    },
+    {
       "name": "api-other",
       "urls": [
         "/api/**"
