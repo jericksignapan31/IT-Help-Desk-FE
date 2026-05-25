@@ -75,15 +75,18 @@ export class AssetListComponent implements OnInit {
   loadAssets(): void {
     this.loading = true;
 
+    console.log('📦 ASSETS LOAD REQUEST');
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+
     // Determine which API to use based on user role
     const isRegularEmployee = this.authService.isUser();
     const apiEndpoint = isRegularEmployee ? '/assets/my-branch' : '/assets';
 
-    
-
-    if (isRegularEmployee) {
-    } else {
-    }
+    console.log('User Role Check:');
+    console.log('  Is Regular Employee:', isRegularEmployee);
+    console.log('  API Endpoint:', apiEndpoint);
+    console.log('  Filters:', this.filters);
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
     // Regular employees use my-branch endpoint (no filters needed)
     // IT/Supervisor/Admin use regular endpoint with filters - returns ALL branches
@@ -93,8 +96,13 @@ export class AssetListComponent implements OnInit {
 
     assetRequest.subscribe({
       next: (data) => {
+        console.log('✅ ASSETS LOADED SUCCESSFULLY');
+        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        console.log('Total Assets:', data.length);
+        console.log('Assets Data:', data);
 
         if (data.length > 0) {
+          console.log('Sample Asset:', data[0]);
 
           // Show branch distribution for admin/IT/supervisor
           if (!isRegularEmployee && data.length > 0) {
@@ -103,18 +111,29 @@ export class AssetListComponent implements OnInit {
               acc[branchName] = (acc[branchName] || 0) + 1;
               return acc;
             }, {});
+            console.log('Branch Distribution:', branchCounts);
           }
         } else {
+          console.log('⚠️ No assets found');
         }
+        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
         this.assets = data;
         this.loading = false;
       },
       error: (err) => {
-      
+        console.error('❌ ASSETS LOAD FAILED');
+        console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        console.error('Status Code:', err.status);
+        console.error('Status Text:', err.statusText);
+        console.error('URL:', err.url);
+        console.error('Error Message:', err.message);
+        console.error('Full Error:', err);
+        console.error('Error Body:', err.error);
+        console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
         if (err.status === 401) {
-         
+          console.error('⚠️ Unauthorized - Session expired');
           Swal.fire({
             icon: 'warning',
             title: 'Session Expired',
@@ -124,6 +143,13 @@ export class AssetListComponent implements OnInit {
             // Redirect to login or handle re-authentication
             localStorage.removeItem('access_token');
             window.location.href = '/login';
+          });
+        } else if (err.status === 403) {
+          console.error('⚠️ Forbidden - No permission');
+          Swal.fire({
+            icon: 'error',
+            title: 'Access Denied',
+            text: 'You do not have permission to view assets.',
           });
         }
 
