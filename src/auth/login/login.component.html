@@ -14,13 +14,16 @@
           <mat-icon matPrefix>email</mat-icon>
           <input
             matInput
-            formControlName="username"
+            formControlName="email"
             type="email"
             placeholder="e.g., admin@ithelp.com"
             autocomplete="email"
           />
-          <mat-error *ngIf="loginForm.get('username')?.hasError('required')">
+          <mat-error *ngIf="loginForm.get('email')?.hasError('required')">
             Email is required
+          </mat-error>
+          <mat-error *ngIf="loginForm.get('email')?.hasError('email')">
+            Please enter a valid email address
           </mat-error>
         </mat-form-field>
 
