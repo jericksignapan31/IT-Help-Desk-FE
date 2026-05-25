@@ -65,7 +65,6 @@ export class EmployeeDialogComponent implements OnInit {
   ) {
     this.isEditMode = data.isEditMode;
     this.employeeForm = this.fb.group({
-      employee_id: ['', [Validators.required, Validators.maxLength(50)]],
       first_name: ['', [Validators.required, Validators.maxLength(100)]],
       last_name: ['', [Validators.required, Validators.maxLength(100)]],
       middle_name: ['', Validators.maxLength(100)],
@@ -85,8 +84,6 @@ export class EmployeeDialogComponent implements OnInit {
     this.loadBranchesAndDepartments();
     if (this.isEditMode && this.data.employee) {
       this.employeeForm.patchValue(this.data.employee);
-      // Disable employee_id in edit mode since it shouldn't be changed
-      this.employeeForm.get('employee_id')?.disable();
     }
   }
 
@@ -131,15 +128,7 @@ export class EmployeeDialogComponent implements OnInit {
     }
 
     this.isSaving = true;
-    let employeeData = this.employeeForm.value;
-
-
-    // In edit mode, remove employee_id from the data being sent
-    // because employee_id is usually immutable and shouldn't be updated
-    if (this.isEditMode) {
-      const { employee_id, ...updateData } = employeeData;
-      employeeData = updateData;
-    }
+    const employeeData = this.employeeForm.value;
 
 
     // Check if token exists

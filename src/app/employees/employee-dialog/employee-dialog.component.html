@@ -6,23 +6,6 @@
   <form [formGroup]="employeeForm" (ngSubmit)="onSubmit()">
     <div class="form-row">
       <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Employee ID</mat-label>
-        <mat-icon matPrefix>badge</mat-icon>
-        <input
-          matInput
-          formControlName="employee_id"
-          placeholder="e.g., EMP001"
-          required
-          [readonly]="isEditMode"
-        />
-        <mat-error *ngIf="employeeForm.get('employee_id')?.invalid">
-          {{ getErrorMessage("employee_id") }}
-        </mat-error>
-      </mat-form-field>
-    </div>
-
-    <div class="form-row">
-      <mat-form-field appearance="outline" class="full-width">
         <mat-label>First Name</mat-label>
         <mat-icon matPrefix>person</mat-icon>
         <input
