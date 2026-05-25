@@ -55,7 +55,7 @@ export const MENU_ITEMS: MenuItem[] = [
     roles: [UserRole.ADMIN],
   },
   {
-    label: 'Branches',
+    label: 'Offices',
     icon: 'business',
     route: '/branches',
     roles: [UserRole.ADMIN],
