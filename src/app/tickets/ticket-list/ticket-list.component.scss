@@ -303,6 +303,21 @@
   }
 }
 
+.duration-cell {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background-color: #e3f2fd;
+  color: #1565c0;
+  border-radius: 4px;
+  font-weight: 600;
+  font-family: monospace;
+  cursor: help;
+
+  &:hover {
+    background-color: #bbdefb;
+  }
+}
+
 @media (max-width: 768px) {
   .filters {
     grid-template-columns: 1fr !important;

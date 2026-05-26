@@ -56,6 +56,7 @@ export class TicketListComponent implements OnInit {
     'approval_status',
     'reporter',
     'created_at',
+    'duration',
     'actions',
   ];
   loading = true;
@@ -182,6 +183,67 @@ export class TicketListComponent implements OnInit {
 
   getPriorityClass(priority: string): string {
     return `priority-${priority}`;
+  }
+
+  calculateDuration(ticket: Ticket): string {
+    let startDate: Date | null = null;
+    let endDate: Date | null = null;
+
+    // Determine duration based on ticket status
+    if (ticket.status === 'resolved' || ticket.status === 'closed') {
+      // Duration from work started to completed
+      if (ticket.started_at && ticket.resolved_at) {
+        startDate = new Date(ticket.started_at);
+        endDate = new Date(ticket.resolved_at);
+      }
+    } else if (ticket.status === 'in_progress' || ticket.status === 'assigned') {
+      // Duration from work started to now
+      if (ticket.started_at) {
+        startDate = new Date(ticket.started_at);
+        endDate = new Date();
+      }
+    } else if (ticket.status === 'approved') {
+      // Duration from creation to approval
+      if (ticket.created_at && ticket.approved_at) {
+        startDate = new Date(ticket.created_at);
+        endDate = new Date(ticket.approved_at);
+      }
+    } else if (ticket.status === 'pending_approval') {
+      // Duration from creation to now (still pending)
+      if (ticket.created_at) {
+        startDate = new Date(ticket.created_at);
+        endDate = new Date();
+      }
+    }
+
+    if (!startDate || !endDate) {
+      return '-';
+    }
+
+    // Calculate difference in milliseconds
+    const diffMs = endDate.getTime() - startDate.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const hours = Math.floor(diffMins / 60);
+    const mins = diffMins % 60;
+
+    if (hours > 0) {
+      return `${hours}h ${mins}m`;
+    } else {
+      return `${mins}m`;
+    }
+  }
+
+  getDurationTooltip(ticket: Ticket): string {
+    if (ticket.status === 'resolved' || ticket.status === 'closed') {
+      return `Work in progress time: ${this.calculateDuration(ticket)}`;
+    } else if (ticket.status === 'in_progress' || ticket.status === 'assigned') {
+      return `Time in progress: ${this.calculateDuration(ticket)}`;
+    } else if (ticket.status === 'approved') {
+      return `Time to approve: ${this.calculateDuration(ticket)}`;
+    } else if (ticket.status === 'pending_approval') {
+      return `Time pending approval: ${this.calculateDuration(ticket)}`;
+    }
+    return 'Duration';
   }
 
   getStatusClass(status: string): string {
