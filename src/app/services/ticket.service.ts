@@ -91,12 +91,7 @@ export class TicketService {
       });
     }
     
-    // Log the exact URL being called
-    const fullUrl = `${this.API_URL}/tickets?${httpParams.toString()}`;
-    console.log('🎯 [TicketService] getTicketsByDepartment called:');
-    console.log('   Department ID:', departmentId);
-    console.log('   Params:', params);
-    console.log('   Full URL:', fullUrl);
+    console.log('🎯 [TicketService] Requesting tickets with department_id:', departmentId);
     
     return this.http.get<Ticket[]>(`${this.API_URL}/tickets`, {
       params: httpParams,
