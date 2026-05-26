@@ -1,3 +1,5 @@
+import { TicketPart } from './ticket-part.model';
+
 export interface Ticket {
   ticket_id: number;
   employee_id: number;
@@ -23,6 +25,7 @@ export interface Ticket {
   created_at: string;
   updated_at?: string;
   department_id?: string; // From reporter's employee record
+  parts?: TicketPart[]; // NEW: Parts tracking
   reporter?: any;
   asset?: any;
   assignedEmployee?: any;
@@ -56,6 +59,7 @@ export enum TicketStatus {
   APPROVED = 'approved',
   ASSIGNED = 'assigned',
   IN_PROGRESS = 'in_progress',
+  WAITING_FOR_PARTS = 'waiting_for_parts',
   RESOLVED = 'resolved',
   CLOSED = 'closed',
   REJECTED = 'rejected',

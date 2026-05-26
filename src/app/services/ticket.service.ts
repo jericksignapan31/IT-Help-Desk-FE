@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Ticket } from '../models/ticket.model';
+import { TicketPart, CreatePartRequest, UpdatePartRequest } from '../models/ticket-part.model';
 import { environment } from '../../environments/environment';
 
 @Injectable({
@@ -141,6 +142,10 @@ export class TicketService {
     return this.http.get<Ticket[]>(`${this.API_URL}/tickets/completed`);
   }
 
+  getWaitingForPartsTickets(): Observable<Ticket[]> {
+    return this.http.get<Ticket[]>(`${this.API_URL}/tickets/waiting-for-parts`);
+  }
+
   getTicketsByPriority(priority: string): Observable<Ticket[]> {
     return this.http.get<Ticket[]>(
       `${this.API_URL}/tickets/priority/${priority}`,
@@ -201,5 +206,25 @@ export class TicketService {
       `${this.API_URL}/tickets/${ticketId}/complete`,
       data,
     );
+  }
+
+  // Parts tracking methods
+  getPartsByTicket(ticketId: string | number): Observable<TicketPart[]> {
+    return this.http.get<TicketPart[]>(`${this.API_URL}/tickets/${ticketId}/parts`);
+  }
+
+  requestParts(ticketId: string | number, part: CreatePartRequest): Observable<TicketPart> {
+    return this.http.post<TicketPart>(`${this.API_URL}/tickets/${ticketId}/parts`, part);
+  }
+
+  updatePartStatus(ticketId: string | number, partId: string, update: UpdatePartRequest): Observable<TicketPart> {
+    return this.http.patch<TicketPart>(
+      `${this.API_URL}/tickets/${ticketId}/parts/${partId}`,
+      update
+    );
+  }
+
+  deletePart(ticketId: string | number, partId: string): Observable<any> {
+    return this.http.delete(`${this.API_URL}/tickets/${ticketId}/parts/${partId}`);
   }
 }

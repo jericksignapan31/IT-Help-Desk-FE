@@ -11,8 +11,9 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { MatDialogModule } from '@angular/material/dialog';
+import { MatDialogModule, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatMenuModule } from '@angular/material/menu';
 import { FormsModule } from '@angular/forms';
 import { TicketService } from '../../services/ticket.service';
 import {
@@ -22,6 +23,7 @@ import {
   ApprovalStatus,
 } from '../../models/ticket.model';
 import { AuthService } from '../../services/auth.service';
+import { TicketDetailDialogComponent } from '../ticket-detail-dialog/ticket-detail-dialog.component';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -40,6 +42,7 @@ import Swal from 'sweetalert2';
     MatSelectModule,
     MatDialogModule,
     MatTooltipModule,
+    MatMenuModule,
     FormsModule,
   ],
   templateUrl: './ticket-list.component.html',
@@ -80,6 +83,7 @@ export class TicketListComponent implements OnInit, OnDestroy {
     public authService: AuthService,
     private route: ActivatedRoute,
     private router: Router,
+    private dialog: MatDialog,
   ) {}
 
   ngOnInit(): void {
@@ -124,6 +128,8 @@ export class TicketListComponent implements OnInit, OnDestroy {
       request = this.ticketService.getAssignedTickets();
     } else if (this.statusFilter === 'in_progress') {
       request = this.ticketService.getInProgressTickets();
+    } else if (this.statusFilter === 'waiting_for_parts') {
+      request = this.ticketService.getWaitingForPartsTickets();
     } else if (this.statusFilter === 'approved') {
       request = this.ticketService.getApprovedTickets();
     } else if (this.statusFilter === 'rejected') {
@@ -399,7 +405,8 @@ export class TicketListComponent implements OnInit, OnDestroy {
               <option value="">Select status...</option>
               <option value="working">Working</option>
               <option value="not_working">Not Working</option>
-              <option value="needs_replacement">Needs Replacement</option>
+              <option value="partially_working">Partially Working</option>
+              <option value="need_buy_parts">⚠️ Need to Buy Parts</option>
             </select>
           </div>
           <div style="margin-bottom: 12px;">
@@ -531,180 +538,14 @@ export class TicketListComponent implements OnInit, OnDestroy {
   }
 
   viewTicket(ticket: Ticket): void {
-    console.log('📋 [View Ticket] Full ticket object:', ticket);
+    const dialogRef = this.dialog.open(TicketDetailDialogComponent, {
+      width: '800px',
+      maxHeight: '90vh',
+      data: ticket,
+    });
 
-    const statusColor = this.getStatusColorForModal(ticket.status);
-    const priorityColor = this.getPriorityColorForModal(ticket.priority);
-
-    const reporterName = ticket.reporter
-      ? `${ticket.reporter.first_name} ${ticket.reporter.last_name}`
-      : 'N/A';
-
-    const assetInfo = ticket.asset
-      ? `${ticket.asset.asset_tag} (${ticket.asset.category})`
-      : 'N/A';
-
-    Swal.fire({
-      title: `Ticket #${ticket.ticket_id}`,
-      html: `
-        <div style="text-align: left; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-          
-          <!-- Header Section -->
-          <div style="border-bottom: 2px solid #1976d2; padding-bottom: 1rem; margin-bottom: 1.5rem;">
-            <h2 style="color: #212121; margin: 0; font-size: 1.5rem; font-weight: 600;">${ticket.subject}</h2>
-          </div>
-          
-          <!-- Status & Priority -->
-          <div style="display: flex; gap: 0.75rem; margin-bottom: 1.5rem;">
-            <span style="display: inline-flex; align-items: center; padding: 0.4rem 1rem; background: ${statusColor}; color: white; border-radius: 20px; font-size: 0.813rem; font-weight: 500; text-transform: capitalize;">
-              ${ticket.status.replace('_', ' ')}
-            </span>
-            <span style="display: inline-flex; align-items: center; padding: 0.4rem 1rem; background: ${priorityColor}; color: white; border-radius: 20px; font-size: 0.813rem; font-weight: 500; text-transform: capitalize;">
-              ${ticket.priority}
-            </span>
-          </div>
-
-          <!-- Description -->
-          <div style="margin-bottom: 1.5rem;">
-            <label style="display: block; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: #757575; margin-bottom: 0.5rem; letter-spacing: 0.5px;">Description</label>
-            <p style="color: #424242; line-height: 1.6; margin: 0; font-size: 0.938rem;">${ticket.description}</p>
-          </div>
-
-          <!-- Info Grid -->
-          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem 2rem; margin-bottom: 1.5rem; padding: 1.25rem; background: #fafafa; border-radius: 8px;">
-            <div>
-              <label style="display: block; font-size: 0.75rem; font-weight: 600; color: #757575; margin-bottom: 0.25rem;">CATEGORY</label>
-              <span style="color: #212121; font-size: 0.938rem; text-transform: capitalize;">${ticket.category}</span>
-            </div>
-            <div>
-              <label style="display: block; font-size: 0.75rem; font-weight: 600; color: #757575; margin-bottom: 0.25rem;">APPROVAL</label>
-              <span style="color: #212121; font-size: 0.938rem; text-transform: capitalize;">${ticket.approval_status}</span>
-            </div>
-            <div>
-              <label style="display: block; font-size: 0.75rem; font-weight: 600; color: #757575; margin-bottom: 0.25rem;">REPORTER</label>
-              <span style="color: #212121; font-size: 0.938rem;">${reporterName}</span>
-            </div>
-            <div>
-              <label style="display: block; font-size: 0.75rem; font-weight: 600; color: #757575; margin-bottom: 0.25rem;">ASSET</label>
-              <span style="color: #212121; font-size: 0.938rem;">${assetInfo}</span>
-            </div>
-            <div>
-              <label style="display: block; font-size: 0.75rem; font-weight: 600; color: #757575; margin-bottom: 0.25rem;">CREATED</label>
-              <span style="color: #212121; font-size: 0.938rem;">${this.formatDate(ticket.created_at)}</span>
-            </div>
-            ${
-              ticket.started_at
-                ? `
-            <div>
-              <label style="display: block; font-size: 0.75rem; font-weight: 600; color: #757575; margin-bottom: 0.25rem;">STARTED</label>
-              <span style="color: #212121; font-size: 0.938rem;">${this.formatDate(ticket.started_at)}</span>
-            </div>
-            `
-                : ''
-            }
-            ${
-              ticket.resolved_at
-                ? `
-            <div>
-              <label style="display: block; font-size: 0.75rem; font-weight: 600; color: #757575; margin-bottom: 0.25rem;">RESOLVED</label>
-              <span style="color: #212121; font-size: 0.938rem;">${this.formatDate(ticket.resolved_at)}</span>
-            </div>
-            `
-                : ''
-            }
-          </div>
-
-          ${
-            ticket.observation || ticket.action_taken || ticket.recommendation
-              ? `
-          <!-- Work Details -->
-          <div style="margin-bottom: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #e0e0e0;">
-            <h3 style="font-size: 1rem; font-weight: 600; color: #212121; margin: 0 0 1rem 0;">Work Details</h3>
-            ${
-              ticket.observation
-                ? `
-            <div style="margin-bottom: 1rem;">
-              <label style="display: block; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: #757575; margin-bottom: 0.5rem; letter-spacing: 0.5px;">Observation</label>
-              <p style="color: #424242; line-height: 1.6; margin: 0; font-size: 0.938rem; padding-left: 0.75rem; border-left: 3px solid #1976d2;">${ticket.observation}</p>
-            </div>
-            `
-                : ''
-            }
-            ${
-              ticket.action_taken
-                ? `
-            <div style="margin-bottom: 1rem;">
-              <label style="display: block; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: #757575; margin-bottom: 0.5rem; letter-spacing: 0.5px;">Action Taken</label>
-              <p style="color: #424242; line-height: 1.6; margin: 0; font-size: 0.938rem; padding-left: 0.75rem; border-left: 3px solid #1976d2;">${ticket.action_taken}</p>
-            </div>
-            `
-                : ''
-            }
-            ${
-              ticket.recommendation
-                ? `
-            <div style="margin-bottom: 1rem;">
-              <label style="display: block; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: #757575; margin-bottom: 0.5rem; letter-spacing: 0.5px;">Recommendation</label>
-              <p style="color: #424242; line-height: 1.6; margin: 0; font-size: 0.938rem; padding-left: 0.75rem; border-left: 3px solid #1976d2;">${ticket.recommendation}</p>
-            </div>
-            `
-                : ''
-            }
-          </div>
-          `
-              : ''
-          }
-
-          ${
-            ticket.resolution_notes
-              ? `
-          <div style="margin-bottom: 1.5rem;">
-            <label style="display: block; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: #757575; margin-bottom: 0.5rem; letter-spacing: 0.5px;">Resolution Notes</label>
-            <p style="color: #424242; line-height: 1.6; margin: 0; font-size: 0.938rem; padding-left: 0.75rem; border-left: 3px solid #4caf50;">${ticket.resolution_notes}</p>
-          </div>
-          `
-              : ''
-          }
-
-          ${
-            ticket.rejection_reason
-              ? `
-          <div style="margin-bottom: 1.5rem; padding: 1rem; background: #ffebee; border-left: 4px solid #d32f2f; border-radius: 4px;">
-            <label style="display: block; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: #d32f2f; margin-bottom: 0.5rem; letter-spacing: 0.5px;">Rejection Reason</label>
-            <p style="color: #c62828; line-height: 1.6; margin: 0; font-size: 0.938rem;">${ticket.rejection_reason}</p>
-          </div>
-          `
-              : ''
-          }
-
-          ${
-            ticket.image_url
-              ? `
-          <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #e0e0e0;">
-            <label style="display: block; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: #757575; margin-bottom: 0.75rem; letter-spacing: 0.5px;">Attachment</label>
-            <img src="${ticket.image_url}" style="max-width: 100%; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" alt="Ticket attachment"/>
-          </div>
-          `
-              : ''
-          }
-        </div>
-      `,
-      width: '650px',
-      showDenyButton: this.canStartWork(ticket) || this.canResolve(ticket),
-      denyButtonText: this.canStartWork(ticket)
-        ? 'Start Working'
-        : 'Complete Ticket',
-      denyButtonColor: this.canStartWork(ticket) ? '#ff4081' : '#4caf50',
-      confirmButtonText: 'Close',
-      confirmButtonColor: '#1976d2',
-    }).then((result) => {
-      if (result.isDenied) {
-        if (this.canStartWork(ticket)) {
-          this.startWork(ticket);
-        } else if (this.canResolve(ticket)) {
-          this.resolveTicket(ticket);
-        }
-      }
+    dialogRef.afterClosed().subscribe(() => {
+      // Optional: refresh ticket list if needed
     });
   }
 

@@ -35,6 +35,11 @@ export const MENU_ITEMS: MenuItem[] = [
         route: '/tickets/in-progress',
       },
       {
+        label: 'Waiting for Parts',
+        icon: 'hourglass_top',
+        route: '/tickets/waiting-for-parts',
+      },
+      {
         label: 'Completed',
         icon: 'check_circle',
         route: '/tickets/completed',

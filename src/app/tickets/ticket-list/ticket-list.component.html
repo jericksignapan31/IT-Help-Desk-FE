@@ -208,6 +208,28 @@
                 <mat-icon>cancel</mat-icon>
               </button>
 
+              <!-- Start Work button for IT staff -->
+              <button
+                *ngIf="canStartWork(ticket)"
+                mat-icon-button
+                color="accent"
+                (click)="startWork(ticket); $event.stopPropagation()"
+                matTooltip="Start Working on Ticket"
+              >
+                <mat-icon>play_arrow</mat-icon>
+              </button>
+
+              <!-- Complete Ticket button for IT staff -->
+              <button
+                *ngIf="canResolve(ticket)"
+                mat-icon-button
+                color="success"
+                (click)="resolveTicket(ticket); $event.stopPropagation()"
+                matTooltip="Complete Ticket"
+              >
+                <mat-icon>done_all</mat-icon>
+              </button>
+
               <!-- View details button -->
               <button
                 mat-icon-button

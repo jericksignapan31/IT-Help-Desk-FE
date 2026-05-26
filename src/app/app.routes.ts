@@ -98,6 +98,14 @@ export const routes: Routes = [
             data: { statusFilter: 'in_progress' },
           },
           {
+            path: 'waiting-for-parts',
+            loadComponent: () =>
+              import('./tickets/ticket-list/ticket-list.component').then(
+                (m) => m.TicketListComponent,
+              ),
+            data: { statusFilter: 'waiting_for_parts' },
+          },
+          {
             path: 'completed',
             loadComponent: () =>
               import('./tickets/ticket-list/ticket-list.component').then(
