@@ -155,13 +155,37 @@ export class EmployeeDialogComponent implements OnInit {
 
     operation.subscribe({
       next: (result) => {
-        Swal.fire({
-          icon: 'success',
-          title: 'Success!',
-          text: `Employee ${this.isEditMode ? 'updated' : 'created'} successfully`,
-          timer: 2000,
-          showConfirmButton: false,
-        });
+        this.isSaving = false;
+
+        // If creating a new employee and temporary password is provided, show it
+        if (!this.isEditMode && result.temporary_password) {
+          Swal.fire({
+            icon: 'success',
+            title: 'Employee Created Successfully! 🎉',
+            html: `
+              <div style="text-align: left; margin: 20px 0;">
+                <p><strong>Employee:</strong> ${result.first_name} ${result.last_name}</p>
+                <p><strong>Email:</strong> ${result.email}</p>
+                <p style="margin-top: 20px; padding: 15px; background-color: #f0f0f0; border-radius: 5px;">
+                  <strong style="color: #d32f2f;">⚠️ Temporary Password (Share with employee):</strong><br/>
+                  <code style="font-size: 16px; font-weight: bold; color: #1976d2; display: block; margin-top: 10px; padding: 10px; background: white; border-radius: 3px;">${result.temporary_password}</code>
+                </p>
+                <p style="margin-top: 10px; color: #666; font-size: 12px;">The employee should change this password on first login.</p>
+              </div>
+            `,
+            confirmButtonText: 'Got it!',
+            confirmButtonColor: '#1976d2',
+            allowOutsideClick: false,
+          });
+        } else {
+          Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: `Employee ${this.isEditMode ? 'updated' : 'created'} successfully`,
+            timer: 2000,
+            showConfirmButton: false,
+          });
+        }
         this.dialogRef.close(result);
       },
       error: (error) => {

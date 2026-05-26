@@ -78,6 +78,22 @@ export class TicketService {
     );
   }
 
+  // Get tickets filtered by department
+  getTicketsByDepartment(departmentId: string | number, params?: any): Observable<Ticket[]> {
+    let httpParams = new HttpParams();
+    httpParams = httpParams.set('department_id', departmentId.toString());
+    if (params) {
+      Object.keys(params).forEach((key) => {
+        if (params[key]) {
+          httpParams = httpParams.set(key, params[key]);
+        }
+      });
+    }
+    return this.http.get<Ticket[]>(`${this.API_URL}/tickets`, {
+      params: httpParams,
+    });
+  }
+
   getAssignedToMe(employeeId: number | string): Observable<Ticket[]> {
     return this.http.get<Ticket[]>(
       `${this.API_URL}/tickets/assignee/${employeeId}`,
@@ -109,8 +125,14 @@ export class TicketService {
   }
 
   // Approval workflow methods (Supervisor/Admin only)
-  getPendingApprovals(): Observable<Ticket[]> {
-    return this.http.get<Ticket[]>(`${this.API_URL}/tickets/pending-approvals`);
+  getPendingApprovals(departmentId?: string | number): Observable<Ticket[]> {
+    let params = new HttpParams();
+    if (departmentId) {
+      params = params.set('department_id', departmentId.toString());
+    }
+    return this.http.get<Ticket[]>(`${this.API_URL}/tickets/pending-approvals`, {
+      params,
+    });
   }
 
   getTicketsByApprovalStatus(status: string): Observable<Ticket[]> {

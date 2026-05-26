@@ -92,24 +92,60 @@ export class TicketListComponent implements OnInit {
     this.loading = true;
 
     let request: Observable<Ticket[]>;
+    
+    // Get current user's department for filtering
+    const currentUser = this.authService.currentUserValue;
+    const userDepartmentId = currentUser?.employee?.department_id;
+    const isEmployeeOrSupervisor = !this.authService.isAdmin() && !this.authService.isTechnician();
 
     if (this.viewMode === 'pending-approvals') {
-      request = this.ticketService.getPendingApprovals();
+      // Apply department filter for supervisors
+      if (isEmployeeOrSupervisor && userDepartmentId) {
+        request = this.ticketService.getPendingApprovals(userDepartmentId);
+      } else {
+        request = this.ticketService.getPendingApprovals();
+      }
     } else if (this.filters.search) {
       // Use search endpoint if search query exists
-      request = this.ticketService.searchTickets(this.filters.search);
+      if (isEmployeeOrSupervisor && userDepartmentId) {
+        request = this.ticketService.getTicketsByDepartment(userDepartmentId, {
+          search: this.filters.search,
+        });
+      } else {
+        request = this.ticketService.searchTickets(this.filters.search);
+      }
     } else if (this.statusFilter === 'completed') {
       // Special case: completed means resolved OR closed
-      request = this.ticketService.getTickets(this.filters);
+      if (isEmployeeOrSupervisor && userDepartmentId) {
+        request = this.ticketService.getTicketsByDepartment(userDepartmentId, this.filters);
+      } else {
+        request = this.ticketService.getTickets(this.filters);
+      }
     } else if (this.filters.status && !this.filters.priority) {
       // Use status filter endpoint
-      request = this.ticketService.getTicketsByStatus(this.filters.status);
+      if (isEmployeeOrSupervisor && userDepartmentId) {
+        request = this.ticketService.getTicketsByDepartment(userDepartmentId, {
+          status: this.filters.status,
+        });
+      } else {
+        request = this.ticketService.getTicketsByStatus(this.filters.status);
+      }
     } else if (this.filters.priority && !this.filters.status) {
       // Use priority filter endpoint
-      request = this.ticketService.getTicketsByPriority(this.filters.priority);
+      if (isEmployeeOrSupervisor && userDepartmentId) {
+        request = this.ticketService.getTicketsByDepartment(userDepartmentId, {
+          priority: this.filters.priority,
+        });
+      } else {
+        request = this.ticketService.getTicketsByPriority(this.filters.priority);
+      }
     } else {
       // Use general getTickets with params for combined filters
-      request = this.ticketService.getTickets(this.filters);
+      if (isEmployeeOrSupervisor && userDepartmentId) {
+        request = this.ticketService.getTicketsByDepartment(userDepartmentId, this.filters);
+      } else {
+        request = this.ticketService.getTickets(this.filters);
+      }
     }
 
     request.subscribe({

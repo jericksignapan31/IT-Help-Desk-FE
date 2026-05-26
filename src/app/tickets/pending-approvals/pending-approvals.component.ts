@@ -56,7 +56,15 @@ export class PendingApprovalsComponent implements OnInit {
 
     console.log('🔄 [Pending Approvals] Loading pending approval tickets...');
 
-    this.ticketService.getPendingApprovals().subscribe({
+    const currentUser = this.authService.currentUserValue;
+    const userDepartmentId = currentUser?.employee?.department_id;
+    const isSupervisor = this.authService.isSupervisor();
+
+    // Supervisors see only their department's pending approvals
+    // Admins see all pending approvals
+    const departmentId = isSupervisor && userDepartmentId ? userDepartmentId : undefined;
+
+    this.ticketService.getPendingApprovals(departmentId).subscribe({
       next: (data) => {
         console.log('✅ [Pending Approvals] Tickets loaded successfully!');
         console.log('📦 [Pending Approvals] Total tickets:', data.length);

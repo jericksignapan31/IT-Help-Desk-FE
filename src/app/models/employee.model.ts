@@ -12,6 +12,7 @@ export interface Employee {
   hire_date?: string;
   employment_status?: boolean;
   is_verified?: boolean;
+  temporary_password?: string;
   created_at?: string;
   updated_at?: string;
   department?: any;
