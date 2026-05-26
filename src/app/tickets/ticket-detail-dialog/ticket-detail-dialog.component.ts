@@ -157,7 +157,33 @@ import Swal from 'sweetalert2';
                 <span>Ticket is waiting for parts to arrive before completion</span>
               </div>
 
+              <!-- Action Buttons for Hold Status -->
+              <div *ngIf="ticket.status === TicketStatus.HOLD" class="hold-actions">
+                <button
+                  mat-raised-button
+                  color="accent"
+                  (click)="requestParts()"
+                  class="add-parts-btn"
+                >
+                  <mat-icon>add_shopping_cart</mat-icon>
+                  Request Parts
+                </button>
+
+                <button
+                  mat-raised-button
+                  color="primary"
+                  (click)="markAsResolved()"
+                  [disabled]="completing"
+                  class="resolve-btn"
+                >
+                  <mat-icon>{{ completing ? 'hourglass_empty' : 'check_circle' }}</mat-icon>
+                  {{ completing ? 'Marking...' : 'Mark as Resolved' }}
+                </button>
+              </div>
+
+              <!-- Request Parts Button (if not on hold) -->
               <button
+                *ngIf="ticket.status !== TicketStatus.HOLD"
                 mat-raised-button
                 color="accent"
                 (click)="requestParts()"
@@ -166,6 +192,7 @@ import Swal from 'sweetalert2';
                 <mat-icon>add_shopping_cart</mat-icon>
                 Request Parts
               </button>
+
               <app-parts-list
                 [ticketId]="ticket.ticket_id"
                 [parts]="parts"
@@ -292,6 +319,17 @@ import Swal from 'sweetalert2';
 
     .add-parts-btn {
       margin-bottom: 1rem;
+    }
+
+    .hold-actions {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .resolve-btn {
+      min-width: 150px;
     }
 
     .action-buttons {
@@ -432,6 +470,58 @@ export class TicketDetailDialogComponent implements OnInit {
               icon: 'error',
               title: 'Error',
               text: error.error?.message || 'Failed to request parts',
+            });
+          }
+        );
+      }
+    });
+  }
+
+  markAsResolved(): void {
+    Swal.fire({
+      title: 'Mark Ticket as Resolved?',
+      text: 'Are you sure you want to mark this ticket as resolved? Parts have been installed and work is complete.',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, Mark as Resolved',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.completing = true;
+
+        // Send simple resolved update
+        const updateData = {
+          unit_status: 'working', // Working since parts were installed
+          observation: 'Parts received and installed',
+          action_taken: 'Completed with new parts',
+          status: 'resolved',
+        };
+
+        console.log('📤 Marking ticket as resolved:', {
+          ticketId: this.ticket.ticket_id,
+          status: 'resolved',
+        });
+
+        this.ticketService.completeTicket(this.ticket.ticket_id, updateData).subscribe(
+          (updatedTicket) => {
+            this.completing = false;
+            this.ticket = updatedTicket;
+            this.loadParts();
+
+            Swal.fire({
+              icon: 'success',
+              title: 'Ticket Resolved',
+              text: '✅ Ticket has been marked as resolved',
+              timer: 3000,
+              showConfirmButton: false,
+            });
+          },
+          (error) => {
+            this.completing = false;
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: error.error?.message || 'Failed to mark ticket as resolved',
             });
           }
         );
