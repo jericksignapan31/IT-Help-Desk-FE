@@ -115,10 +115,18 @@ export class TicketListComponent implements OnInit, OnDestroy {
     const userRole = currentUser?.role;
     
     // Only employees and supervisors should have department filter applied
-    // (Admin/IT will see all tickets from backend based on their role)
     const shouldSendDepartmentFilter = (userRole === 'employee' || userRole === 'supervisor') && userDepartmentId;
 
-    if (this.viewMode === 'pending-approvals') {
+    // Use new dedicated endpoints based on statusFilter
+    if (this.statusFilter === 'pending_approval') {
+      request = this.ticketService.getPendingTickets();
+    } else if (this.statusFilter === 'approved') {
+      request = this.ticketService.getApprovedTickets();
+    } else if (this.statusFilter === 'in_progress') {
+      request = this.ticketService.getInProgressTickets();
+    } else if (this.statusFilter === 'completed') {
+      request = this.ticketService.getCompletedTickets();
+    } else if (this.viewMode === 'pending-approvals') {
       if (shouldSendDepartmentFilter) {
         request = this.ticketService.getPendingApprovals(userDepartmentId);
       } else {
@@ -131,12 +139,6 @@ export class TicketListComponent implements OnInit, OnDestroy {
         });
       } else {
         request = this.ticketService.searchTickets(this.filters.search);
-      }
-    } else if (this.statusFilter === 'completed') {
-      if (shouldSendDepartmentFilter) {
-        request = this.ticketService.getTicketsByDepartment(userDepartmentId, this.filters);
-      } else {
-        request = this.ticketService.getTickets(this.filters);
       }
     } else if (this.filters.status && !this.filters.priority) {
       if (shouldSendDepartmentFilter) {

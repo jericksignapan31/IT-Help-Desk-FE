@@ -116,6 +116,23 @@ export class TicketService {
     return this.http.get<Ticket[]>(`${this.API_URL}/tickets/status/${status}`);
   }
 
+  // New dedicated status endpoints
+  getPendingTickets(): Observable<Ticket[]> {
+    return this.http.get<Ticket[]>(`${this.API_URL}/tickets/pending`);
+  }
+
+  getInProgressTickets(): Observable<Ticket[]> {
+    return this.http.get<Ticket[]>(`${this.API_URL}/tickets/in-progress`);
+  }
+
+  getCompletedTickets(): Observable<Ticket[]> {
+    return this.http.get<Ticket[]>(`${this.API_URL}/tickets/completed`);
+  }
+
+  getApprovedTickets(): Observable<Ticket[]> {
+    return this.http.get<Ticket[]>(`${this.API_URL}/tickets/approved`);
+  }
+
   getTicketsByPriority(priority: string): Observable<Ticket[]> {
     return this.http.get<Ticket[]>(
       `${this.API_URL}/tickets/priority/${priority}`,
