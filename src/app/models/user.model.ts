@@ -51,7 +51,7 @@ export enum UserRole {
 }
 
 export interface LoginRequest {
-  username: string;
+  email: string;
   password: string;
 }
 
@@ -78,6 +78,7 @@ export interface RegisterResponse {
   message: string;
   email?: string;
   temporaryPassword?: string;
+  temporary_password?: string;
   user?: User;
 }
 

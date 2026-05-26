@@ -111,7 +111,49 @@ export class EmployeeListComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.loadEmployees();
+        // Show temporary password modal if available
+        if (result.temporary_password) {
+          const tempPassword = result.temporary_password;
+          Swal.fire({
+            icon: 'success',
+            title: 'Employee Created Successfully! 🎉',
+            html: `
+              <div style="text-align: left; margin: 20px 0;">
+                <p><strong>Employee:</strong> ${result.first_name} ${result.last_name}</p>
+                <p><strong>Email:</strong> ${result.email}</p>
+                <p style="margin-top: 20px; padding: 15px; background-color: #f0f0f0; border-radius: 5px;">
+                  <strong style="color: #d32f2f;">⚠️ Temporary Password (Share with employee):</strong><br/>
+                  <code style="font-size: 16px; font-weight: bold; color: #1976d2; display: block; margin-top: 10px; padding: 10px; background: white; border-radius: 3px; word-break: break-all;">${tempPassword}</code>
+                  <button id="copy-password-btn" style="margin-top: 10px; padding: 8px 16px; background-color: #1976d2; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 14px;">📋 Copy Password</button>
+                </p>
+                <p style="margin-top: 10px; color: #666; font-size: 12px;">The employee should change this password on first login.</p>
+              </div>
+            `,
+            confirmButtonText: 'Got it!',
+            confirmButtonColor: '#1976d2',
+            allowOutsideClick: false,
+            didOpen: () => {
+              const copyBtn = document.getElementById('copy-password-btn');
+              if (copyBtn) {
+                copyBtn.addEventListener('click', () => {
+                  navigator.clipboard.writeText(tempPassword).then(() => {
+                    const originalText = copyBtn.textContent;
+                    copyBtn.textContent = '✅ Copied!';
+                    setTimeout(() => {
+                      copyBtn.textContent = originalText;
+                    }, 2000);
+                  }).catch(() => {
+                    alert('Failed to copy password');
+                  });
+                });
+              }
+            },
+          }).then(() => {
+            this.loadEmployees();
+          });
+        } else {
+          this.loadEmployees();
+        }
       }
     });
   }

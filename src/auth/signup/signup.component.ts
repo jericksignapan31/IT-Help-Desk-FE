@@ -163,10 +163,13 @@ export class SignupComponent implements OnInit {
         console.log('✅ REGISTRATION SUCCESSFUL');
         console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
         console.log('Email:', response.email);
-        console.log('Temporary Password:', response.temporaryPassword);
+        console.log('Temporary Password:', response.temporary_password || response.temporaryPassword);
         console.log('Full Response:', response);
         console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
         this.loading = false;
+
+        // Get temporary password from response (try both formats)
+        const tempPassword = response.temporary_password || response.temporaryPassword;
 
         // Show temporary password modal
         Swal.fire({
@@ -183,7 +186,7 @@ export class SignupComponent implements OnInit {
               
               <div style="background: #fff3e0; border-left: 4px solid #ff9800; padding: 15px; border-radius: 4px; margin: 15px 0;">
                 <p style="margin: 8px 0; font-size: 14px;"><strong>🔑 Temporary Password:</strong></p>
-                <p style="margin: 8px 0; font-family: monospace; font-size: 20px; color: #ff6f00; font-weight: bold; letter-spacing: 2px;">${response.temporaryPassword}</p>
+                <p style="margin: 8px 0; font-family: monospace; font-size: 20px; color: #ff6f00; font-weight: bold; letter-spacing: 2px;">${tempPassword || 'N/A'}</p>
               </div>
               
               <div style="background: #e8f5e9; border-left: 4px solid #4caf50; padding: 15px; border-radius: 4px; margin: 15px 0;">
