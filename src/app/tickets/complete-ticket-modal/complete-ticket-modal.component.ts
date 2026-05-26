@@ -10,6 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 
 export interface CompleteTicketData {
   unit_status: string;
+  status: string; // Derived from unit_status: need_buy_parts → waiting_for_parts, else → resolved
   observation: string;
   action_taken: string;
   recommendation?: string;
@@ -176,7 +177,22 @@ export class CompleteTicketModalComponent {
 
   onSubmit(): void {
     if (this.completeForm.valid) {
-      this.dialogRef.close(this.completeForm.value as CompleteTicketData);
+      const formData = this.completeForm.value;
+      
+      // Frontend applies conditional logic: convert unit_status to ticket status
+      const completedData: CompleteTicketData = {
+        ...formData,
+        status: formData.unit_status === 'need_buy_parts' 
+          ? 'hold' 
+          : 'resolved',
+      };
+      
+      console.log('Frontend converting unit_status to status:', {
+        unit_status: formData.unit_status,
+        resulting_status: completedData.status,
+      });
+      
+      this.dialogRef.close(completedData);
     }
   }
 

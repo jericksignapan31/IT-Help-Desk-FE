@@ -142,8 +142,13 @@ export class TicketService {
     return this.http.get<Ticket[]>(`${this.API_URL}/tickets/completed`);
   }
 
+  getHoldTickets(): Observable<Ticket[]> {
+    return this.http.get<Ticket[]>(`${this.API_URL}/tickets/hold`);
+  }
+
+  // Alias for backward compatibility
   getWaitingForPartsTickets(): Observable<Ticket[]> {
-    return this.http.get<Ticket[]>(`${this.API_URL}/tickets/waiting-for-parts`);
+    return this.getHoldTickets();
   }
 
   getTicketsByPriority(priority: string): Observable<Ticket[]> {

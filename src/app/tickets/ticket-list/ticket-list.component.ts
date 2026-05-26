@@ -128,7 +128,7 @@ export class TicketListComponent implements OnInit, OnDestroy {
       request = this.ticketService.getAssignedTickets();
     } else if (this.statusFilter === 'in_progress') {
       request = this.ticketService.getInProgressTickets();
-    } else if (this.statusFilter === 'waiting_for_parts') {
+    } else if (this.statusFilter === 'hold') {
       request = this.ticketService.getWaitingForPartsTickets();
     } else if (this.statusFilter === 'approved') {
       request = this.ticketService.getApprovedTickets();

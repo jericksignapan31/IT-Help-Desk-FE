@@ -142,8 +142,8 @@ import Swal from 'sweetalert2';
                   (click)="openCompleteModal()"
                   class="complete-btn"
                 >
-                  <mat-icon>{{ ticket.status === TicketStatus.WAITING_FOR_PARTS ? 'check_circle' : 'done_all' }}</mat-icon>
-                  {{ ticket.status === TicketStatus.WAITING_FOR_PARTS ? 'Resume Work' : 'Complete Ticket' }}
+                  <mat-icon>{{ ticket.status === TicketStatus.HOLD ? 'check_circle' : 'done_all' }}</mat-icon>
+                  {{ ticket.status === TicketStatus.HOLD ? 'Resume Work' : 'Complete Ticket' }}
                 </button>
               </div>
             </div>
@@ -152,7 +152,7 @@ import Swal from 'sweetalert2';
           <!-- Parts Tab (Show when waiting_for_parts or parts exist) -->
           <mat-tab label="Parts ({{ parts.length }})" *ngIf="shouldShowPartsTab()">
             <div class="tab-content">
-              <div *ngIf="ticket.status === TicketStatus.WAITING_FOR_PARTS" class="waiting-for-parts-banner">
+              <div *ngIf="ticket.status === TicketStatus.HOLD" class="waiting-for-parts-banner">
                 <mat-icon>info</mat-icon>
                 <span>Ticket is waiting for parts to arrive before completion</span>
               </div>
@@ -339,11 +339,11 @@ export class TicketDetailDialogComponent implements OnInit {
   }
 
   canCompleteTicket(): boolean {
-    return this.ticket.status === TicketStatus.IN_PROGRESS || this.ticket.status === TicketStatus.WAITING_FOR_PARTS;
+    return this.ticket.status === TicketStatus.IN_PROGRESS || this.ticket.status === TicketStatus.HOLD;
   }
 
   shouldShowPartsTab(): boolean {
-    return this.ticket.status === TicketStatus.WAITING_FOR_PARTS || this.parts.length > 0;
+    return this.ticket.status === TicketStatus.HOLD || this.parts.length > 0;
   }
 
   openCompleteModal(): void {
@@ -362,18 +362,27 @@ export class TicketDetailDialogComponent implements OnInit {
 
   completeTicket(data: any): void {
     this.completing = true;
+    
+    // Log what we're sending to backend
+    console.log('📤 Sending to backend:', {
+      unit_status: data.unit_status,
+      status: data.status,
+      observation: data.observation,
+      action_taken: data.action_taken,
+    });
+    
     this.ticketService.completeTicket(this.ticket.ticket_id, data).subscribe(
       (updatedTicket) => {
         this.completing = false;
         this.ticket = updatedTicket;
         this.loadParts();
 
-        const isWaitingForParts = data.unit_status === 'need_buy_parts';
+        const isWaitingForParts = data.status === 'hold';
         Swal.fire({
           icon: 'success',
           title: isWaitingForParts ? 'Ticket on Hold' : 'Ticket Completed',
           text: isWaitingForParts
-            ? 'Ticket is now waiting for parts. You can request parts and track their status.'
+            ? `✅ Ticket is now waiting for parts (unit_status: ${data.unit_status})`
             : 'Ticket has been marked as completed.',
           timer: 3000,
           showConfirmButton: false,
@@ -436,7 +445,7 @@ export class TicketDetailDialogComponent implements OnInit {
       [TicketStatus.APPROVED]: 'primary',
       [TicketStatus.ASSIGNED]: 'primary',
       [TicketStatus.IN_PROGRESS]: 'accent',
-      [TicketStatus.WAITING_FOR_PARTS]: 'warn',
+      [TicketStatus.HOLD]: 'warn',
       [TicketStatus.RESOLVED]: 'primary',
       [TicketStatus.REJECTED]: 'warn',
     };
