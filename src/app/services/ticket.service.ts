@@ -82,6 +82,7 @@ export class TicketService {
   getTicketsByDepartment(departmentId: string | number, params?: any): Observable<Ticket[]> {
     let httpParams = new HttpParams();
     httpParams = httpParams.set('department_id', departmentId.toString());
+    
     if (params) {
       Object.keys(params).forEach((key) => {
         if (params[key]) {
@@ -89,6 +90,14 @@ export class TicketService {
         }
       });
     }
+    
+    // Log the exact URL being called
+    const fullUrl = `${this.API_URL}/tickets?${httpParams.toString()}`;
+    console.log('🎯 [TicketService] getTicketsByDepartment called:');
+    console.log('   Department ID:', departmentId);
+    console.log('   Params:', params);
+    console.log('   Full URL:', fullUrl);
+    
     return this.http.get<Ticket[]>(`${this.API_URL}/tickets`, {
       params: httpParams,
     });

@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { MatTableModule } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -44,7 +45,7 @@ import Swal from 'sweetalert2';
   templateUrl: './ticket-list.component.html',
   styleUrls: ['./ticket-list.component.scss'],
 })
-export class TicketListComponent implements OnInit {
+export class TicketListComponent implements OnInit, OnDestroy {
   tickets: Ticket[] = [];
   displayedColumns: string[] = [
     'ticket_id',
@@ -55,6 +56,7 @@ export class TicketListComponent implements OnInit {
     'status',
     'approval_status',
     'reporter',
+    'department',
     'created_at',
     'duration',
     'actions',
@@ -62,6 +64,7 @@ export class TicketListComponent implements OnInit {
   loading = true;
   viewMode: 'all' | 'pending-approvals' = 'all';
   statusFilter: string | null = null;
+  private destroy$ = new Subject<void>();
 
   filters = {
     search: '',
@@ -87,6 +90,19 @@ export class TicketListComponent implements OnInit {
       }
       this.loadTickets();
     });
+
+    // Subscribe to auth changes to reload tickets when user data updates
+    this.authService.getCurrentUser$()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        console.log('👤 [Auth Changed] User data updated, reloading tickets...');
+        this.loadTickets();
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   loadTickets(): void {
@@ -97,54 +113,78 @@ export class TicketListComponent implements OnInit {
     // Get current user's department for filtering
     const currentUser = this.authService.currentUserValue;
     const userDepartmentId = currentUser?.employee?.department_id;
-    const isEmployeeOrSupervisor = !this.authService.isAdmin() && !this.authService.isTechnician();
+    const userRole = currentUser?.role;
+    
+    // Only employees and supervisors should be restricted to their department
+    const shouldApplyDepartmentFilter = (userRole === 'employee' || userRole === 'supervisor') && userDepartmentId;
+
+    // DEBUG LOGGING
+    console.log('🔍 [DEBUG] loadTickets:', {
+      currentUser: currentUser?.email,
+      userRole: userRole,
+      userDepartmentId: userDepartmentId,
+      shouldApplyDepartmentFilter: shouldApplyDepartmentFilter,
+      fullEmployee: currentUser?.employee,
+    });
 
     if (this.viewMode === 'pending-approvals') {
       // Apply department filter for supervisors
-      if (isEmployeeOrSupervisor && userDepartmentId) {
+      if (shouldApplyDepartmentFilter) {
+        console.log('📋 Using getPendingApprovals with department:', userDepartmentId);
         request = this.ticketService.getPendingApprovals(userDepartmentId);
       } else {
+        console.log('📋 Using getPendingApprovals without department filter');
         request = this.ticketService.getPendingApprovals();
       }
     } else if (this.filters.search) {
       // Use search endpoint if search query exists
-      if (isEmployeeOrSupervisor && userDepartmentId) {
+      if (shouldApplyDepartmentFilter) {
+        console.log('🔍 Using search with department:', userDepartmentId);
         request = this.ticketService.getTicketsByDepartment(userDepartmentId, {
           search: this.filters.search,
         });
       } else {
+        console.log('🔍 Using search without department filter');
         request = this.ticketService.searchTickets(this.filters.search);
       }
     } else if (this.statusFilter === 'completed') {
       // Special case: completed means resolved OR closed
-      if (isEmployeeOrSupervisor && userDepartmentId) {
+      if (shouldApplyDepartmentFilter) {
+        console.log('✅ Using getTicketsByDepartment with filters:', userDepartmentId);
         request = this.ticketService.getTicketsByDepartment(userDepartmentId, this.filters);
       } else {
+        console.log('✅ Using getTickets without department filter');
         request = this.ticketService.getTickets(this.filters);
       }
     } else if (this.filters.status && !this.filters.priority) {
       // Use status filter endpoint
-      if (isEmployeeOrSupervisor && userDepartmentId) {
+      if (shouldApplyDepartmentFilter) {
+        console.log('⏳ Using getTicketsByDepartment with status:', userDepartmentId);
         request = this.ticketService.getTicketsByDepartment(userDepartmentId, {
           status: this.filters.status,
         });
       } else {
+        console.log('⏳ Using getTicketsByStatus without department filter');
         request = this.ticketService.getTicketsByStatus(this.filters.status);
       }
     } else if (this.filters.priority && !this.filters.status) {
       // Use priority filter endpoint
-      if (isEmployeeOrSupervisor && userDepartmentId) {
+      if (shouldApplyDepartmentFilter) {
+        console.log('🎯 Using getTicketsByDepartment with priority:', userDepartmentId);
         request = this.ticketService.getTicketsByDepartment(userDepartmentId, {
           priority: this.filters.priority,
         });
       } else {
+        console.log('🎯 Using getTicketsByPriority without department filter');
         request = this.ticketService.getTicketsByPriority(this.filters.priority);
       }
     } else {
       // Use general getTickets with params for combined filters
-      if (isEmployeeOrSupervisor && userDepartmentId) {
+      if (shouldApplyDepartmentFilter) {
+        console.log('📊 Using getTicketsByDepartment:', userDepartmentId);
         request = this.ticketService.getTicketsByDepartment(userDepartmentId, this.filters);
       } else {
+        console.log('📊 Using getTickets without department filter');
         request = this.ticketService.getTickets(this.filters);
       }
     }
@@ -154,13 +194,36 @@ export class TicketListComponent implements OnInit {
         console.log('Loaded tickets:', data);
         console.log('Status filter:', this.statusFilter);
         console.log('Filters:', this.filters);
+        
+        // NEW: Log departments of received tickets
+        const departments = new Set(data.map(t => t.reporter?.department_id || t.department_id || 'N/A'));
+        const uniqueDepartments = Array.from(departments);
+        console.log('📊 Departments in response:', uniqueDepartments);
+        console.log('📝 Total tickets received:', data.length);
+        
+        // CLIENT-SIDE FALLBACK: Filter by department if backend didn't do it
+        const currentUser = this.authService.currentUserValue;
+        const userRole = currentUser?.role;
+        const userDepartmentId = currentUser?.employee?.department_id;
+        const shouldFilter = (userRole === 'employee' || userRole === 'supervisor') && userDepartmentId;
+
+        let filteredData = data;
+        if (shouldFilter) {
+          const beforeCount = data.length;
+          filteredData = data.filter((ticket) => {
+            const ticketDeptId = ticket.department_id || ticket.reporter?.department_id;
+            return ticketDeptId === userDepartmentId;
+          });
+          console.log(`🔍 CLIENT-SIDE FILTERING: ${beforeCount} → ${filteredData.length} tickets (kept only dept: ${userDepartmentId})`);
+        }
+        
         // Filter for completed tickets (resolved OR closed)
         if (this.statusFilter === 'completed') {
-          this.tickets = data.filter(
+          this.tickets = filteredData.filter(
             (t) => t.status === 'resolved' || t.status === 'closed',
           );
         } else {
-          this.tickets = data;
+          this.tickets = filteredData;
         }
         console.log('Final tickets after filter:', this.tickets);
         this.loading = false;

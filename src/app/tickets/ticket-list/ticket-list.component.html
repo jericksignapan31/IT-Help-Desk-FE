@@ -159,6 +159,15 @@
           </td>
         </ng-container>
 
+        <ng-container matColumnDef="department">
+          <th mat-header-cell *matHeaderCellDef>Department</th>
+          <td mat-cell *matCellDef="let ticket">
+            <span class="department-badge">
+              {{ ticket.reporter?.department?.department_name || ticket.department_id || '—' }}
+            </span>
+          </td>
+        </ng-container>
+
         <ng-container matColumnDef="created_at">
           <th mat-header-cell *matHeaderCellDef>Created</th>
           <td mat-cell *matCellDef="let ticket">

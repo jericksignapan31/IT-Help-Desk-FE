@@ -22,6 +22,7 @@ export interface Ticket {
   recommendation?: string;
   created_at: string;
   updated_at?: string;
+  department_id?: string; // From reporter's employee record
   reporter?: any;
   asset?: any;
   assignedEmployee?: any;
