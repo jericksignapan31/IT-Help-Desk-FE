@@ -120,11 +120,15 @@ export class TicketListComponent implements OnInit, OnDestroy {
     // Use new dedicated endpoints based on statusFilter
     if (this.statusFilter === 'pending_approval') {
       request = this.ticketService.getPendingTickets();
-    } else if (this.statusFilter === 'approved') {
-      request = this.ticketService.getApprovedTickets();
+    } else if (this.statusFilter === 'assigned') {
+      request = this.ticketService.getAssignedTickets();
     } else if (this.statusFilter === 'in_progress') {
       request = this.ticketService.getInProgressTickets();
-    } else if (this.statusFilter === 'completed') {
+    } else if (this.statusFilter === 'approved') {
+      request = this.ticketService.getApprovedTickets();
+    } else if (this.statusFilter === 'rejected') {
+      request = this.ticketService.getRejectedTickets();
+    } else if (this.statusFilter === 'completed' || this.statusFilter === 'resolved') {
       request = this.ticketService.getCompletedTickets();
     } else if (this.viewMode === 'pending-approvals') {
       if (shouldSendDepartmentFilter) {

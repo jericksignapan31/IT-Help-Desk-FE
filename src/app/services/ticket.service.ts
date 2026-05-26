@@ -121,16 +121,24 @@ export class TicketService {
     return this.http.get<Ticket[]>(`${this.API_URL}/tickets/pending`);
   }
 
+  getAssignedTickets(): Observable<Ticket[]> {
+    return this.http.get<Ticket[]>(`${this.API_URL}/tickets/assigned`);
+  }
+
   getInProgressTickets(): Observable<Ticket[]> {
     return this.http.get<Ticket[]>(`${this.API_URL}/tickets/in-progress`);
   }
 
-  getCompletedTickets(): Observable<Ticket[]> {
-    return this.http.get<Ticket[]>(`${this.API_URL}/tickets/completed`);
-  }
-
   getApprovedTickets(): Observable<Ticket[]> {
     return this.http.get<Ticket[]>(`${this.API_URL}/tickets/approved`);
+  }
+
+  getRejectedTickets(): Observable<Ticket[]> {
+    return this.http.get<Ticket[]>(`${this.API_URL}/tickets/rejected`);
+  }
+
+  getCompletedTickets(): Observable<Ticket[]> {
+    return this.http.get<Ticket[]>(`${this.API_URL}/tickets/completed`);
   }
 
   getTicketsByPriority(priority: string): Observable<Ticket[]> {
