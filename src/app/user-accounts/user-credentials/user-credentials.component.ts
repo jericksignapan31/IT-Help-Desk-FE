@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -7,6 +8,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { UserAccountService } from '../../services/user-account.service';
 import Swal from 'sweetalert2';
 import { log } from 'console';
@@ -30,6 +33,7 @@ interface UserCredential {
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     MatTableModule,
     MatCardModule,
     MatButtonModule,
@@ -37,19 +41,25 @@ interface UserCredential {
     MatChipsModule,
     MatTooltipModule,
     MatProgressSpinnerModule,
+    MatFormFieldModule,
+    MatInputModule,
   ],
   templateUrl: './user-credentials.component.html',
   styleUrls: ['./user-credentials.component.scss'],
 })
 export class UserCredentialsComponent implements OnInit {
   credentials: UserCredential[] = [];
+  filteredCredentials: UserCredential[] = [];
   displayedColumns: string[] = [
-    'username',
+    'email',
+    'employee_name',
+    'role',
     'password',
     'account_status',
     'actions',
   ];
   loading = false;
+  searchText = '';
 
   constructor(private userAccountService: UserAccountService) {}
 
@@ -62,6 +72,7 @@ export class UserCredentialsComponent implements OnInit {
     this.userAccountService.getUserCredentials().subscribe({
       next: (data) => {
         this.credentials = data;
+        this.applyFilter();
         this.loading = false;
         console.log('User credentials loaded:', data);
       },
@@ -75,6 +86,25 @@ export class UserCredentialsComponent implements OnInit {
         this.loading = false;
       },
     });
+  }
+
+  applyFilter(): void {
+    if (!this.searchText.trim()) {
+      this.filteredCredentials = this.credentials;
+    } else {
+      const search = this.searchText.toLowerCase();
+      this.filteredCredentials = this.credentials.filter(
+        (cred) =>
+          cred.email?.toLowerCase().includes(search) ||
+          cred.employee_name?.toLowerCase().includes(search) ||
+          cred.username?.toLowerCase().includes(search) ||
+          cred.role?.toLowerCase().includes(search),
+      );
+    }
+  }
+
+  onSearchChange(): void {
+    this.applyFilter();
   }
 
   resetPassword(credential: UserCredential): void {
