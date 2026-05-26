@@ -402,9 +402,8 @@ export class TicketDetailDialogComponent implements OnInit {
     this.completing = true;
     
     // Log what we're sending to backend
-    console.log('📤 Sending to backend:', {
+    console.log('📤 Sending complete ticket data:', {
       unit_status: data.unit_status,
-      status: data.status,
       observation: data.observation,
       action_taken: data.action_taken,
     });
@@ -415,23 +414,25 @@ export class TicketDetailDialogComponent implements OnInit {
         this.ticket = updatedTicket;
         this.loadParts();
 
-        const isWaitingForParts = data.status === 'hold';
+        const isOnHold = updatedTicket.status === 'hold';
         Swal.fire({
           icon: 'success',
-          title: isWaitingForParts ? 'Ticket on Hold' : 'Ticket Completed',
-          text: isWaitingForParts
-            ? `✅ Ticket is now waiting for parts (unit_status: ${data.unit_status})`
-            : 'Ticket has been marked as completed.',
+          title: isOnHold ? 'Ticket on Hold' : 'Ticket Completed',
+          text: isOnHold
+            ? `✅ Ticket is now waiting for parts`
+            : '✅ Ticket has been marked as completed.',
           timer: 3000,
           showConfirmButton: false,
         });
       },
       (error) => {
         this.completing = false;
+        const errorMsg = error.error?.message || 'Failed to complete ticket';
+        console.error('❌ Error completing ticket:', errorMsg, error.error);
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: error.error?.message || 'Failed to complete ticket',
+          text: errorMsg,
         });
       }
     );
@@ -489,17 +490,15 @@ export class TicketDetailDialogComponent implements OnInit {
       if (result.isConfirmed) {
         this.completing = true;
 
-        // Send simple resolved update
+        // Send minimal data - backend determines status based on unit_status
         const updateData = {
-          unit_status: 'working', // Working since parts were installed
+          unit_status: 'working',
           observation: 'Parts received and installed',
           action_taken: 'Completed with new parts',
-          status: 'resolved',
         };
 
         console.log('📤 Marking ticket as resolved:', {
-          ticketId: this.ticket.ticket_id,
-          status: 'resolved',
+          unit_status: updateData.unit_status,
         });
 
         this.ticketService.completeTicket(this.ticket.ticket_id, updateData).subscribe(
@@ -518,10 +517,12 @@ export class TicketDetailDialogComponent implements OnInit {
           },
           (error) => {
             this.completing = false;
+            const errorMsg = error.error?.message || 'Failed to mark ticket as resolved';
+            console.error('❌ Error marking as resolved:', errorMsg, error.error);
             Swal.fire({
               icon: 'error',
               title: 'Error',
-              text: error.error?.message || 'Failed to mark ticket as resolved',
+              text: errorMsg,
             });
           }
         );
