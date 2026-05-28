@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
@@ -7,6 +8,9 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCardModule } from '@angular/material/card';
+import { MatInputModule } from '@angular/material/input';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 import { TicketPart } from '../../models/ticket-part.model';
 import { TicketService } from '../../services/ticket.service';
 import Swal from 'sweetalert2';
@@ -18,6 +22,7 @@ import { takeUntil } from 'rxjs/operators';
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     MatButtonModule,
     MatIconModule,
     MatTableModule,
@@ -25,6 +30,9 @@ import { takeUntil } from 'rxjs/operators';
     MatFormFieldModule,
     MatSelectModule,
     MatCardModule,
+    MatInputModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
   ],
   templateUrl: './parts-inventory.component.html',
   styleUrls: ['./parts-inventory.component.scss'],
@@ -39,6 +47,8 @@ export class PartsInventoryComponent implements OnInit, OnDestroy {
   selectedStatus: 'pending' | 'ordered' | 'received' = 'pending';
   selectedSupplier: string = '';
   suppliers: string[] = [];
+  dateFromFilter: Date | null = null;
+  dateToFilter: Date | null = null;
   
   displayedColumns: string[] = [
     'part_name',
@@ -49,7 +59,6 @@ export class PartsInventoryComponent implements OnInit, OnDestroy {
     'status',
     'requested_date',
     'received_date',
-    'ticket_subject',
   ];
 
   private destroy$ = new Subject<void>();
@@ -152,6 +161,44 @@ export class PartsInventoryComponent implements OnInit, OnDestroy {
   private extractSuppliers(): void {
     const uniqueSuppliers = new Set(this.parts.map((p) => p.supplier));
     this.suppliers = Array.from(uniqueSuppliers).sort();
+  }
+
+  filterByDateRange(): void {
+    if (!this.dateFromFilter && !this.dateToFilter) {
+      this.loadAllParts();
+      return;
+    }
+
+    this.loading = true;
+    this.error = '';
+    this.filterType = 'all';
+
+    // Filter parts by date range
+    this.filteredParts = this.parts.filter((part) => {
+      const requestedDate = new Date(part.requested_date);
+      
+      if (this.dateFromFilter && requestedDate < this.dateFromFilter) {
+        return false;
+      }
+      
+      if (this.dateToFilter) {
+        const toDateEnd = new Date(this.dateToFilter);
+        toDateEnd.setHours(23, 59, 59, 999);
+        if (requestedDate > toDateEnd) {
+          return false;
+        }
+      }
+      
+      return true;
+    });
+
+    this.loading = false;
+  }
+
+  clearDateFilters(): void {
+    this.dateFromFilter = null;
+    this.dateToFilter = null;
+    this.loadAllParts();
   }
 
   getStatusColor(status: string): string {

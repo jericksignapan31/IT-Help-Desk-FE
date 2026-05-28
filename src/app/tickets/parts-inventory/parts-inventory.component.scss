@@ -132,6 +132,21 @@
         width: 100%;
       }
     }
+
+    .date-filter {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-end;
+      flex-wrap: wrap;
+
+      mat-form-field {
+        min-width: 200px;
+      }
+
+      button {
+        align-self: flex-end;
+      }
+    }
   }
 
   .error-message {
