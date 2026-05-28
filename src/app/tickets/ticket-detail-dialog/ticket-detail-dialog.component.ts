@@ -139,10 +139,10 @@ import Swal from 'sweetalert2';
                   *ngIf="canCompleteTicket()"
                   mat-raised-button
                   color="accent"
-                  (click)="openCompleteModal()"
+                  (click)="ticket.status === TicketStatus.HOLD ? resumeWork() : openCompleteModal()"
                   class="complete-btn"
                 >
-                  <mat-icon>{{ ticket.status === TicketStatus.HOLD ? 'check_circle' : 'done_all' }}</mat-icon>
+                  <mat-icon>{{ ticket.status === TicketStatus.HOLD ? 'play_arrow' : 'done_all' }}</mat-icon>
                   {{ ticket.status === TicketStatus.HOLD ? 'Resume Work' : 'Complete Ticket' }}
                 </button>
               </div>
@@ -167,17 +167,6 @@ import Swal from 'sweetalert2';
                 >
                   <mat-icon>add_shopping_cart</mat-icon>
                   Request Parts
-                </button>
-
-                <button
-                  mat-raised-button
-                  color="primary"
-                  (click)="markAsResolved()"
-                  [disabled]="completing"
-                  class="resolve-btn"
-                >
-                  <mat-icon>{{ completing ? 'hourglass_empty' : 'check_circle' }}</mat-icon>
-                  {{ completing ? 'Marking...' : 'Mark as Resolved' }}
                 </button>
               </div>
 
@@ -620,6 +609,41 @@ export class TicketDetailDialogComponent implements OnInit {
                 text: errorMsg,
               });
             }
+          }
+        );
+      }
+    });
+  }
+
+  resumeWork(): void {
+    Swal.fire({
+      title: 'Resume Work?',
+      text: 'Provide notes about resuming work on this ticket',
+      input: 'textarea',
+      inputPlaceholder: 'e.g., Parts have arrived, resuming work',
+      showCancelButton: true,
+      confirmButtonText: 'Resume Work',
+      cancelButtonText: 'Cancel',
+    } as any).then((result) => {
+      if (result.isConfirmed && result.value) {
+        this.ticketService.resumeFromHold(this.ticket.ticket_id, result.value).subscribe(
+          (updatedTicket) => {
+            this.ticket = updatedTicket;
+
+            Swal.fire({
+              icon: 'success',
+              title: 'Work Resumed',
+              text: '✅ Ticket moved to In Progress',
+              timer: 2000,
+              showConfirmButton: false,
+            });
+          },
+          (error) => {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: error.error?.message || 'Failed to resume work',
+            });
           }
         );
       }

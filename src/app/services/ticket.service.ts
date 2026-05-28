@@ -199,10 +199,17 @@ export class TicketService {
   }
 
   // IT Staff workflow methods
-  startWork(ticketId: number): Observable<Ticket> {
+  startWork(ticketId: number | string, notes?: string): Observable<Ticket> {
     return this.http.patch<Ticket>(
       `${this.API_URL}/tickets/${ticketId}/start-work`,
-      null,
+      { notes: notes || '' },
+    );
+  }
+
+  resumeFromHold(ticketId: number | string, notes?: string): Observable<Ticket> {
+    return this.http.patch<Ticket>(
+      `${this.API_URL}/tickets/${ticketId}/resume-from-hold`,
+      { notes: notes || '' },
     );
   }
 
