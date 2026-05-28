@@ -490,14 +490,16 @@ export class TicketDetailDialogComponent implements OnInit {
       if (result.isConfirmed) {
         this.completing = true;
 
-        // Send minimal data - backend determines status based on unit_status
+        // Send data to mark as resolved
+        // Note: Backend needs to allow completing tickets in 'hold' status
         const updateData = {
           unit_status: 'working',
           observation: 'Parts received and installed',
           action_taken: 'Completed with new parts',
         };
 
-        console.log('📤 Marking ticket as resolved:', {
+        console.log('📤 Marking ticket as resolved (from hold status):', {
+          currentStatus: this.ticket.status,
           unit_status: updateData.unit_status,
         });
 
@@ -519,11 +521,23 @@ export class TicketDetailDialogComponent implements OnInit {
             this.completing = false;
             const errorMsg = error.error?.message || 'Failed to mark ticket as resolved';
             console.error('❌ Error marking as resolved:', errorMsg, error.error);
-            Swal.fire({
-              icon: 'error',
-              title: 'Error',
-              text: errorMsg,
-            });
+            
+            // Check if error is about ticket status - provide helpful message
+            if (errorMsg.includes('status') || errorMsg.includes('in progress')) {
+              Swal.fire({
+                icon: 'error',
+                title: 'Cannot Complete From Hold Status',
+                html: `<p>${errorMsg}</p><p style="margin-top: 10px; font-size: 0.9em;">
+                  <strong>Note:</strong> Backend needs to support completing tickets from 'hold' status.
+                </p>`,
+              });
+            } else {
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: errorMsg,
+              });
+            }
           }
         );
       }
