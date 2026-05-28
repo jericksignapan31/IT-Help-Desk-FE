@@ -385,9 +385,34 @@ export class TicketDetailDialogComponent implements OnInit {
   }
 
   openCompleteModal(): void {
+    // Check if ticket is on hold and parts are received
+    const isHoldStatus = this.ticket.status === TicketStatus.HOLD;
+    const allPartsReceived = this.checkAllPartsReceived();
+    
+    if (isHoldStatus && !allPartsReceived) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Parts Not Ready',
+        html: `
+          <p>Not all parts have been marked as received.</p>
+          <p><strong>Parts Status:</strong></p>
+          <ul style="text-align: left;">
+            ${this.parts.map(p => `<li>${p.part_name}: <strong>${p.status || 'pending'}</strong></li>`).join('')}
+          </ul>
+          <p style="margin-top: 1rem;">Please mark all parts as received before completing.</p>
+        `,
+        confirmButtonText: 'OK',
+      });
+      return;
+    }
+    
     const dialogRef = this.dialog.open(CompleteTicketModalComponent, {
       width: '600px',
-      data: { ticketId: this.ticket.ticket_id },
+      data: { 
+        ticketId: this.ticket.ticket_id,
+        ticketStatus: this.ticket.status,
+        allPartsReceived: allPartsReceived,
+      },
       disableClose: false,
     });
 
@@ -429,11 +454,32 @@ export class TicketDetailDialogComponent implements OnInit {
         this.completing = false;
         const errorMsg = error.error?.message || 'Failed to complete ticket';
         console.error('❌ Error completing ticket:', errorMsg, error.error);
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: errorMsg,
-        });
+        
+        // Check if error is about parts not received
+        if (errorMsg.includes('part') && errorMsg.includes('received')) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Parts Not Received',
+            html: `
+              <p>${errorMsg}</p>
+              <p style="margin-top: 1rem; font-size: 0.9em;">
+                <strong>Action:</strong> Mark all parts as received from the Parts tab before completing.
+              </p>
+            `,
+          });
+        } else if (errorMsg.includes('status') && (errorMsg.includes('in progress') || errorMsg.includes('hold'))) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Cannot Complete Ticket',
+            html: `<p>${errorMsg}</p>`,
+          });
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: errorMsg,
+          });
+        }
       }
     );
   }
@@ -479,6 +525,33 @@ export class TicketDetailDialogComponent implements OnInit {
   }
 
   markAsResolved(): void {
+    // Validate all parts are received
+    if (!this.checkAllPartsReceived()) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Parts Not Ready',
+        html: `
+          <p>Cannot mark as resolved - not all parts have been received.</p>
+          <p><strong>Received Status:</strong></p>
+          <ul style="text-align: left;">
+            ${this.parts.map(p => `
+              <li>
+                <strong>${p.part_name}</strong>:
+                <span style="${p.status === 'received' ? 'color: green;' : 'color: orange;'}">
+                  ${p.status === 'received' ? '✅ Received' : '⏳ ' + (p.status || 'pending')}
+                </span>
+              </li>
+            `).join('')}
+          </ul>
+          <p style="margin-top: 1rem;">
+            Please mark all parts as received first using the 'Mark Received' button.
+          </p>
+        `,
+        confirmButtonText: 'OK',
+      });
+      return;
+    }
+
     Swal.fire({
       title: 'Mark Ticket as Resolved?',
       text: 'Are you sure you want to mark this ticket as resolved? Parts have been installed and work is complete.',
@@ -491,7 +564,6 @@ export class TicketDetailDialogComponent implements OnInit {
         this.completing = true;
 
         // Send data to mark as resolved
-        // Note: Backend needs to allow completing tickets in 'hold' status
         const updateData = {
           unit_status: 'working',
           observation: 'Parts received and installed',
@@ -501,6 +573,7 @@ export class TicketDetailDialogComponent implements OnInit {
         console.log('📤 Marking ticket as resolved (from hold status):', {
           currentStatus: this.ticket.status,
           unit_status: updateData.unit_status,
+          allPartsReceived: this.checkAllPartsReceived(),
         });
 
         this.ticketService.completeTicket(this.ticket.ticket_id, updateData).subscribe(
@@ -522,14 +595,23 @@ export class TicketDetailDialogComponent implements OnInit {
             const errorMsg = error.error?.message || 'Failed to mark ticket as resolved';
             console.error('❌ Error marking as resolved:', errorMsg, error.error);
             
-            // Check if error is about ticket status - provide helpful message
-            if (errorMsg.includes('status') || errorMsg.includes('in progress')) {
+            // Enhanced error handling
+            if (errorMsg.includes('part') && errorMsg.includes('received')) {
+              Swal.fire({
+                icon: 'error',
+                title: 'Parts Not Received',
+                html: `
+                  <p>${errorMsg}</p>
+                  <p style="margin-top: 1rem; font-size: 0.9em;">
+                    Backend validation: All parts must be marked as received.
+                  </p>
+                `,
+              });
+            } else if (errorMsg.includes('status') || errorMsg.includes('in progress')) {
               Swal.fire({
                 icon: 'error',
                 title: 'Cannot Complete From Hold Status',
-                html: `<p>${errorMsg}</p><p style="margin-top: 10px; font-size: 0.9em;">
-                  <strong>Note:</strong> Backend needs to support completing tickets from 'hold' status.
-                </p>`,
+                html: `<p>${errorMsg}</p>`,
               });
             } else {
               Swal.fire({
@@ -540,6 +622,53 @@ export class TicketDetailDialogComponent implements OnInit {
             }
           }
         );
+      }
+    });
+  }
+
+  checkAllPartsReceived(): boolean {
+    if (!this.parts || this.parts.length === 0) {
+      return true; // No parts, so all "received"
+    }
+    return this.parts.every(part => part.status === 'received');
+  }
+
+  markPartAsReceived(part: TicketPart): void {
+    Swal.fire({
+      title: `Mark ${part.part_name} as Received?`,
+      text: `Confirm receipt of: ${part.part_name} (Qty: ${part.quantity})`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, Mark as Received',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.ticketService
+          .updatePartStatus(this.ticket.ticket_id, part.part_id, { status: 'received' })
+          .subscribe(
+            (updatedPart) => {
+              // Update the part in local array
+              const index = this.parts.findIndex(p => p.part_id === part.part_id);
+              if (index > -1) {
+                this.parts[index] = updatedPart;
+              }
+
+              Swal.fire({
+                icon: 'success',
+                title: 'Part Marked',
+                text: `✅ ${part.part_name} marked as received`,
+                timer: 2000,
+                showConfirmButton: false,
+              });
+            },
+            (error) => {
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: error.error?.message || 'Failed to update part status',
+              });
+            }
+          );
       }
     });
   }

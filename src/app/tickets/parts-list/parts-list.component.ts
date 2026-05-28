@@ -103,6 +103,13 @@ import Swal from 'sweetalert2';
                     <span>Mark as Ordered</span>
                   </button>
                   <button 
+                    *ngIf="part.status === 'pending'" 
+                    mat-menu-item 
+                    (click)="updateStatus(part, 'received')">
+                    <mat-icon>check_circle</mat-icon>
+                    <span>Mark as Received</span>
+                  </button>
+                  <button 
                     *ngIf="part.status === 'ordered'" 
                     mat-menu-item 
                     (click)="updateStatus(part, 'received')">
