@@ -132,6 +132,15 @@ export const routes: Routes = [
             data: { roles: [UserRole.ADMIN, UserRole.IT] },
           },
           {
+            path: 'inventory',
+            loadComponent: () =>
+              import('./tickets/parts-inventory/parts-inventory.component').then(
+                (m) => m.PartsInventoryComponent,
+              ),
+            canActivate: [roleGuard],
+            data: { roles: [UserRole.ADMIN, UserRole.SUPERVISOR, UserRole.IT] },
+          },
+          {
             path: 'edit/:id',
             loadComponent: () =>
               import('./tickets/ticket-form/ticket-form.component').then(

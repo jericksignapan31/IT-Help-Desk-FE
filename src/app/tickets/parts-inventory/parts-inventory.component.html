@@ -1,0 +1,203 @@
+<div class="parts-inventory-container">
+  <div class="inventory-header">
+    <h1>Parts Inventory</h1>
+    <p class="subtitle">View and manage all parts requested across the system</p>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="summary-cards">
+    <mat-card class="summary-card">
+      <mat-card-content>
+        <div class="card-icon pending">
+          <mat-icon>schedule</mat-icon>
+        </div>
+        <div class="card-info">
+          <h3>Pending</h3>
+          <p class="count">{{ pendingCount }}</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="summary-card">
+      <mat-card-content>
+        <div class="card-icon ordered">
+          <mat-icon>local_shipping</mat-icon>
+        </div>
+        <div class="card-info">
+          <h3>Ordered</h3>
+          <p class="count">{{ orderedCount }}</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="summary-card">
+      <mat-card-content>
+        <div class="card-icon received">
+          <mat-icon>check_circle</mat-icon>
+        </div>
+        <div class="card-info">
+          <h3>Received</h3>
+          <p class="count">{{ receivedCount }}</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="summary-card total">
+      <mat-card-content>
+        <div class="card-icon">
+          <mat-icon>local_offer</mat-icon>
+        </div>
+        <div class="card-info">
+          <h3>Total Cost</h3>
+          <p class="count">{{ formatCurrency(totalInventoryCost) }}</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Filter Section -->
+  <div class="filter-section">
+    <div class="filter-controls">
+      <button
+        mat-raised-button
+        [color]="filterType === 'all' ? 'primary' : ''"
+        (click)="loadAllParts()"
+      >
+        <mat-icon>list</mat-icon>
+        All Parts
+      </button>
+
+      <button
+        mat-raised-button
+        [color]="filterType === 'status' && selectedStatus === 'pending' ? 'warn' : ''"
+        (click)="filterByStatus('pending')"
+      >
+        <mat-icon>schedule</mat-icon>
+        Pending
+      </button>
+
+      <button
+        mat-raised-button
+        [color]="filterType === 'status' && selectedStatus === 'ordered' ? 'accent' : ''"
+        (click)="filterByStatus('ordered')"
+      >
+        <mat-icon>local_shipping</mat-icon>
+        Ordered
+      </button>
+
+      <button
+        mat-raised-button
+        [color]="filterType === 'status' && selectedStatus === 'received' ? 'primary' : ''"
+        (click)="filterByStatus('received')"
+      >
+        <mat-icon>check_circle</mat-icon>
+        Received
+      </button>
+    </div>
+
+    <div class="supplier-filter" *ngIf="suppliers.length > 0">
+      <mat-form-field appearance="outline">
+        <mat-label>Filter by Supplier</mat-label>
+        <mat-select (selectionChange)="filterBySupplier($event.value)">
+          <mat-option value="">All Suppliers</mat-option>
+          <mat-option *ngFor="let supplier of suppliers" [value]="supplier">
+            {{ supplier }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="error" class="error-message">
+    <mat-icon>error</mat-icon>
+    {{ error }}
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <p>Loading parts inventory...</p>
+  </div>
+
+  <!-- Data Table -->
+  <div *ngIf="!loading && filteredParts.length > 0" class="table-container">
+    <table mat-table [dataSource]="filteredParts" class="parts-table">
+      <!-- Part Name Column -->
+      <ng-container matColumnDef="part_name">
+        <th mat-header-cell *matHeaderCellDef>Part Name</th>
+        <td mat-cell *matCellDef="let part">
+          <strong>{{ part.part_name }}</strong>
+        </td>
+      </ng-container>
+
+      <!-- Quantity Column -->
+      <ng-container matColumnDef="quantity">
+        <th mat-header-cell *matHeaderCellDef>Qty</th>
+        <td mat-cell *matCellDef="let part">{{ part.quantity }}</td>
+      </ng-container>
+
+      <!-- Unit Cost Column -->
+      <ng-container matColumnDef="unit_cost">
+        <th mat-header-cell *matHeaderCellDef>Unit Cost</th>
+        <td mat-cell *matCellDef="let part">{{ formatCurrency(part.unit_cost) }}</td>
+      </ng-container>
+
+      <!-- Total Cost Column -->
+      <ng-container matColumnDef="total_cost">
+        <th mat-header-cell *matHeaderCellDef>Total Cost</th>
+        <td mat-cell *matCellDef="let part" class="cost-cell">
+          <strong>{{ formatCurrency(part.total_cost) }}</strong>
+        </td>
+      </ng-container>
+
+      <!-- Supplier Column -->
+      <ng-container matColumnDef="supplier">
+        <th mat-header-cell *matHeaderCellDef>Supplier</th>
+        <td mat-cell *matCellDef="let part">{{ part.supplier }}</td>
+      </ng-container>
+
+      <!-- Status Column -->
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef>Status</th>
+        <td mat-cell *matCellDef="let part">
+          <mat-chip [color]="getStatusColor(part.status)" selected>
+            <mat-icon matChipAvatar [fontIcon]="getStatusIcon(part.status)"></mat-icon>
+            {{ part.status | uppercase }}
+          </mat-chip>
+        </td>
+      </ng-container>
+
+      <!-- Requested Date Column -->
+      <ng-container matColumnDef="requested_date">
+        <th mat-header-cell *matHeaderCellDef>Requested</th>
+        <td mat-cell *matCellDef="let part">{{ formatDate(part.requested_date) }}</td>
+      </ng-container>
+
+      <!-- Received Date Column -->
+      <ng-container matColumnDef="received_date">
+        <th mat-header-cell *matHeaderCellDef>Received</th>
+        <td mat-cell *matCellDef="let part">{{ formatDate(part.received_date) }}</td>
+      </ng-container>
+
+      <!-- Ticket Subject Column -->
+      <ng-container matColumnDef="ticket_subject">
+        <th mat-header-cell *matHeaderCellDef>Ticket</th>
+        <td mat-cell *matCellDef="let part">
+          {{ part.ticket?.subject || '-' }}
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && filteredParts.length === 0" class="empty-state">
+    <mat-icon>inbox</mat-icon>
+    <p>No parts found</p>
+    <button mat-raised-button color="primary" (click)="loadAllParts()">
+      View All Parts
+    </button>
+  </div>
+</div>

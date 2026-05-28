@@ -239,4 +239,17 @@ export class TicketService {
   deletePart(ticketId: string | number, partId: string): Observable<any> {
     return this.http.delete(`${this.API_URL}/tickets/${ticketId}/parts/${partId}`);
   }
+
+  // Inventory endpoints
+  getAllParts(): Observable<TicketPart[]> {
+    return this.http.get<TicketPart[]>(`${this.API_URL}/tickets/inventory/all`);
+  }
+
+  getPartsByStatus(status: 'pending' | 'ordered' | 'received'): Observable<TicketPart[]> {
+    return this.http.get<TicketPart[]>(`${this.API_URL}/tickets/inventory/status/${status}`);
+  }
+
+  getPartsBySupplier(supplier: string): Observable<TicketPart[]> {
+    return this.http.get<TicketPart[]>(`${this.API_URL}/tickets/inventory/supplier/${supplier}`);
+  }
 }

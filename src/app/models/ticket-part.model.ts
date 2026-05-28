@@ -12,6 +12,12 @@ export interface TicketPart {
   notes: string;
   created_at: string;
   updated_at: string;
+  ticket?: {
+    ticket_id: string;
+    subject: string;
+    status: string;
+    assigned_to: string;
+  };
 }
 
 export interface CreatePartRequest {
