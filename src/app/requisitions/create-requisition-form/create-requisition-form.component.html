@@ -1,0 +1,158 @@
+<mat-card class="create-requisition-card">
+  <mat-card-header>
+    <mat-card-title>Create New Requisition</mat-card-title>
+  </mat-card-header>
+
+  <mat-card-content>
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <!-- Requested By and Department -->
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Requested By</mat-label>
+          <input matInput [value]="currentUserFullname" readonly />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Department (Optional)</mat-label>
+          <mat-select formControlName="department">
+            <mat-option value="">-- Select Department --</mat-option>
+            <mat-option *ngFor="let dept of departments" [value]="dept.department_id">
+              {{ dept.department_name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- Deadline -->
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Deadline (Optional)</mat-label>
+          <input
+            matInput
+            [matDatepicker]="picker"
+            formControlName="deadline"
+            [min]="minDate"
+            placeholder="Select a deadline"
+          />
+          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+      <!-- Items Section -->
+      <div class="items-section">
+        <div class="items-header">
+          <h3>Requisition Items</h3>
+          <button
+            type="button"
+            mat-icon-button
+            (click)="addItem()"
+            [disabled]="loading"
+            matTooltip="Add another item"
+          >
+            <mat-icon>add_circle</mat-icon>
+          </button>
+        </div>
+
+        <div *ngFor="let item of items.controls; let i = index" class="item-row">
+          <div [formGroup]="getItemFormGroup(i)" class="item-fields">
+            <mat-form-field appearance="outline" class="item-field item-name">
+              <mat-label>Item Name *</mat-label>
+              <input matInput formControlName="item_name" placeholder="e.g., Dell Monitor" />
+              <mat-error *ngIf="item.get('item_name')?.hasError('required')">
+                Required
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="item-field item-qty">
+              <mat-label>Qty *</mat-label>
+              <input
+                matInput
+                type="number"
+                formControlName="quantity"
+                min="1"
+                placeholder="0"
+              />
+              <mat-error *ngIf="item.get('quantity')?.hasError('required')">
+                Required
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="item-field item-unit">
+              <mat-label>Unit *</mat-label>
+              <mat-select formControlName="unit">
+                <mat-option value="pcs">pcs</mat-option>
+                <mat-option value="box">box</mat-option>
+                <mat-option value="set">set</mat-option>
+                <mat-option value="kit">kit</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="item-field item-supplier">
+              <mat-label>Supplier</mat-label>
+              <input matInput formControlName="supplier" placeholder="e.g., Lazada" />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="item-field item-cost">
+              <mat-label>Unit Cost</mat-label>
+              <input matInput type="number" formControlName="unit_cost" placeholder="0" />
+              <mat-icon matPrefix>₱</mat-icon>
+            </mat-form-field>
+
+            <div class="item-total">
+              <strong>{{ formatCurrency(calculateTotalCost(i)) }}</strong>
+            </div>
+
+            <button
+              *ngIf="items.length > 1"
+              type="button"
+              mat-icon-button
+              (click)="removeItem(i)"
+              [disabled]="loading"
+              matTooltip="Remove item"
+              class="remove-btn"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+
+          <mat-form-field appearance="outline" class="remarks-field">
+            <mat-label>Purpose/Remarks</mat-label>
+            <textarea
+              matInput
+              formControlName="purpose_remarks"
+              placeholder="Why this item is needed..."
+              rows="2"
+            ></textarea>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- Total Cost Display -->
+      <div class="total-cost-section">
+        <span class="label">Total Requisition Cost:</span>
+        <span class="amount">{{ formatCurrency(getRequisitionTotal()) }}</span>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="button-group">
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          [disabled]="isFormInvalid()"
+          class="submit-btn"
+        >
+          <mat-icon *ngIf="!loading">add</mat-icon>
+          <mat-icon *ngIf="loading">schedule</mat-icon>
+          {{ loading ? 'Creating...' : 'Create Requisition' }}
+        </button>
+
+        <button mat-raised-button type="button" (click)="reset()" [disabled]="loading">
+          <mat-icon>clear</mat-icon>
+          Clear
+        </button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>

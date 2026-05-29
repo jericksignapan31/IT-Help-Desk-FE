@@ -1,0 +1,18 @@
+<div class="requisitions-dashboard">
+  <div class="dashboard-header">
+    <h1>Requisitions Management</h1>
+    <p class="subtitle">Create and track part requisitions</p>
+  </div>
+
+  <div class="dashboard-content">
+    <!-- Create Requisition Form -->
+    <section class="form-section">
+      <app-create-requisition-form (submitSuccess)="onFormSubmitted($event)"></app-create-requisition-form>
+    </section>
+
+    <!-- My Requisitions List -->
+    <section class="list-section">
+      <app-my-requisitions-list [refreshTrigger]="refreshTrigger"></app-my-requisitions-list>
+    </section>
+  </div>
+</div>

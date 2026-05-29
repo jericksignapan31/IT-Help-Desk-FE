@@ -92,6 +92,7 @@ export class LayoutComponent {
   getRoleBadgeClass(): string {
     if (this.authService.isAdmin()) return 'role-admin';
     if (this.authService.isTechnician()) return 'role-technician';
+    if (this.currentUser?.role === UserRole.WAREHOUSE) return 'role-warehouse';
     return 'role-user';
   }
 

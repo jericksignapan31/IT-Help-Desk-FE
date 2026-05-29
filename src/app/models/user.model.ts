@@ -48,6 +48,7 @@ export enum UserRole {
   SUPERVISOR = 'supervisor',
   IT = 'it',
   EMPLOYEE = 'employee',
+  WAREHOUSE = 'warehouse',
 }
 
 export interface LoginRequest {

@@ -1,0 +1,18 @@
+<div class="warehouse-dashboard">
+  <div class="dashboard-header">
+    <h1>Warehouse Management</h1>
+    <p class="subtitle">Request parts and track inventory</p>
+  </div>
+
+  <div class="dashboard-content">
+    <!-- Request Parts Form -->
+    <section class="form-section">
+      <app-request-parts-form (submitSuccess)="onFormSubmitted()"></app-request-parts-form>
+    </section>
+
+    <!-- My Part Requests List -->
+    <section class="list-section">
+      <app-my-part-requests-list [refreshTrigger]="refreshTrigger"></app-my-part-requests-list>
+    </section>
+  </div>
+</div>

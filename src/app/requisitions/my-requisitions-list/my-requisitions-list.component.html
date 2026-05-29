@@ -1,0 +1,100 @@
+<mat-card class="requisitions-list-card">
+  <mat-card-header>
+    <mat-card-title>My Requisitions</mat-card-title>
+    <mat-card-subtitle>Track your submitted requisitions</mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content>
+    <!-- Loading State -->
+    <div *ngIf="loading" class="loading-state">
+      <p>Loading requisitions...</p>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="error && !loading" class="error-message">
+      <mat-icon>error</mat-icon>
+      {{ error }}
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!loading && requisitions.length === 0 && !error" class="empty-state">
+      <mat-icon>receipt_long</mat-icon>
+      <p>No requisitions yet</p>
+      <p class="subtitle">Create your first requisition using the form above</p>
+    </div>
+
+    <!-- Data Table -->
+    <div *ngIf="requisitions.length > 0 && !loading" class="table-container">
+      <table mat-table [dataSource]="requisitions" class="requisitions-table">
+        <!-- RF Number Column -->
+        <ng-container matColumnDef="rf_number">
+          <th mat-header-cell *matHeaderCellDef>RF Number</th>
+          <td mat-cell *matCellDef="let req">
+            <strong style="color: #667eea;">{{ req.rf_number }}</strong>
+          </td>
+        </ng-container>
+
+        <!-- Department Column -->
+        <ng-container matColumnDef="department">
+          <th mat-header-cell *matHeaderCellDef>Department</th>
+          <td mat-cell *matCellDef="let req">
+            {{ req.department || 'N/A' }}
+          </td>
+        </ng-container>
+
+        <!-- Status Column -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let req">
+            <mat-chip [color]="getStatusColor(req.status)" selected>
+              <mat-icon matChipAvatar [fontIcon]="getStatusIcon(req.status)"></mat-icon>
+              {{ req.status | titlecase }}
+            </mat-chip>
+          </td>
+        </ng-container>
+
+        <!-- Items Count Column -->
+        <ng-container matColumnDef="items_count">
+          <th mat-header-cell *matHeaderCellDef>Items</th>
+          <td mat-cell *matCellDef="let req">
+            {{ getItemsCount(req) }}
+          </td>
+        </ng-container>
+
+        <!-- Total Cost Column -->
+        <ng-container matColumnDef="total_cost">
+          <th mat-header-cell *matHeaderCellDef>Total Cost</th>
+          <td mat-cell *matCellDef="let req" class="cost-cell">
+            <strong>{{ formatCurrency(calculateTotalCost(req)) }}</strong>
+          </td>
+        </ng-container>
+
+        <!-- Created Date Column -->
+        <ng-container matColumnDef="created_at">
+          <th mat-header-cell *matHeaderCellDef>Created</th>
+          <td mat-cell *matCellDef="let req">
+            {{ formatDate(req.created_at) }}
+          </td>
+        </ng-container>
+
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let req">
+            <button
+              mat-icon-button
+              (click)="viewDetail(req)"
+              matTooltip="View details"
+              color="primary"
+            >
+              <mat-icon>visibility</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+    </div>
+  </mat-card-content>
+</mat-card>

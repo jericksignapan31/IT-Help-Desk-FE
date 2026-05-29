@@ -1,0 +1,110 @@
+<mat-card class="requests-list-card">
+  <mat-card-header>
+    <mat-card-title>My Part Requests</mat-card-title>
+    <mat-card-subtitle>Track your submitted part requests</mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content>
+    <!-- Loading State -->
+    <div *ngIf="loading" class="loading-state">
+      <p>Loading your requests...</p>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="error && !loading" class="error-message">
+      <mat-icon>error</mat-icon>
+      {{ error }}
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!loading && requests.length === 0 && !error" class="empty-state">
+      <mat-icon>inbox</mat-icon>
+      <p>No part requests yet</p>
+      <p class="subtitle">Submit your first part request using the form above</p>
+    </div>
+
+    <!-- Data Table -->
+    <div *ngIf="requests.length > 0 && !loading" class="table-container">
+      <table mat-table [dataSource]="requests" class="requests-table">
+        <!-- Part Name Column -->
+        <ng-container matColumnDef="part_name">
+          <th mat-header-cell *matHeaderCellDef>Part Name</th>
+          <td mat-cell *matCellDef="let request">
+            <strong>{{ request.part_name }}</strong>
+          </td>
+        </ng-container>
+
+        <!-- Quantity Column -->
+        <ng-container matColumnDef="quantity">
+          <th mat-header-cell *matHeaderCellDef>Qty</th>
+          <td mat-cell *matCellDef="let request">{{ request.quantity }}</td>
+        </ng-container>
+
+        <!-- Unit Cost Column -->
+        <ng-container matColumnDef="unit_cost">
+          <th mat-header-cell *matHeaderCellDef>Unit Cost</th>
+          <td mat-cell *matCellDef="let request">
+            {{ formatCurrency(request.unit_cost) }}
+          </td>
+        </ng-container>
+
+        <!-- Total Cost Column -->
+        <ng-container matColumnDef="total_cost">
+          <th mat-header-cell *matHeaderCellDef>Total Cost</th>
+          <td mat-cell *matCellDef="let request" class="cost-cell">
+            <strong>{{ formatCurrency(request.total_cost) }}</strong>
+          </td>
+        </ng-container>
+
+        <!-- Supplier Column -->
+        <ng-container matColumnDef="supplier">
+          <th mat-header-cell *matHeaderCellDef>Supplier</th>
+          <td mat-cell *matCellDef="let request">{{ request.supplier }}</td>
+        </ng-container>
+
+        <!-- Status Column -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let request">
+            <mat-chip [color]="getStatusColor(request.status)" selected>
+              <mat-icon matChipAvatar [fontIcon]="getStatusIcon(request.status)"></mat-icon>
+              {{ request.status | uppercase }}
+            </mat-chip>
+          </td>
+        </ng-container>
+
+        <!-- Requested Date Column -->
+        <ng-container matColumnDef="requested_at">
+          <th mat-header-cell *matHeaderCellDef>Requested</th>
+          <td mat-cell *matCellDef="let request">
+            {{ formatDate(request.requested_at) }}
+          </td>
+        </ng-container>
+
+        <!-- Approved Date Column -->
+        <ng-container matColumnDef="approved_at">
+          <th mat-header-cell *matHeaderCellDef>Approved</th>
+          <td mat-cell *matCellDef="let request">
+            {{ formatDate(request.approved_at) }}
+          </td>
+        </ng-container>
+
+        <!-- Rejection Reason Column -->
+        <ng-container matColumnDef="rejection_reason">
+          <th mat-header-cell *matHeaderCellDef>Reason</th>
+          <td mat-cell *matCellDef="let request">
+            {{ request.rejection_reason || '-' }}
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr
+          mat-row
+          *matRowDef="let row; columns: displayedColumns"
+          class="clickable-row"
+          (click)="viewDetails(row)"
+        ></tr>
+      </table>
+    </div>
+  </mat-card-content>
+</mat-card>

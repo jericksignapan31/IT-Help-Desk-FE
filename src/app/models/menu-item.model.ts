@@ -51,7 +51,13 @@ export const MENU_ITEMS: MenuItem[] = [
     label: 'Parts Inventory',
     icon: 'inventory_2',
     route: '/tickets/inventory',
-    roles: [UserRole.ADMIN, UserRole.IT, UserRole.SUPERVISOR],
+    roles: [UserRole.ADMIN, UserRole.IT, UserRole.SUPERVISOR, UserRole.WAREHOUSE],
+  },
+  {
+    label: 'Requisitions',
+    icon: 'request_page',
+    route: '/requisitions',
+    roles: [UserRole.IT, UserRole.WAREHOUSE, UserRole.ADMIN],
   },
   {
     label: 'Brands',

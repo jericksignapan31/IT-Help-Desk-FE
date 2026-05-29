@@ -138,7 +138,7 @@ export const routes: Routes = [
                 (m) => m.PartsInventoryComponent,
               ),
             canActivate: [roleGuard],
-            data: { roles: [UserRole.ADMIN, UserRole.SUPERVISOR, UserRole.IT] },
+            data: { roles: [UserRole.ADMIN, UserRole.SUPERVISOR, UserRole.IT, UserRole.WAREHOUSE] },
           },
           {
             path: 'edit/:id',
@@ -365,6 +365,50 @@ export const routes: Routes = [
           import('./account-settings/account-settings.component').then(
             (m) => m.AccountSettingsComponent,
           ),
+      },
+      // Requisition Routes (IT, WAREHOUSE, ADMIN)
+      {
+        path: 'requisitions',
+        canActivate: [roleGuard],
+        data: { roles: [UserRole.IT, UserRole.WAREHOUSE, UserRole.ADMIN] },
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./requisitions/requisitions-dashboard/requisitions-dashboard.component').then(
+                (m) => m.RequisitionsDashboardComponent,
+              ),
+          },
+          {
+            path: 'dashboard',
+            loadComponent: () =>
+              import('./requisitions/requisitions-dashboard/requisitions-dashboard.component').then(
+                (m) => m.RequisitionsDashboardComponent,
+              ),
+          },
+        ],
+      },
+      // Warehouse Routes
+      {
+        path: 'warehouse',
+        canActivate: [roleGuard],
+        data: { roles: [UserRole.WAREHOUSE] },
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./warehouse/warehouse-dashboard/warehouse-dashboard.component').then(
+                (m) => m.WarehouseDashboardComponent,
+              ),
+          },
+          {
+            path: 'dashboard',
+            loadComponent: () =>
+              import('./warehouse/warehouse-dashboard/warehouse-dashboard.component').then(
+                (m) => m.WarehouseDashboardComponent,
+              ),
+          },
+        ],
       },
     ],
   },

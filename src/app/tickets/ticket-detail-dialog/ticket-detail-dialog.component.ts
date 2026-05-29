@@ -157,20 +157,7 @@ import Swal from 'sweetalert2';
                 <span>Ticket is waiting for parts to arrive before completion</span>
               </div>
 
-              <!-- Action Buttons for Hold Status -->
-              <div *ngIf="ticket.status === TicketStatus.HOLD" class="hold-actions">
-                <button
-                  mat-raised-button
-                  color="accent"
-                  (click)="requestParts()"
-                  class="add-parts-btn"
-                >
-                  <mat-icon>add_shopping_cart</mat-icon>
-                  Request Parts
-                </button>
-              </div>
-
-              <!-- Request Parts Button (if not on hold) -->
+              <!-- Request Parts Button -->
               <button
                 *ngIf="ticket.status !== TicketStatus.HOLD"
                 mat-raised-button
@@ -370,7 +357,7 @@ export class TicketDetailDialogComponent implements OnInit {
   }
 
   shouldShowPartsTab(): boolean {
-    return this.ticket.status === TicketStatus.HOLD || this.parts.length > 0;
+    return this.parts.length > 0 && this.ticket.status !== TicketStatus.HOLD;
   }
 
   openCompleteModal(): void {
