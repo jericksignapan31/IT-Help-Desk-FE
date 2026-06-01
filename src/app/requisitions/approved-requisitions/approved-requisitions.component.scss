@@ -1,4 +1,4 @@
-.pending-admin-review-container {
+.approved-requisitions-container {
   padding: 20px;
   background: white;
   min-height: 100vh;
@@ -18,7 +18,7 @@
         font-size: 32px;
         width: 32px;
         height: 32px;
-        color: #667eea;
+        color: #11998e;
       }
 
       mat-card-title {
@@ -108,7 +108,7 @@
       }
 
       .items-chip {
-        background-color: #667eea;
+        background-color: #11998e;
         color: white;
         font-weight: 600;
       }
@@ -117,7 +117,7 @@
 }
 
 @media (max-width: 768px) {
-  .pending-admin-review-container {
+  .approved-requisitions-container {
     padding: 10px;
 
     .header-card {

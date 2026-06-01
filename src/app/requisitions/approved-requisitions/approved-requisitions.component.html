@@ -1,0 +1,93 @@
+<div class="approved-requisitions-container">
+  <mat-card class="header-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon class="header-icon">verified</mat-icon>
+        Approved Requisitions
+      </mat-card-title>
+      <mat-card-subtitle>Requisitions approved and ready for procurement</mat-card-subtitle>
+    </mat-card-header>
+  </mat-card>
+
+  <mat-card class="content-card">
+    <mat-card-content>
+      <div *ngIf="isLoading" class="loading-container">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p>Loading requisitions...</p>
+      </div>
+
+      <div *ngIf="!isLoading && requisitions.length === 0" class="empty-state">
+        <mat-icon>inbox</mat-icon>
+        <p>No approved requisitions</p>
+      </div>
+
+      <div *ngIf="!isLoading && requisitions.length > 0" class="table-wrapper">
+        <table mat-table [dataSource]="requisitions" class="requisitions-table">
+          <!-- RF Number Column -->
+          <ng-container matColumnDef="rf_number">
+            <th mat-header-cell *matHeaderCellDef>RF Number</th>
+            <td mat-cell *matCellDef="let element">
+              <strong>{{ element.rf_number }}</strong>
+            </td>
+          </ng-container>
+
+          <!-- Requester Column -->
+          <ng-container matColumnDef="requester">
+            <th mat-header-cell *matHeaderCellDef>Requester</th>
+            <td mat-cell *matCellDef="let element">
+              {{ getRequesterName(element) }}
+            </td>
+          </ng-container>
+
+          <!-- Warehouse Acknowledger Column -->
+          <ng-container matColumnDef="warehouse_acknowledger">
+            <th mat-header-cell *matHeaderCellDef>Warehouse Acknowledger</th>
+            <td mat-cell *matCellDef="let element">
+              {{ getAcknowledgerName(element) }}
+            </td>
+          </ng-container>
+
+          <!-- Items Count Column -->
+          <ng-container matColumnDef="items_count">
+            <th mat-header-cell *matHeaderCellDef>Items</th>
+            <td mat-cell *matCellDef="let element">
+              <mat-chip class="items-chip">
+                {{ getItemsCount(element) }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Total Cost Column -->
+          <ng-container matColumnDef="total_cost">
+            <th mat-header-cell *matHeaderCellDef>Total Cost</th>
+            <td mat-cell *matCellDef="let element">
+              {{ formatCurrency(calculateTotalCost(element)) }}
+            </td>
+          </ng-container>
+
+          <!-- Approved At Column -->
+          <ng-container matColumnDef="approved_at">
+            <th mat-header-cell *matHeaderCellDef>Approved Date</th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.approved_at ? formatDate(element.approved_at) : 'N/A' }}
+            </td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let element">
+              <button mat-icon-button matTooltip="View Details" (click)="viewDetails(element)">
+                <mat-icon>info</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <!-- Table Header and Rows -->
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

@@ -1,0 +1,178 @@
+<div class="inventory-dashboard-container">
+  <mat-card class="header-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon class="header-icon">inventory_2</mat-icon>
+        Requisition Inventory
+      </mat-card-title>
+      <mat-card-subtitle>Track all items from approved and pending requisitions</mat-card-subtitle>
+    </mat-card-header>
+  </mat-card>
+
+  <mat-card class="filters-card">
+    <mat-card-header>
+      <mat-card-title>Filters</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="filters-container">
+        <mat-form-field class="filter-field">
+          <mat-label>Item Name</mat-label>
+          <input matInput [(ngModel)]="filterItemName" (change)="onFilterChange()" placeholder="Search item...">
+          <mat-icon matPrefix>search</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field class="filter-field">
+          <mat-label>Supplier</mat-label>
+          <mat-select [(ngModel)]="filterSupplier" (change)="onFilterChange()">
+            <mat-option value="">All Suppliers</mat-option>
+            <mat-option *ngFor="let supplier of supplierOptions" [value]="supplier">
+              {{ supplier }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field class="filter-field">
+          <mat-label>Status</mat-label>
+          <mat-select [(ngModel)]="filterStatus" (change)="onFilterChange()">
+            <mat-option value="">All Status</mat-option>
+            <mat-option *ngFor="let status of statusOptions" [value]="status">
+              {{ getStatusLabel(status) }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <button mat-raised-button color="warn" (click)="clearFilters()" class="clear-btn">
+          <mat-icon>clear</mat-icon>
+          Clear Filters
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="stats-card">
+    <mat-card-content>
+      <div class="stats-container">
+        <div class="stat-item">
+          <div class="stat-label">Total Items</div>
+          <div class="stat-value">{{ filteredItems.length }}</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">Total Quantity</div>
+          <div class="stat-value">{{ calculateTotalQuantity() }}</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">Total Value</div>
+          <div class="stat-value">{{ formatCurrency(calculateTotalInventory()) }}</div>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="content-card">
+    <mat-card-content>
+      <div *ngIf="isLoading" class="loading-container">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p>Loading inventory...</p>
+      </div>
+
+      <div *ngIf="!isLoading && filteredItems.length === 0" class="empty-state">
+        <mat-icon>inbox</mat-icon>
+        <p>No inventory items found</p>
+      </div>
+
+      <div *ngIf="!isLoading && filteredItems.length > 0" class="table-wrapper">
+        <table mat-table [dataSource]="filteredItems" class="inventory-table">
+          <!-- RF Number Column -->
+          <ng-container matColumnDef="rf_number">
+            <th mat-header-cell *matHeaderCellDef>RF Number</th>
+            <td mat-cell *matCellDef="let element">
+              <strong>{{ element.rf_number }}</strong>
+            </td>
+          </ng-container>
+
+          <!-- Item Name Column -->
+          <ng-container matColumnDef="item_name">
+            <th mat-header-cell *matHeaderCellDef>Item Name</th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.item_name }}
+            </td>
+          </ng-container>
+
+          <!-- Quantity Column -->
+          <ng-container matColumnDef="quantity">
+            <th mat-header-cell *matHeaderCellDef>Quantity</th>
+            <td mat-cell *matCellDef="let element">
+              <mat-chip class="quantity-chip">
+                {{ element.quantity }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Unit Column -->
+          <ng-container matColumnDef="unit">
+            <th mat-header-cell *matHeaderCellDef>Unit</th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.unit }}
+            </td>
+          </ng-container>
+
+          <!-- Supplier Column -->
+          <ng-container matColumnDef="supplier">
+            <th mat-header-cell *matHeaderCellDef>Supplier</th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.supplier || 'N/A' }}
+            </td>
+          </ng-container>
+
+          <!-- Unit Cost Column -->
+          <ng-container matColumnDef="unit_cost">
+            <th mat-header-cell *matHeaderCellDef>Unit Cost</th>
+            <td mat-cell *matCellDef="let element">
+              {{ formatCurrency(element.unit_cost) }}
+            </td>
+          </ng-container>
+
+          <!-- Total Cost Column -->
+          <ng-container matColumnDef="total_cost">
+            <th mat-header-cell *matHeaderCellDef>Total Cost</th>
+            <td mat-cell *matCellDef="let element">
+              <strong>{{ formatCurrency(element.total_cost) }}</strong>
+            </td>
+          </ng-container>
+
+          <!-- Status Column -->
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let element">
+              <mat-chip [class]="'status-chip status-' + element.requisition_status">
+                {{ getStatusLabel(element.requisition_status) }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Requester Column -->
+          <ng-container matColumnDef="requester">
+            <th mat-header-cell *matHeaderCellDef>Requester</th>
+            <td mat-cell *matCellDef="let element">
+              {{ getRequesterName(element) }}
+            </td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let element">
+              <button mat-icon-button matTooltip="View Details" (click)="viewDetails(element)">
+                <mat-icon>info</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <!-- Table Header and Rows -->
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

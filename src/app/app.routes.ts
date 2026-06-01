@@ -404,6 +404,20 @@ export const routes: Routes = [
                 (m) => m.PendingAdminReviewComponent,
               ),
           },
+          {
+            path: 'approved',
+            loadComponent: () =>
+              import('./requisitions/approved-requisitions/approved-requisitions.component').then(
+                (m) => m.ApprovedRequisitionsComponent,
+              ),
+          },
+          {
+            path: 'inventory',
+            loadComponent: () =>
+              import('./requisitions/inventory-dashboard/inventory-dashboard.component').then(
+                (m) => m.InventoryDashboardComponent,
+              ),
+          },
         ],
       },
       // Warehouse Routes

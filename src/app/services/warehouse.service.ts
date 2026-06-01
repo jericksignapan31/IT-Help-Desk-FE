@@ -44,6 +44,29 @@ export interface ApprovePartRequestDto {
   rejection_reason?: string;
 }
 
+export interface RequisitionInventoryItem {
+  item_id: string;
+  requisition_id: string;
+  rf_number: string;
+  item_name: string;
+  quantity: number;
+  unit: string;
+  supplier?: string;
+  unit_cost?: string | number;
+  total_cost?: string | number;
+  purpose_remarks?: string;
+  requisition_status: 'pending' | 'pending_admin_review' | 'approved' | 'rejected';
+  requested_by_type: 'it' | 'warehouse';
+  requester?: {
+    employee_id: string;
+    first_name: string;
+    last_name: string;
+    email: string;
+  };
+  created_at: string;
+  updated_at: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -144,5 +167,15 @@ export class WarehouseService {
       `${this.API_URL}/requisitions/${rfNumber}/approve`,
       data
     );
+  }
+
+  // Get all approved requisitions
+  getApprovedRequisitions(): Observable<PartRequisition[]> {
+    return this.http.get<PartRequisition[]>(`${this.API_URL}/requisitions/approved`);
+  }
+
+  // Get requisition inventory (flat list of all items)
+  getRequisitionInventory(): Observable<RequisitionInventoryItem[]> {
+    return this.http.get<RequisitionInventoryItem[]>(`${this.API_URL}/requisitions/inventory`);
   }
 }

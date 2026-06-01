@@ -48,12 +48,6 @@ export const MENU_ITEMS: MenuItem[] = [
   },
   { label: 'Assets', icon: 'devices', route: '/assets' },
   {
-    label: 'Parts Inventory',
-    icon: 'inventory_2',
-    route: '/tickets/inventory',
-    roles: [UserRole.ADMIN, UserRole.IT, UserRole.SUPERVISOR, UserRole.WAREHOUSE],
-  },
-  {
     label: 'Requisitions',
     icon: 'request_page',
     roles: [UserRole.IT, UserRole.WAREHOUSE, UserRole.ADMIN],
@@ -74,6 +68,16 @@ export const MENU_ITEMS: MenuItem[] = [
         icon: 'approval',
         route: '/requisitions/pending-admin-review',
         roles: [UserRole.ADMIN],
+      },
+      {
+        label: 'Approved',
+        icon: 'verified',
+        route: '/requisitions/approved',
+      },
+      {
+        label: 'Inventory',
+        icon: 'inventory_2',
+        route: '/requisitions/inventory',
       },
     ],
   },
