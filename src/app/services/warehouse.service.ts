@@ -116,9 +116,7 @@ export class WarehouseService {
 
   // ADMIN: Get requisitions pending admin review
   getPendingAdminReview(): Observable<PartRequisition[]> {
-    return this.http.get<PartRequisition[]>(
-      `${this.API_URL}/requisitions/pending-admin-review`
-    );
+    return this.http.get<PartRequisition[]>(`${this.API_URL}/requisitions/all`);
   }
 
   // Get requisition detail by RF number

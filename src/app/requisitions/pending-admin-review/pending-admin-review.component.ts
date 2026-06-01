@@ -86,8 +86,10 @@ export class PendingAdminReviewComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (data) => {
-          console.log('✅ Pending admin review data loaded:', data);
-          this.requisitions = data;
+          console.log('✅ All requisitions loaded:', data);
+          // Filter to only pending_admin_review status
+          this.requisitions = data.filter((req) => req.status === 'pending_admin_review');
+          console.log('✅ Filtered to pending_admin_review:', this.requisitions);
           this.isLoading = false;
         },
         error: (err) => {
