@@ -386,6 +386,24 @@ export const routes: Routes = [
                 (m) => m.RequisitionsDashboardComponent,
               ),
           },
+          {
+            path: 'pending',
+            canActivate: [roleGuard],
+            data: { roles: [UserRole.WAREHOUSE] },
+            loadComponent: () =>
+              import('./requisitions/pending-requisitions/pending-requisitions.component').then(
+                (m) => m.PendingRequisitionsComponent,
+              ),
+          },
+          {
+            path: 'pending-admin-review',
+            canActivate: [roleGuard],
+            data: { roles: [UserRole.ADMIN] },
+            loadComponent: () =>
+              import('./requisitions/pending-admin-review/pending-admin-review.component').then(
+                (m) => m.PendingAdminReviewComponent,
+              ),
+          },
         ],
       },
       // Warehouse Routes

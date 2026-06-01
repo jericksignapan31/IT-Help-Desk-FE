@@ -1,0 +1,102 @@
+<h2 mat-dialog-title>Acknowledge Requisition {{ requisition.rf_number }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="acknowledge-form">
+    <!-- Requisition Summary -->
+    <mat-card class="requisition-summary">
+      <mat-card-content>
+        <div class="summary-grid">
+          <div class="summary-item">
+            <label>Requested By:</label>
+            <span>
+              {{
+                requisition.requester
+                  ? requisition.requester.first_name +
+                    ' ' +
+                    requisition.requester.last_name
+                  : 'Unknown'
+              }}
+            </span>
+          </div>
+          <div class="summary-item">
+            <label>Department:</label>
+            <span>{{ getDepartmentName(requisition.department) }}</span>
+          </div>
+          <div class="summary-item">
+            <label>Items Count:</label>
+            <span>{{ getItemsCount() }} items</span>
+          </div>
+          <div class="summary-item">
+            <label>Total Cost:</label>
+            <span>{{ formatCurrency(calculateTotalCost()) }}</span>
+          </div>
+          <div class="summary-item">
+            <label>Created:</label>
+            <span>{{ formatDate(requisition.created_at) }}</span>
+          </div>
+          <div class="summary-item" *ngIf="requisition.deadline">
+            <label>Deadline:</label>
+            <span>{{ formatDate(requisition.deadline) }}</span>
+          </div>
+        </div>
+
+        <!-- Items Table -->
+        <div class="items-table" *ngIf="requisition.items && requisition.items.length > 0">
+          <h4>Items Requested:</h4>
+          <table>
+            <thead>
+              <tr>
+                <th>Item Name</th>
+                <th>Qty</th>
+                <th>Unit</th>
+                <th>Supplier</th>
+                <th>Unit Cost</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of requisition.items">
+                <td>{{ item.item_name }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.unit }}</td>
+                <td>{{ item.supplier || 'N/A' }}</td>
+                <td>₱{{ getUnitCostValue(item.unit_cost).toFixed(2) }}</td>
+                <td>₱{{ getTotalCostValue(item.total_cost).toFixed(2) }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Acknowledgment Notes -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Acknowledgment Notes (Optional)</mat-label>
+      <textarea
+        matInput
+        formControlName="notes"
+        placeholder="Add any notes about this requisition acknowledgment..."
+        rows="4"
+      ></textarea>
+      <mat-hint align="end">
+        {{ form.get('notes')?.value?.length || 0 }}/500
+      </mat-hint>
+      <mat-error *ngIf="form.get('notes')?.hasError('maxlength')">
+        Notes cannot exceed 500 characters
+      </mat-error>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button
+    mat-raised-button
+    color="accent"
+    (click)="onAcknowledge()"
+    [disabled]="form.invalid"
+  >
+    <mat-icon>check_circle</mat-icon>
+    Acknowledge
+  </button>
+</mat-dialog-actions>

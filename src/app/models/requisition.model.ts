@@ -51,9 +51,8 @@ export interface PartRequisition {
 }
 
 export interface CreatePartRequisitionDto {
-  requested_by_type: 'it' | 'warehouse';
   department?: string;
-  deadline?: string;
+  deadline?: string | Date;
   items: CreateRequisitionItemDto[];
 }
 

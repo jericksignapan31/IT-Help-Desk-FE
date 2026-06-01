@@ -56,8 +56,26 @@ export const MENU_ITEMS: MenuItem[] = [
   {
     label: 'Requisitions',
     icon: 'request_page',
-    route: '/requisitions',
     roles: [UserRole.IT, UserRole.WAREHOUSE, UserRole.ADMIN],
+    children: [
+      {
+        label: 'Create/View',
+        icon: 'add_circle',
+        route: '/requisitions',
+      },
+      {
+        label: 'Pending Review',
+        icon: 'pending_actions',
+        route: '/requisitions/pending',
+        roles: [UserRole.WAREHOUSE],
+      },
+      {
+        label: 'Admin Approval',
+        icon: 'approval',
+        route: '/requisitions/pending-admin-review',
+        roles: [UserRole.ADMIN],
+      },
+    ],
   },
   {
     label: 'Brands',

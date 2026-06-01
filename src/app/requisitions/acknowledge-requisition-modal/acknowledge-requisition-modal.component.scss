@@ -1,0 +1,95 @@
+.acknowledge-form {
+  .requisition-summary {
+    margin-bottom: 1.5rem;
+    background: #f9f9f9;
+
+    mat-card-content {
+      padding: 1.5rem;
+
+      .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+
+        .summary-item {
+          display: flex;
+          flex-direction: column;
+
+          label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 0.25rem;
+          }
+
+          span {
+            font-size: 0.95rem;
+            color: #333;
+          }
+        }
+      }
+
+      .items-table {
+        margin-top: 1rem;
+
+        h4 {
+          margin: 0 0 0.75rem 0;
+          font-size: 0.95rem;
+        }
+
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          font-size: 0.85rem;
+
+          thead {
+            background: #f0f0f0;
+
+            th {
+              padding: 0.5rem;
+              text-align: left;
+              font-weight: 600;
+              border-bottom: 2px solid #ddd;
+            }
+          }
+
+          tbody {
+            tr {
+              border-bottom: 1px solid #eee;
+
+              &:last-child {
+                border-bottom: none;
+              }
+            }
+
+            td {
+              padding: 0.5rem;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .full-width {
+    width: 100%;
+  }
+
+  mat-hint {
+    font-size: 0.75rem;
+  }
+}
+
+mat-dialog-actions {
+  padding: 1rem 0 0 0;
+  border-top: 1px solid #eee;
+
+  button {
+    margin-left: 0.5rem;
+
+    mat-icon {
+      margin-right: 0.5rem;
+    }
+  }
+}

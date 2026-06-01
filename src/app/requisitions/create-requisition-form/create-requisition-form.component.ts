@@ -159,12 +159,15 @@ export class CreateRequisitionFormComponent implements OnInit, OnDestroy {
     this.loading = true;
     const formData = this.form.value;
     
-    // Automatically add current user info
+    // Backend will extract requested_by and requested_by_type from JWT token
+    // Only send: department, deadline, items
     const data = {
-      ...formData,
-      requested_by: this.currentUserFullname,
-      requested_by_id: this.currentUser?.employee_id || this.currentUser?.id,
+      department: formData.department || null,
+      deadline: formData.deadline || null,
+      items: formData.items,
     };
+
+    console.log('Submitting requisition:', data);
 
     this.warehouseService
       .createRequisition(data)

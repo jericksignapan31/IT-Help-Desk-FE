@@ -23,9 +23,10 @@ export const appConfig: ApplicationConfig = {
     provideClientHydration(withEventReplay()),
     provideHttpClient(withInterceptors([authInterceptor]), withFetch()),
     provideAnimations(),
-    provideServiceWorker('ngsw-worker.js', {
-      enabled: environment.production,
-      registrationStrategy: 'registerWhenStable:30000'
-    })
+    ...(environment.production 
+      ? [provideServiceWorker('ngsw-worker.js', {
+          registrationStrategy: 'registerWhenStable:30000'
+        })] 
+      : [])
   ],
 };
