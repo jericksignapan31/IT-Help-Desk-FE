@@ -56,6 +56,7 @@ export const MENU_ITEMS: MenuItem[] = [
         label: 'Create/View',
         icon: 'add_circle',
         route: '/requisitions',
+        roles: [UserRole.IT, UserRole.WAREHOUSE],
       },
       {
         label: 'Pending Review',

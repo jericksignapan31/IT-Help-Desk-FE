@@ -17,13 +17,13 @@
       <div class="filters-container">
         <mat-form-field class="filter-field">
           <mat-label>Item Name</mat-label>
-          <input matInput [(ngModel)]="filterItemName" (change)="onFilterChange()" placeholder="Search item...">
+          <input matInput [(ngModel)]="filterItemName" (ngModelChange)="onFilterChange()" placeholder="Search item...">
           <mat-icon matPrefix>search</mat-icon>
         </mat-form-field>
 
         <mat-form-field class="filter-field">
           <mat-label>Supplier</mat-label>
-          <mat-select [(ngModel)]="filterSupplier" (change)="onFilterChange()">
+          <mat-select [(ngModel)]="filterSupplier" (ngModelChange)="onFilterChange()">
             <mat-option value="">All Suppliers</mat-option>
             <mat-option *ngFor="let supplier of supplierOptions" [value]="supplier">
               {{ supplier }}
@@ -33,7 +33,7 @@
 
         <mat-form-field class="filter-field">
           <mat-label>Status</mat-label>
-          <mat-select [(ngModel)]="filterStatus" (change)="onFilterChange()">
+          <mat-select [(ngModel)]="filterStatus" (ngModelChange)="onFilterChange()">
             <mat-option value="">All Status</mat-option>
             <mat-option *ngFor="let status of statusOptions" [value]="status">
               {{ getStatusLabel(status) }}

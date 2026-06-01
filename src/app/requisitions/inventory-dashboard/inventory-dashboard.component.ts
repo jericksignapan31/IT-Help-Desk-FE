@@ -79,8 +79,16 @@ export class InventoryDashboardComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (data) => {
-          console.log('✅ Inventory items loaded:', data);
+          console.log('✅ Inventory items loaded:', data.length, 'items');
           this.allItems = data;
+          
+          // Show status breakdown
+          const statusCount = new Map<string, number>();
+          data.forEach((item) => {
+            statusCount.set(item.requisition_status, (statusCount.get(item.requisition_status) || 0) + 1);
+          });
+          console.log('📊 Items by status:', Object.fromEntries(statusCount));
+          
           this.populateSupplierOptions();
           this.applyFilters();
           this.isLoading = false;
@@ -108,6 +116,16 @@ export class InventoryDashboardComponent implements OnInit, OnDestroy {
   }
 
   applyFilters(): void {
+    console.log('📋 INVENTORY FILTER DEBUG:');
+    console.log('├─ filterItemName:', this.filterItemName || '(empty)');
+    console.log('├─ filterSupplier:', this.filterSupplier || '(empty)');
+    console.log('├─ filterStatus:', this.filterStatus || '(empty)');
+    console.log('├─ Total items:', this.allItems.length);
+
+    // Show all unique statuses in data
+    const uniqueStatuses = new Set(this.allItems.map((i) => i.requisition_status));
+    console.log('├─ Available statuses:', Array.from(uniqueStatuses));
+
     this.filteredItems = this.allItems.filter((item) => {
       const matchItemName =
         !this.filterItemName ||
@@ -119,9 +137,12 @@ export class InventoryDashboardComponent implements OnInit, OnDestroy {
 
       return matchItemName && matchSupplier && matchStatus;
     });
+
+    console.log('└─ ✅ Filtered items:', this.filteredItems.length);
   }
 
   onFilterChange(): void {
+    console.log('� Filter updated by user - applying filters...');
     this.applyFilters();
   }
 
