@@ -99,33 +99,58 @@ export class ChatSocketService {
     this.socket.on('disconnect', () => {
       this.ngZone.run(() => {
         this.connectionStatusSubject.next(false);
-        console.log('Chat socket disconnected');
+        console.log('[ChatSocket] Disconnected from server');
+      });
+    });
+
+    this.socket.on('connect_error', (error: any) => {
+      this.ngZone.run(() => {
+        const errorMsg = `Connection error: ${error?.message || 'Unknown error'}`;
+        this.errorSubject.next(errorMsg);
+        console.error('[ChatSocket] Connection error:', error);
       });
     });
 
     // Message events
-    this.socket.on('message_received', (data: Message) => {
+    this.socket.on('new_message', (data: Message) => {
       this.ngZone.run(() => {
+        console.log('[ChatSocket] Message received:', data);
         this.messageReceivedSubject.next(data);
       });
     });
 
     // Typing events
-    this.socket.on('user_typing', (data: TypingIndicator) => {
+    this.socket.on('user_typing', (data: any) => {
       this.ngZone.run(() => {
-        this.userTypingSubject.next(data);
+        const typingData: TypingIndicator = {
+          userId: data.userId,
+          conversationId: data.conversationId || data.conversation_id,
+          userName: data.userName || data.user_name,
+        };
+        console.log('[ChatSocket] User typing:', typingData);
+        this.userTypingSubject.next(typingData);
       });
     });
 
     this.socket.on('user_stopped_typing', (data: { userId: string }) => {
       this.ngZone.run(() => {
+        console.log('[ChatSocket] User stopped typing:', data.userId);
         this.userStoppedTypingSubject.next(data.userId);
       });
+    });
+
+    this.socket.on('user_joined', (data: any) => {
+      console.log('[ChatSocket] User joined conversation:', data);
+    });
+
+    this.socket.on('user_left', (data: any) => {
+      console.log('[ChatSocket] User left conversation:', data);
     });
 
     // Read receipt events
     this.socket.on('message_read', (data: { messageId: string; conversationId: string }) => {
       this.ngZone.run(() => {
+        console.log('[ChatSocket] Message marked as read:', data);
         this.messageReadSubject.next(data);
       });
     });
@@ -133,45 +158,51 @@ export class ChatSocketService {
     // Error events
     this.socket.on('error', (data: { message: string }) => {
       this.ngZone.run(() => {
+        console.error('[ChatSocket] Server error:', data.message);
         this.errorSubject.next(data.message);
-        console.error('Chat socket error:', data.message);
       });
     });
+
+    console.log('[ChatSocket] Event listeners setup complete');
   }
 
   /**
-   * Join a conversation
+   * Join a conversation (subscribe to room)
    */
   joinConversation(conversationId: string): void {
     if (!this.socket) {
-      console.error('Socket not connected');
+      console.warn('[ChatSocket] Socket not connected, cannot join conversation');
       return;
     }
+    console.log('[ChatSocket] Joining conversation:', conversationId);
     this.socket.emit('join_conversation', { conversationId });
   }
 
   /**
-   * Leave a conversation
+   * Leave a conversation (unsubscribe from room)
    */
   leaveConversation(conversationId: string): void {
     if (!this.socket) {
-      console.error('Socket not connected');
+      console.warn('[ChatSocket] Socket not connected, cannot leave conversation');
       return;
     }
+    console.log('[ChatSocket] Leaving conversation:', conversationId);
     this.socket.emit('leave_conversation', { conversationId });
   }
 
   /**
-   * Send message in real-time
+   * Send message through Socket.io (for real-time updates)
+   * Note: Messages are typically sent via HTTP API, Socket.io is used for broadcast
    */
-  sendMessage(conversationId: string, text: string): void {
+  sendMessage(conversationId: string, content: string): void {
     if (!this.socket) {
-      console.error('Socket not connected');
+      console.warn('[ChatSocket] Socket not connected, cannot send message');
       return;
     }
+    console.log('[ChatSocket] Sending message to conversation:', conversationId);
     this.socket.emit('send_message', {
-      conversationId,
-      text,
+      conversation_id: conversationId,
+      content,
     });
   }
 
@@ -180,10 +211,13 @@ export class ChatSocketService {
    */
   emitTyping(conversationId: string): void {
     if (!this.socket) {
-      console.error('Socket not connected');
+      console.warn('[ChatSocket] Socket not connected, cannot emit typing');
       return;
     }
-    this.socket.emit('typing', { conversationId });
+    this.socket.emit('typing', {
+      conversationId,
+      isTyping: true,
+    });
   }
 
   /**
@@ -191,10 +225,13 @@ export class ChatSocketService {
    */
   emitStopTyping(conversationId: string): void {
     if (!this.socket) {
-      console.error('Socket not connected');
+      console.warn('[ChatSocket] Socket not connected, cannot emit stop typing');
       return;
     }
-    this.socket.emit('stop_typing', { conversationId });
+    this.socket.emit('typing', {
+      conversationId,
+      isTyping: false,
+    });
   }
 
   /**
@@ -202,9 +239,10 @@ export class ChatSocketService {
    */
   markAsRead(messageId: string): void {
     if (!this.socket) {
-      console.error('Socket not connected');
+      console.warn('[ChatSocket] Socket not connected, cannot mark as read');
       return;
     }
+    console.log('[ChatSocket] Marking message as read:', messageId);
     this.socket.emit('mark_as_read', { messageId });
   }
 
