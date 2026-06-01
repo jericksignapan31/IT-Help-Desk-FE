@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { MatTableModule } from '@angular/material/table';
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -10,6 +10,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { TicketService } from '../../services/ticket.service';
 import {
   Ticket,
@@ -34,12 +35,15 @@ import Swal from 'sweetalert2';
     MatFormFieldModule,
     MatInputModule,
     MatDialogModule,
+    MatPaginatorModule,
   ],
   templateUrl: './assigned-tickets.component.html',
   styleUrls: ['./assigned-tickets.component.scss'],
 })
 export class AssignedTicketsComponent implements OnInit {
   tickets: Ticket[] = [];
+  dataSource = new MatTableDataSource<Ticket>();
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
   displayedColumns: string[] = [
     'ticket_id',
     'subject',
@@ -74,6 +78,8 @@ export class AssignedTicketsComponent implements OnInit {
       this.ticketService.getAssignedToMe(employeeId).subscribe({
         next: (data) => {
           this.tickets = data;
+          this.dataSource.data = data;
+          this.dataSource.paginator = this.paginator;
           console.log('✅ [Assigned Tickets] Loaded tickets:', data);
           console.log(
             '✅ [Assigned Tickets] Ticket statuses:',

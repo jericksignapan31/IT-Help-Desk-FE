@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatTableModule } from '@angular/material/table';
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -11,6 +11,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { FormsModule } from '@angular/forms';
 import { EmployeeService } from '../../services/employee.service';
 import { Employee } from '../../models/employee.model';
@@ -34,6 +35,7 @@ import Swal from 'sweetalert2';
     MatTooltipModule,
     MatProgressSpinnerModule,
     MatDialogModule,
+    MatPaginatorModule,
     FormsModule,
   ],
   templateUrl: './employee-list.component.html',
@@ -41,6 +43,8 @@ import Swal from 'sweetalert2';
 })
 export class EmployeeListComponent implements OnInit {
   employees: Employee[] = [];
+  dataSource = new MatTableDataSource<Employee>();
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
   filteredEmployees: Employee[] = [];
   displayedColumns: string[] = [
     'employee_id',
@@ -71,6 +75,7 @@ export class EmployeeListComponent implements OnInit {
       next: (data) => {
         this.employees = data;
         this.applyFilter();
+        this.dataSource.paginator = this.paginator;
         this.loading = false;
       },
       error: (err) => {
@@ -99,6 +104,10 @@ export class EmployeeListComponent implements OnInit {
     }
 
     this.filteredEmployees = filtered;
+    this.dataSource.data = filtered;
+    if (this.paginator) {
+      this.dataSource.paginator = this.paginator;
+    }
   }
 
   createEmployee(): void {

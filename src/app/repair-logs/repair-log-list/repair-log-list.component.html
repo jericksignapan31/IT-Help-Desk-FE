@@ -53,7 +53,7 @@
         *ngIf="!isLoading && filteredLogs.length > 0"
         class="table-container"
       >
-        <table mat-table [dataSource]="filteredLogs" class="repair-logs-table">
+        <table mat-table [dataSource]="dataSource" class="repair-logs-table">
           <!-- Ticket ID Column -->
           <ng-container matColumnDef="ticket_id">
             <th mat-header-cell *matHeaderCellDef>Ticket #</th>
@@ -157,6 +157,7 @@
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
           <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
         </table>
+        <mat-paginator [pageSizeOptions]="[5, 10, 25, 50]" showFirstLastButtons></mat-paginator>
       </div>
     </mat-card-content>
   </mat-card>

@@ -1,12 +1,13 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatTableModule } from '@angular/material/table';
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { WarehouseService } from '../../services/warehouse.service';
 import { DepartmentService } from '../../services/department.service';
 import { PartRequisition } from '../../models/requisition.model';
@@ -29,12 +30,15 @@ import { MatDialog } from '@angular/material/dialog';
     MatCardModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
+    MatPaginatorModule,
   ],
   templateUrl: './pending-requisitions.component.html',
   styleUrls: ['./pending-requisitions.component.scss'],
 })
 export class PendingRequisitionsComponent implements OnInit, OnDestroy {
   requisitions: PartRequisition[] = [];
+  dataSource = new MatTableDataSource<PartRequisition>();
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
   departments: Department[] = [];
   loading = false;
   displayedColumns: string[] = [
@@ -93,6 +97,8 @@ export class PendingRequisitionsComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (data) => {
           this.requisitions = data;
+          this.dataSource.data = data;
+          this.dataSource.paginator = this.paginator;
           this.loading = false;
         },
         error: (err) => {

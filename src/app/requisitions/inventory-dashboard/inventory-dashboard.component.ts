@@ -1,7 +1,7 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MatTableModule } from '@angular/material/table';
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
@@ -11,6 +11,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import Swal from 'sweetalert2';
 import { WarehouseService, RequisitionInventoryItem } from '../../services/warehouse.service';
 import { Subject } from 'rxjs';
@@ -32,6 +33,7 @@ import { takeUntil } from 'rxjs/operators';
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
+    MatPaginatorModule,
   ],
   templateUrl: './inventory-dashboard.component.html',
   styleUrls: ['./inventory-dashboard.component.scss'],
@@ -39,6 +41,8 @@ import { takeUntil } from 'rxjs/operators';
 export class InventoryDashboardComponent implements OnInit, OnDestroy {
   allItems: RequisitionInventoryItem[] = [];
   filteredItems: RequisitionInventoryItem[] = [];
+  dataSource = new MatTableDataSource<RequisitionInventoryItem>();
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
   displayedColumns: string[] = [
     'rf_number',
     'item_name',
@@ -139,6 +143,8 @@ export class InventoryDashboardComponent implements OnInit, OnDestroy {
     });
 
     console.log('└─ ✅ Filtered items:', this.filteredItems.length);
+    this.dataSource.data = this.filteredItems;
+    this.dataSource.paginator = this.paginator;
   }
 
   onFilterChange(): void {

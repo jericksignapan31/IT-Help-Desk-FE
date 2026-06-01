@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, Inject, PLATFORM_ID, ViewChild } from '@angular/core';
 import { isPlatformBrowser, CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import {
@@ -14,12 +14,13 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
-import { MatTableModule } from '@angular/material/table';
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSelectModule } from '@angular/material/select';
+import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { RepairLogService } from '../services/repair-log.service';
 import { TicketService } from '../services/ticket.service';
 import { AuthService } from '../services/auth.service';
@@ -46,6 +47,7 @@ import Swal from 'sweetalert2';
     MatProgressSpinnerModule,
     MatCheckboxModule,
     MatSelectModule,
+    MatPaginatorModule,
   ],
   templateUrl: './reports.component.html',
   styleUrls: ['./reports.component.scss'],
@@ -55,6 +57,10 @@ export class ReportsComponent implements OnInit {
   loading = false;
   repairLogs: RepairLog[] = [];
   tickets: Ticket[] = [];
+  repairLogsDataSource = new MatTableDataSource<RepairLog>();
+  ticketsDataSource = new MatTableDataSource<Ticket>();
+  @ViewChild('repairLogsPaginator') repairLogsPaginator!: MatPaginator;
+  @ViewChild('ticketsPaginator') ticketsPaginator!: MatPaginator;
   filteredRepairLogs: RepairLog[] = [];
   filteredTickets: Ticket[] = [];
   logoBase64 = '';
@@ -206,6 +212,8 @@ export class ReportsComponent implements OnInit {
             // Compare in local timezone
             return logDate.getTime() >= start.getTime() && logDate.getTime() <= end.getTime();
           });
+          this.repairLogsDataSource.data = this.filteredRepairLogs;
+          this.repairLogsDataSource.paginator = this.repairLogsPaginator;
           resolve();
         },
         error: (err) => {
@@ -231,6 +239,8 @@ export class ReportsComponent implements OnInit {
             // Compare in local timezone
             return ticketDate.getTime() >= start.getTime() && ticketDate.getTime() <= end.getTime();
           });
+          this.ticketsDataSource.data = this.filteredTickets;
+          this.ticketsDataSource.paginator = this.ticketsPaginator;
           resolve();
         },
         error: (err) => {

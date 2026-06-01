@@ -81,7 +81,7 @@
       </div>
 
       <div *ngIf="!isLoading && filteredItems.length > 0" class="table-wrapper">
-        <table mat-table [dataSource]="filteredItems" class="inventory-table">
+        <table mat-table [dataSource]="dataSource" class="inventory-table">
           <!-- RF Number Column -->
           <ng-container matColumnDef="rf_number">
             <th mat-header-cell *matHeaderCellDef>RF Number</th>
@@ -172,6 +172,7 @@
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
           <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
         </table>
+        <mat-paginator [pageSizeOptions]="[5, 10, 25, 50]" showFirstLastButtons></mat-paginator>
       </div>
     </mat-card-content>
   </mat-card>

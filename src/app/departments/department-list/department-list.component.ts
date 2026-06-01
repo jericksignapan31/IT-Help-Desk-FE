@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatTableModule } from '@angular/material/table';
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
@@ -8,6 +8,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { DepartmentService } from '../../services/department.service';
 import { AuthService } from '../../services/auth.service';
 import { Department } from '../../models/department.model';
@@ -27,12 +28,15 @@ import Swal from 'sweetalert2';
     MatTooltipModule,
     MatProgressSpinnerModule,
     MatDialogModule,
+    MatPaginatorModule,
   ],
   templateUrl: './department-list.component.html',
   styleUrls: ['./department-list.component.scss'],
 })
 export class DepartmentListComponent implements OnInit {
   departments: Department[] = [];
+  dataSource = new MatTableDataSource<Department>();
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
   displayedColumns: string[] = [
     'department_name',
     'description',
@@ -60,6 +64,8 @@ export class DepartmentListComponent implements OnInit {
     this.departmentService.getAllDepartments().subscribe({
       next: (departments) => {
         this.departments = departments;
+        this.dataSource.data = departments;
+        this.dataSource.paginator = this.paginator;
         this.isLoading = false;
       },
       error: (error) => {

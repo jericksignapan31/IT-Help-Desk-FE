@@ -1,12 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { MatTableModule } from '@angular/material/table';
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { TicketService } from '../../services/ticket.service';
 import { Ticket } from '../../models/ticket.model';
 import { AuthService } from '../../services/auth.service';
@@ -24,12 +25,15 @@ import Swal from 'sweetalert2';
     MatIconModule,
     MatChipsModule,
     MatTooltipModule,
+    MatPaginatorModule,
   ],
   templateUrl: './my-tickets.component.html',
   styleUrls: ['./my-tickets.component.scss'],
 })
 export class MyTicketsComponent implements OnInit {
   tickets: Ticket[] = [];
+  dataSource = new MatTableDataSource<Ticket>();
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
   displayedColumns: string[] = [
     'ticket_id',
     'subject',
@@ -71,6 +75,8 @@ export class MyTicketsComponent implements OnInit {
           console.log('📋 [My Tickets] Tickets data:', data);
 
           this.tickets = data;
+          this.dataSource.data = data;
+          this.dataSource.paginator = this.paginator;
           this.loading = false;
         },
         error: (err) => {

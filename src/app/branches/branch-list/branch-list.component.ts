@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatTableModule } from '@angular/material/table';
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
@@ -8,6 +8,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { BranchService } from '../../services/branch.service';
 import { Branch } from '../../models/branch.model';
 import { BranchDialogComponent } from '../branch-dialog/branch-dialog.component';
@@ -26,12 +27,15 @@ import Swal from 'sweetalert2';
     MatTooltipModule,
     MatProgressSpinnerModule,
     MatDialogModule,
+    MatPaginatorModule,
   ],
   templateUrl: './branch-list.component.html',
   styleUrls: ['./branch-list.component.scss'],
 })
 export class BranchListComponent implements OnInit {
   branches: Branch[] = [];
+  dataSource = new MatTableDataSource<Branch>();
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
   displayedColumns: string[] = [
     'branch_name',
     'location',
@@ -55,6 +59,8 @@ export class BranchListComponent implements OnInit {
     this.branchService.getAllBranches().subscribe({
       next: (branches) => {
         this.branches = branches;
+        this.dataSource.data = branches;
+        this.dataSource.paginator = this.paginator;
         this.isLoading = false;
       },
       error: (error) => {

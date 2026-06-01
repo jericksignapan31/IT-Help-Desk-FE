@@ -1,12 +1,13 @@
-import { Component, OnInit, OnDestroy, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatTableModule } from '@angular/material/table';
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { WarehouseService } from '../../services/warehouse.service';
 import { PartRequisition } from '../../models/requisition.model';
 import Swal from 'sweetalert2';
@@ -25,6 +26,7 @@ import { takeUntil } from 'rxjs/operators';
     MatCardModule,
     MatDialogModule,
     MatTooltipModule,
+    MatPaginatorModule,
   ],
   templateUrl: './my-requisitions-list.component.html',
   styleUrls: ['./my-requisitions-list.component.scss'],
@@ -33,6 +35,8 @@ export class MyRequisitionsListComponent implements OnInit, OnDestroy, OnChanges
   @Input() refreshTrigger = 0;
 
   requisitions: PartRequisition[] = [];
+  dataSource = new MatTableDataSource<PartRequisition>();
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
   loading = true;
   error: string = '';
 
@@ -78,6 +82,8 @@ export class MyRequisitionsListComponent implements OnInit, OnDestroy, OnChanges
       .subscribe({
         next: (data) => {
           this.requisitions = data;
+          this.dataSource.data = data;
+          this.dataSource.paginator = this.paginator;
           this.loading = false;
         },
         error: (err) => {

@@ -43,8 +43,8 @@
         </button>
       </div>
 
-      <div *ngIf="!isLoading && brands.length > 0" class="table-container">
-        <table mat-table [dataSource]="brands" class="brands-table">
+      <div *ngIf="!isLoading && dataSource.data.length > 0" class="table-container">
+        <table mat-table [dataSource]="dataSource" class="brands-table">
           <!-- Brand Name Column -->
           <ng-container matColumnDef="brand_name">
             <th mat-header-cell *matHeaderCellDef>Brand Name</th>
@@ -121,6 +121,7 @@
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
           <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
         </table>
+        <mat-paginator [pageSizeOptions]="[5, 10, 25, 50]" showFirstLastButtons></mat-paginator>
       </div>
     </mat-card-content>
   </mat-card>

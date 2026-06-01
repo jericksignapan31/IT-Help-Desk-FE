@@ -17,15 +17,15 @@
     </div>
 
     <!-- Empty State -->
-    <div *ngIf="!loading && requisitions.length === 0 && !error" class="empty-state">
+    <div *ngIf="!loading && dataSource.data.length === 0 && !error" class="empty-state">
       <mat-icon>receipt_long</mat-icon>
       <p>No requisitions yet</p>
       <p class="subtitle">Create your first requisition using the form above</p>
     </div>
 
     <!-- Data Table -->
-    <div *ngIf="requisitions.length > 0 && !loading" class="table-container">
-      <table mat-table [dataSource]="requisitions" class="requisitions-table">
+    <div *ngIf="dataSource.data.length > 0 && !loading" class="table-container">
+      <table mat-table [dataSource]="dataSource" class="requisitions-table">
         <!-- RF Number Column -->
         <ng-container matColumnDef="rf_number">
           <th mat-header-cell *matHeaderCellDef>RF Number</th>
@@ -95,6 +95,7 @@
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
       </table>
+      <mat-paginator [pageSizeOptions]="[5, 10, 25, 50]" showFirstLastButtons></mat-paginator>
     </div>
   </mat-card-content>
 </mat-card>

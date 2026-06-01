@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatTableModule } from '@angular/material/table';
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
@@ -11,6 +11,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
+import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { FormsModule } from '@angular/forms';
 import { RepairLogService } from '../../services/repair-log.service';
 import { RepairLog } from '../../models/repair-log.model';
@@ -32,6 +33,7 @@ import Swal from 'sweetalert2';
     MatFormFieldModule,
     MatSelectModule,
     MatInputModule,
+    MatPaginatorModule,
     FormsModule,
   ],
   templateUrl: './repair-log-list.component.html',
@@ -39,6 +41,8 @@ import Swal from 'sweetalert2';
 })
 export class RepairLogListComponent implements OnInit {
   repairLogs: RepairLog[] = [];
+  dataSource = new MatTableDataSource<RepairLog>();
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
   filteredLogs: RepairLog[] = [];
   displayedColumns: string[] = [
     'ticket_id',
@@ -74,6 +78,7 @@ export class RepairLogListComponent implements OnInit {
       next: (logs) => {
         this.repairLogs = logs;
         this.applyFilters();
+        this.dataSource.paginator = this.paginator;
         this.isLoading = false;
       },
       error: (error) => {
@@ -102,6 +107,10 @@ export class RepairLogListComponent implements OnInit {
 
       return matchesStatus && matchesSearch;
     });
+    this.dataSource.data = this.filteredLogs;
+    if (this.paginator) {
+      this.dataSource.paginator = this.paginator;
+    }
   }
 
   onFilterChange(): void {

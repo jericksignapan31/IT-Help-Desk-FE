@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MatTableModule } from '@angular/material/table';
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -10,6 +10,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { UserAccountService } from '../../services/user-account.service';
 import Swal from 'sweetalert2';
 import { log } from 'console';
@@ -43,12 +44,15 @@ interface UserCredential {
     MatProgressSpinnerModule,
     MatFormFieldModule,
     MatInputModule,
+    MatPaginatorModule,
   ],
   templateUrl: './user-credentials.component.html',
   styleUrls: ['./user-credentials.component.scss'],
 })
 export class UserCredentialsComponent implements OnInit {
   credentials: UserCredential[] = [];
+  dataSource = new MatTableDataSource<UserCredential>();
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
   filteredCredentials: UserCredential[] = [];
   displayedColumns: string[] = [
     'email',
@@ -73,6 +77,7 @@ export class UserCredentialsComponent implements OnInit {
       next: (data) => {
         this.credentials = data;
         this.applyFilter();
+        this.dataSource.paginator = this.paginator;
         this.loading = false;
         console.log('User credentials loaded:', data);
       },
@@ -100,6 +105,10 @@ export class UserCredentialsComponent implements OnInit {
           cred.username?.toLowerCase().includes(search) ||
           cred.role?.toLowerCase().includes(search),
       );
+    }
+    this.dataSource.data = this.filteredCredentials;
+    if (this.paginator) {
+      this.dataSource.paginator = this.paginator;
     }
   }
 

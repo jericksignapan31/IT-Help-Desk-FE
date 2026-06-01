@@ -23,8 +23,8 @@
         </button>
       </div>
 
-      <div *ngIf="!isLoading && branches.length > 0" class="table-container">
-        <table mat-table [dataSource]="branches" class="branches-table">
+      <div *ngIf="!isLoading && dataSource.data.length > 0" class="table-container">
+        <table mat-table [dataSource]="dataSource" class="branches-table">
           <!-- Branch Name Column -->
           <ng-container matColumnDef="branch_name">
             <th mat-header-cell *matHeaderCellDef>Branch Name</th>
@@ -100,6 +100,7 @@
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
           <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
         </table>
+        <mat-paginator [pageSizeOptions]="[5, 10, 25, 50]" showFirstLastButtons></mat-paginator>
       </div>
     </mat-card-content>
   </mat-card>

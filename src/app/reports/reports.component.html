@@ -88,7 +88,7 @@
       </mat-card-header>
       <mat-card-content *ngIf="filteredRepairLogs.length > 0">
         <div class="table-container">
-          <table mat-table [dataSource]="filteredRepairLogs" class="data-table">
+          <table mat-table [dataSource]="repairLogsDataSource" class="data-table">
             <!-- Ticket ID Column -->
             <ng-container matColumnDef="ticket_id">
               <th mat-header-cell *matHeaderCellDef>Ticket ID</th>
@@ -154,9 +154,10 @@
             <tr mat-header-row *matHeaderRowDef="repairLogColumns"></tr>
             <tr mat-row *matRowDef="let row; columns: repairLogColumns"></tr>
           </table>
+          <mat-paginator #repairLogsPaginator [pageSizeOptions]="[5, 10, 25, 50]" showFirstLastButtons></mat-paginator>
         </div>
       </mat-card-content>
-      <mat-card-content *ngIf="filteredRepairLogs.length === 0">
+      <mat-card-content *ngIf="repairLogsDataSource.data.length === 0">
         <div class="no-data">
           <mat-icon>inbox</mat-icon>
           <p>No repair logs found for the selected date range.</p>
@@ -177,7 +178,7 @@
       </mat-card-header>
       <mat-card-content *ngIf="filteredTickets.length > 0">
         <div class="table-container">
-          <table mat-table [dataSource]="filteredTickets" class="data-table">
+          <table mat-table [dataSource]="ticketsDataSource" class="data-table">
             <!-- Ticket ID Column -->
             <ng-container matColumnDef="ticket_id">
               <th mat-header-cell *matHeaderCellDef>Ticket ID</th>
@@ -227,9 +228,10 @@
             <tr mat-header-row *matHeaderRowDef="ticketColumns"></tr>
             <tr mat-row *matRowDef="let row; columns: ticketColumns"></tr>
           </table>
+          <mat-paginator #ticketsPaginator [pageSizeOptions]="[5, 10, 25, 50]" showFirstLastButtons></mat-paginator>
         </div>
       </mat-card-content>
-      <mat-card-content *ngIf="filteredTickets.length === 0">
+      <mat-card-content *ngIf="ticketsDataSource.data.length === 0">
         <div class="no-data">
           <mat-icon>inbox</mat-icon>
           <p>No tickets found for the selected date range.</p>

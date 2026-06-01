@@ -163,6 +163,7 @@
           class="employee-row"
         ></tr>
       </table>
+      <mat-paginator [pageSizeOptions]="[5, 10, 25, 50]" showFirstLastButtons></mat-paginator>
 
       <!-- Empty State -->
       <div *ngIf="filteredEmployees.length === 0 && !loading" class="no-data">

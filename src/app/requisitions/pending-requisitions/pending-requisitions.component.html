@@ -16,7 +16,7 @@
     </div>
 
     <div *ngIf="!loading && requisitions.length > 0" class="table-container">
-      <table mat-table [dataSource]="requisitions" class="requisitions-table">
+      <table mat-table [dataSource]="dataSource" class="requisitions-table">
         <!-- RF Number Column -->
         <ng-container matColumnDef="rf_number">
           <th mat-header-cell *matHeaderCellDef>RF Number</th>
@@ -100,6 +100,7 @@
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
       </table>
+      <mat-paginator [pageSizeOptions]="[5, 10, 25, 50]" showFirstLastButtons></mat-paginator>
     </div>
   </mat-card-content>
 </mat-card>

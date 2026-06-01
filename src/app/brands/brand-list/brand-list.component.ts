@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { MatTableModule } from '@angular/material/table';
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
@@ -11,6 +11,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { BrandService } from '../../services/brand.service';
 import { Brand } from '../../models/brand.model';
 import { BrandDialogComponent } from '../brand-dialog/brand-dialog.component';
@@ -32,12 +33,15 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
     MatFormFieldModule,
     MatInputModule,
     MatDialogModule,
+    MatPaginatorModule,
   ],
   templateUrl: './brand-list.component.html',
   styleUrls: ['./brand-list.component.scss'],
 })
 export class BrandListComponent implements OnInit {
   brands: Brand[] = [];
+  dataSource = new MatTableDataSource<Brand>();
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
   displayedColumns: string[] = [
     'brand_name',
     'description',
@@ -76,6 +80,8 @@ export class BrandListComponent implements OnInit {
     this.brandService.searchBrands(query).subscribe({
       next: (brands) => {
         this.brands = brands;
+        this.dataSource.data = brands;
+        this.dataSource.paginator = this.paginator;
         this.isLoading = false;
       },
       error: (error) => {
@@ -89,6 +95,8 @@ export class BrandListComponent implements OnInit {
     this.brandService.getAllBrands().subscribe({
       next: (brands) => {
         this.brands = brands;
+        this.dataSource.data = brands;
+        this.dataSource.paginator = this.paginator;
         this.isLoading = false;
       },
       error: (error) => {
