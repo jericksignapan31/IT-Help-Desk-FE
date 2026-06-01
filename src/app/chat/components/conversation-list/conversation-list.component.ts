@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, OnChanges, SimpleChanges, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
@@ -10,6 +10,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { FormsModule } from '@angular/forms';
 import { Conversation } from '../../models';
 import { UnreadBadgeComponent } from '../unread-badge/unread-badge.component';
+import { OnlineStatusComponent } from '../online-status/online-status.component';
+import { ChatSocketService } from '../../services/chat-socket.service';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-conversation-list',
@@ -25,6 +28,7 @@ import { UnreadBadgeComponent } from '../unread-badge/unread-badge.component';
     MatInputModule,
     MatFormFieldModule,
     UnreadBadgeComponent,
+    OnlineStatusComponent,
   ],
   template: `
     <div class="conversation-list-container">
@@ -61,9 +65,15 @@ import { UnreadBadgeComponent } from '../unread-badge/unread-badge.component';
         >
           <div class="conversation-content">
             <div class="conversation-header">
-              <span class="conversation-name">
-                {{ getConversationName(conversation) }}
-              </span>
+              <div class="conversation-name-wrapper">
+                <span class="conversation-name">
+                  {{ getConversationName(conversation) }}
+                </span>
+                <app-online-status 
+                  *ngIf="conversation.type === 'DIRECT'"
+                  [isOnline]="isUserOnline(conversation)"
+                ></app-online-status>
+              </div>
               <app-unread-badge [count]="conversation.unread_count || 0"></app-unread-badge>
             </div>
             <div class="conversation-preview">
@@ -251,6 +261,7 @@ import { UnreadBadgeComponent } from '../unread-badge/unread-badge.component';
         align-items: center;
         gap: 8px;
         margin-bottom: 4px;
+        min-width: 0;
       }
 
       .conversation-name {
@@ -260,6 +271,14 @@ import { UnreadBadgeComponent } from '../unread-badge/unread-badge.component';
         overflow: hidden;
         text-overflow: ellipsis;
         color: #333;
+      }
+
+      .conversation-name-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        min-width: 0;
+        flex: 1;
       }
 
       .conversation-preview {
@@ -291,6 +310,8 @@ export class ConversationListComponent implements OnChanges {
   @Output() createNew = new EventEmitter<void>();
 
   searchText: string = '';
+  private chatSocket = inject(ChatSocketService);
+  onlineUsers$ = this.chatSocket.onlineUsers$;
 
   constructor(private cdr: ChangeDetectorRef) {}
 
@@ -322,6 +343,15 @@ export class ConversationListComponent implements OnChanges {
 
   isActive(conversation: Conversation): boolean {
     return this.currentConversation?.conversation_id === conversation.conversation_id;
+  }
+
+  isUserOnline(conversation: Conversation): boolean {
+    if (!conversation.participants || conversation.participants.length === 0) {
+      return false;
+    }
+    const onlineUsers = this.chatSocket.getOnlineUsers();
+    // For DIRECT conversations, check if the other participant is online
+    return conversation.participants.some((p) => onlineUsers.includes(p.id));
   }
 
   onSelectConversation(conversation: Conversation): void {

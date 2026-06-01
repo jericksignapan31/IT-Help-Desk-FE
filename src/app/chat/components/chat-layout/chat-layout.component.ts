@@ -238,6 +238,24 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
           this.chatStore.setError(error);
         }
       });
+
+    // Listen for typing users updates
+    this.chatSocket.typingUsers$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((typingUsersMap) => {
+        const currentConv = this.chatStore.getCurrentConversation();
+        if (currentConv) {
+          const typingUsers = typingUsersMap.get(currentConv.conversation_id) || new Set();
+          (this.typingUsers$ as Subject<string[]>).next(Array.from(typingUsers));
+        }
+      });
+
+    // Listen for online users updates
+    this.chatSocket.onlineUsers$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((onlineUsers) => {
+        console.log('[ChatLayout] Online users updated:', onlineUsers);
+      });
   }
 
   private subscribeToSocketEvents(): void {
@@ -320,7 +338,7 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
     }
   }
 
-  onSendMessage(text: string): void {
+  onSendMessage(data: { text: string; attachments?: any[] }): void {
     console.log('========= onSendMessage CALLED =========');
     const currentConv = this.chatStore.getCurrentConversation();
     const currentUser = this.authService.currentUserValue;
@@ -339,12 +357,14 @@ export class ChatLayoutComponent implements OnInit, OnDestroy {
 
     const request: CreateMessageRequest = {
       conversation_id: currentConv.conversation_id,
-      content: text,
+      content: data.text,
+      attachments: data.attachments || undefined,
     };
 
     console.log('Creating message request:', { 
       conversationId: currentConv.conversation_id, 
-      content: text,
+      content: data.text,
+      attachments: data.attachments,
       currentUserId: currentUser?.id,
       conversationParticipants: currentConv.participant_ids,
     });

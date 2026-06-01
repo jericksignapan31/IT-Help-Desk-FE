@@ -36,6 +36,14 @@ export class ChatSocketService {
   private errorSubject = new BehaviorSubject<string | null>(null);
   error$ = this.errorSubject.asObservable();
 
+  // Track typing users per conversation
+  private typingUsersSubject = new BehaviorSubject<Map<string, Set<string>>>(new Map());
+  typingUsers$ = this.typingUsersSubject.asObservable();
+
+  // Track online users
+  private onlineUsersSubject = new BehaviorSubject<Set<string>>(new Set());
+  onlineUsers$ = this.onlineUsersSubject.asObservable();
+
   constructor(private ngZone: NgZone) {}
 
   /**
@@ -128,23 +136,45 @@ export class ChatSocketService {
           userName: data.userName || data.user_name,
         };
         console.log('[ChatSocket] User typing:', typingData);
+        this.addTypingUser(typingData.conversationId, typingData.userId);
         this.userTypingSubject.next(typingData);
       });
     });
 
-    this.socket.on('user_stopped_typing', (data: { userId: string }) => {
+    this.socket.on('user_stopped_typing', (data: { userId: string; conversationId: string }) => {
       this.ngZone.run(() => {
         console.log('[ChatSocket] User stopped typing:', data.userId);
+        this.removeTypingUser(data.conversationId, data.userId);
         this.userStoppedTypingSubject.next(data.userId);
       });
     });
 
     this.socket.on('user_joined', (data: any) => {
-      console.log('[ChatSocket] User joined conversation:', data);
+      this.ngZone.run(() => {
+        console.log('[ChatSocket] User joined conversation:', data);
+        this.addOnlineUser(data.userId);
+      });
     });
 
     this.socket.on('user_left', (data: any) => {
-      console.log('[ChatSocket] User left conversation:', data);
+      this.ngZone.run(() => {
+        console.log('[ChatSocket] User left conversation:', data);
+        this.removeOnlineUser(data.userId);
+      });
+    });
+
+    this.socket.on('user_online', (data: { userId: string }) => {
+      this.ngZone.run(() => {
+        console.log('[ChatSocket] User online:', data.userId);
+        this.addOnlineUser(data.userId);
+      });
+    });
+
+    this.socket.on('user_offline', (data: { userId: string }) => {
+      this.ngZone.run(() => {
+        console.log('[ChatSocket] User offline:', data.userId);
+        this.removeOnlineUser(data.userId);
+      });
     });
 
     // Read receipt events
@@ -251,5 +281,65 @@ export class ChatSocketService {
    */
   isConnected(): boolean {
     return this.socket?.connected ?? false;
+  }
+
+  /**
+   * Get typing users for a specific conversation
+   */
+  getTypingUsersForConversation(conversationId: string): string[] {
+    const allTypingUsers = this.typingUsersSubject.value;
+    const typingInConversation = allTypingUsers.get(conversationId);
+    return typingInConversation ? Array.from(typingInConversation) : [];
+  }
+
+  /**
+   * Get all online users
+   */
+  getOnlineUsers(): string[] {
+    return Array.from(this.onlineUsersSubject.value);
+  }
+
+  /**
+   * Add typing user to conversation
+   */
+  private addTypingUser(conversationId: string, userId: string): void {
+    const allTypingUsers = new Map(this.typingUsersSubject.value);
+    if (!allTypingUsers.has(conversationId)) {
+      allTypingUsers.set(conversationId, new Set());
+    }
+    allTypingUsers.get(conversationId)!.add(userId);
+    this.typingUsersSubject.next(allTypingUsers);
+  }
+
+  /**
+   * Remove typing user from conversation
+   */
+  private removeTypingUser(conversationId: string, userId: string): void {
+    const allTypingUsers = new Map(this.typingUsersSubject.value);
+    if (allTypingUsers.has(conversationId)) {
+      allTypingUsers.get(conversationId)!.delete(userId);
+      if (allTypingUsers.get(conversationId)!.size === 0) {
+        allTypingUsers.delete(conversationId);
+      }
+    }
+    this.typingUsersSubject.next(allTypingUsers);
+  }
+
+  /**
+   * Add online user
+   */
+  private addOnlineUser(userId: string): void {
+    const onlineUsers = new Set(this.onlineUsersSubject.value);
+    onlineUsers.add(userId);
+    this.onlineUsersSubject.next(onlineUsers);
+  }
+
+  /**
+   * Remove online user
+   */
+  private removeOnlineUser(userId: string): void {
+    const onlineUsers = new Set(this.onlineUsersSubject.value);
+    onlineUsers.delete(userId);
+    this.onlineUsersSubject.next(onlineUsers);
   }
 }

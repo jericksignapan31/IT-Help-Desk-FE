@@ -4,7 +4,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { Message } from '../../models';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { Message, FileAttachment } from '../../models';
+import { FileUploadService } from '../../services/file-upload.service';
 
 @Component({
   selector: 'app-message-list',
@@ -15,6 +17,7 @@ import { Message } from '../../models';
     MatButtonModule,
     MatMenuModule,
     MatProgressSpinnerModule,
+    MatTooltipModule,
   ],
   template: `
     <div class="message-list-container">
@@ -52,6 +55,36 @@ import { Message } from '../../models';
                 {{ message.sender?.first_name || 'Unknown User' }}
               </div>
               <div class="message-text">{{ message.content }}</div>
+              
+              <!-- Attachments -->
+              <div *ngIf="message.attachments && message.attachments.length > 0" class="attachments">
+                <div
+                  *ngFor="let attachment of message.attachments"
+                  class="attachment-item"
+                  [matTooltip]="attachment.filename"
+                >
+                  <!-- Image preview -->
+                  <img
+                    *ngIf="attachment.preview_url"
+                    [src]="attachment.preview_url"
+                    [alt]="attachment.filename"
+                    class="attachment-image"
+                  />
+                  <!-- File icon for non-images -->
+                  <div
+                    *ngIf="!attachment.preview_url"
+                    class="attachment-file-icon"
+                  >
+                    <mat-icon>
+                      {{ fileUploadService.getFileIcon(attachment.file_type) }}
+                    </mat-icon>
+                    <div class="file-name-label">
+                      {{ fileUploadService.getFileDisplayName(attachment.filename) }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <div class="message-footer">
                 <span class="timestamp">{{ formatTime(message.created_at) }}</span>
                 <span *ngIf="isOwnMessage(message)" class="read-receipt" [class.read]="message.is_read">
@@ -269,6 +302,64 @@ import { Message } from '../../models';
         margin: 0;
       }
 
+      .attachments {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 8px;
+      }
+
+      .attachment-item {
+        position: relative;
+        cursor: pointer;
+        border-radius: 8px;
+        overflow: hidden;
+        background: rgba(0, 0, 0, 0.05);
+        transition: all 0.2s ease;
+      }
+
+      .attachment-item:hover {
+        transform: scale(1.02);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      }
+
+      .attachment-image {
+        max-width: 200px;
+        max-height: 200px;
+        width: auto;
+        height: auto;
+        display: block;
+        border-radius: 8px;
+      }
+
+      .attachment-file-icon {
+        width: 120px;
+        height: 120px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 12px;
+        background: rgba(102, 126, 234, 0.1);
+        border-radius: 8px;
+      }
+
+      .attachment-file-icon mat-icon {
+        font-size: 32px;
+        width: 32px;
+        height: 32px;
+        color: #667eea;
+      }
+
+      .file-name-label {
+        font-size: 10px;
+        text-align: center;
+        color: #666;
+        word-break: break-all;
+        max-width: 100%;
+      }
+
       .message-footer {
         display: flex;
         align-items: center;
@@ -342,7 +433,10 @@ export class MessageListComponent implements OnInit, OnChanges, AfterViewChecked
 
   private shouldScroll = true;
 
-  constructor(private cdr: ChangeDetectorRef) {}
+  constructor(
+    private cdr: ChangeDetectorRef,
+    public fileUploadService: FileUploadService
+  ) {}
 
   ngOnInit(): void {}
 

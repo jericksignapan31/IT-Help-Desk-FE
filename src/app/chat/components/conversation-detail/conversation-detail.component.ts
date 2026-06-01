@@ -4,7 +4,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
-import { Conversation, Message } from '../../models';
+import { Conversation, Message, FileAttachment } from '../../models';
 import { MessageListComponent } from '../message-list/message-list.component';
 import { MessageInputComponent } from '../message-input/message-input.component';
 import { TypingIndicatorComponent } from '../typing-indicator/typing-indicator.component';
@@ -183,7 +183,7 @@ export class ConversationDetailComponent implements OnChanges {
   @Input() currentUserId: string = '';
   @Input() loadingMessages: boolean = false;
   @Input() disabled: boolean = false;
-  @Output() sendMessage = new EventEmitter<string>();
+  @Output() sendMessage = new EventEmitter<{ text: string; attachments?: FileAttachment[] }>();
   @Output() deleteMessage = new EventEmitter<Message>();
   @Output() typing = new EventEmitter<void>();
   @Output() stoppedTyping = new EventEmitter<void>();
@@ -221,7 +221,7 @@ export class ConversationDetailComponent implements OnChanges {
     return `${this.conversation.participants.length} participant${this.conversation.participants.length !== 1 ? 's' : ''}`;
   }
 
-  onSendMessage(message: string): void {
+  onSendMessage(message: { text: string; attachments?: FileAttachment[] }): void {
     this.sendMessage.emit(message);
   }
 
