@@ -1,6 +1,6 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatTableModule } from '@angular/material/table';
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
@@ -8,6 +8,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import Swal from 'sweetalert2';
 import { WarehouseService } from '../../services/warehouse.service';
 import { DepartmentService } from '../../services/department.service';
@@ -30,12 +31,15 @@ import { takeUntil } from 'rxjs/operators';
     MatDialogModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
+    MatPaginatorModule,
   ],
   templateUrl: './pending-admin-review.component.html',
   styleUrls: ['./pending-admin-review.component.scss'],
 })
 export class PendingAdminReviewComponent implements OnInit, OnDestroy {
   requisitions: PartRequisition[] = [];
+  dataSource = new MatTableDataSource<PartRequisition>();
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
   departments: Department[] = [];
   displayedColumns: string[] = [
     'rf_number',
@@ -89,6 +93,8 @@ export class PendingAdminReviewComponent implements OnInit, OnDestroy {
           console.log('✅ All requisitions loaded:', data);
           // Filter to only pending_admin_review status
           this.requisitions = data.filter((req) => req.status === 'pending_admin_review');
+          this.dataSource.data = this.requisitions;
+          this.dataSource.paginator = this.paginator;
           console.log('✅ Filtered to pending_admin_review:', this.requisitions);
           this.isLoading = false;
         },

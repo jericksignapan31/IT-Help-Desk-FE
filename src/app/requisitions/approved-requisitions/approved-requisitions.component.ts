@@ -1,12 +1,13 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatTableModule } from '@angular/material/table';
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import Swal from 'sweetalert2';
 import { WarehouseService } from '../../services/warehouse.service';
 import { DepartmentService } from '../../services/department.service';
@@ -27,12 +28,15 @@ import { takeUntil } from 'rxjs/operators';
     MatCardModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
+    MatPaginatorModule,
   ],
   templateUrl: './approved-requisitions.component.html',
   styleUrls: ['./approved-requisitions.component.scss'],
 })
 export class ApprovedRequisitionsComponent implements OnInit, OnDestroy {
   requisitions: PartRequisition[] = [];
+  dataSource = new MatTableDataSource<PartRequisition>();
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
   departments: Department[] = [];
   displayedColumns: string[] = [
     'rf_number',
@@ -84,6 +88,8 @@ export class ApprovedRequisitionsComponent implements OnInit, OnDestroy {
         next: (data) => {
           console.log('✅ Approved requisitions loaded:', data);
           this.requisitions = data;
+          this.dataSource.data = data;
+          this.dataSource.paginator = this.paginator;
           this.isLoading = false;
         },
         error: (err) => {
