@@ -27,20 +27,29 @@
   margin-bottom: 1.5rem;
 
   .filters {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr auto;
+    display: flex;
+    flex-wrap: wrap;
     gap: 1rem;
-    align-items: start;
+    align-items: flex-start;
 
     mat-form-field {
-      width: 100%;
+      flex: 1;
+      min-width: 180px;
     }
 
     .filter-actions {
       display: flex;
       gap: 0.5rem;
       align-items: center;
-      margin-top: 0.5rem;
+      flex-wrap: wrap;
+
+      button {
+        white-space: nowrap;
+
+        mat-icon {
+          margin-right: 0.5rem;
+        }
+      }
     }
   }
 }

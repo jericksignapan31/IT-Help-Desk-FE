@@ -12,6 +12,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 import { FormsModule } from '@angular/forms';
 import { AssetService } from '../../services/asset.service';
 import { Asset, AssetStatus } from '../../models/asset.model';
@@ -39,6 +41,8 @@ import * as QRCode from 'qrcode';
     MatDialogModule,
     MatTooltipModule,
     MatPaginatorModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
     FormsModule,
   ],
   templateUrl: './asset-list.component.html',
@@ -62,6 +66,8 @@ export class AssetListComponent implements OnInit {
   filters = {
     search: '',
     status: '',
+    startDate: null as Date | null,
+    endDate: null as Date | null,
   };
 
   statusOptions = Object.values(AssetStatus);
@@ -169,8 +175,192 @@ export class AssetListComponent implements OnInit {
   }
 
   clearFilters(): void {
-    this.filters = { search: '', status: '' };
+    this.filters = { search: '', status: '', startDate: null, endDate: null };
     this.loadAssets();
+  }
+
+  downloadData(): void {
+    if (this.dataSource.data.length === 0) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'No Data',
+        text: 'There are no assets to download.',
+      });
+      return;
+    }
+
+    const startDate = this.filters.startDate 
+      ? this.formatDate(this.filters.startDate) 
+      : 'All';
+    const endDate = this.filters.endDate 
+      ? this.formatDate(this.filters.endDate) 
+      : 'All';
+
+    this.generateAssetsPDF(startDate, endDate);
+  }
+
+  private generateAssetsPDF(startDate: string, endDate: string): void {
+    const headers = ['Asset Tag', 'Category', 'Brand', 'Model', 'Status', 'Assigned To', 'Created Date'];
+
+    const tableData = [
+      headers.map((h) => ({
+        text: h,
+        bold: true,
+        color: '#ffffff',
+        fillColor: '#1976d2',
+        alignment: 'center',
+        margin: [4, 6, 4, 6],
+        fontSize: 9,
+      })),
+      ...this.dataSource.data.map((asset, index) => [
+        {
+          text: asset.asset_tag,
+          margin: [4, 5, 4, 5],
+          fontSize: 8,
+          fillColor: index % 2 === 0 ? '#f5f5f5' : '#ffffff',
+        },
+        {
+          text: asset.category,
+          margin: [4, 5, 4, 5],
+          fontSize: 8,
+          fillColor: index % 2 === 0 ? '#f5f5f5' : '#ffffff',
+        },
+        {
+          text: asset.brand?.brand_name || 'N/A',
+          margin: [4, 5, 4, 5],
+          fontSize: 8,
+          fillColor: index % 2 === 0 ? '#f5f5f5' : '#ffffff',
+        },
+        {
+          text: asset.model,
+          margin: [4, 5, 4, 5],
+          fontSize: 8,
+          fillColor: index % 2 === 0 ? '#f5f5f5' : '#ffffff',
+        },
+        {
+          text: asset.status,
+          margin: [4, 5, 4, 5],
+          fontSize: 8,
+          alignment: 'center',
+          fillColor: index % 2 === 0 ? '#f5f5f5' : '#ffffff',
+        },
+        {
+          text: asset.assignedEmployee
+            ? `${asset.assignedEmployee.first_name} ${asset.assignedEmployee.last_name}`
+            : 'Unassigned',
+          margin: [4, 5, 4, 5],
+          fontSize: 8,
+          fillColor: index % 2 === 0 ? '#f5f5f5' : '#ffffff',
+        },
+        {
+          text: asset.created_at ? new Date(asset.created_at).toLocaleDateString() : 'N/A',
+          margin: [4, 5, 4, 5],
+          fontSize: 8,
+          alignment: 'center',
+          fillColor: index % 2 === 0 ? '#f5f5f5' : '#ffffff',
+        },
+      ]),
+    ];
+
+    const docDefinition: any = {
+      content: [
+        {
+          text: 'Assets Inventory Report',
+          style: 'header',
+          alignment: 'center',
+        },
+        {
+          text: `From: ${startDate}    To: ${endDate}`,
+          style: 'subheader',
+          alignment: 'center',
+          margin: [0, 0, 0, 20],
+        },
+        {
+          table: {
+            headerRows: 1,
+            widths: ['auto', 'auto', 'auto', '*', 'auto', '*', 'auto'],
+            body: tableData,
+          },
+          layout: 'lightHorizontalLines',
+        },
+        {
+          table: {
+            widths: ['*', '*'],
+            body: [
+              [
+                {
+                  text: '___________________________',
+                  alignment: 'center',
+                  margin: [0, 128, 0, 10],
+                },
+                {
+                  text: '___________________________',
+                  alignment: 'center',
+                  margin: [0, 128, 0, 10],
+                },
+              ],
+              [
+                {
+                  text: 'Signature',
+                  alignment: 'center',
+                  fontSize: 10,
+                  margin: [0, 5, 0, 0],
+                },
+                {
+                  text: 'Signature',
+                  alignment: 'center',
+                  fontSize: 10,
+                  margin: [0, 5, 0, 0],
+                },
+              ],
+            ],
+          },
+          layout: 'noBorders',
+          margin: [0, 40, 0, 0],
+        },
+      ],
+      styles: {
+        header: {
+          fontSize: 18,
+          bold: true,
+          margin: [0, 0, 0, 10],
+        },
+        subheader: {
+          fontSize: 12,
+          italics: true,
+        },
+      },
+      pageOrientation: 'landscape',
+      pageMargins: [10, 10, 10, 10],
+    };
+
+    try {
+      const pdfMake = (window as any).pdfMake;
+      if (!pdfMake) {
+        throw new Error('pdfMake library not initialized');
+      }
+      pdfMake.createPdf(docDefinition).download(`assets-${startDate}-to-${endDate}.pdf`);
+    } catch (e) {
+      console.error('PDF generation error:', e);
+      Swal.fire({
+        icon: 'error',
+        title: 'PDF Error',
+        text: 'Failed to generate PDF. Please try again.',
+      });
+      return;
+    }
+
+    Swal.fire({
+      icon: 'success',
+      title: 'PDF Downloaded',
+      text: `Assets report downloaded successfully (${this.dataSource.data.length} records)!`,
+      timer: 2000,
+      showConfirmButton: false,
+    });
+  }
+
+  private formatDate(date: Date): string {
+    return date.toISOString().split('T')[0];
   }
 
   getStatusClass(status: string): string {

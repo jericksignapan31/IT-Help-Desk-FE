@@ -54,11 +54,41 @@
         </mat-select>
       </mat-form-field>
 
+      <mat-form-field appearance="outline">
+        <mat-label>Start Date</mat-label>
+        <input
+          matInput
+          [matDatepicker]="startDatePicker"
+          [(ngModel)]="filters.startDate"
+          placeholder="Select start date"
+        />
+        <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
+        <mat-datepicker #startDatePicker></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>End Date</mat-label>
+        <input
+          matInput
+          [matDatepicker]="endDatePicker"
+          [(ngModel)]="filters.endDate"
+          placeholder="Select end date"
+        />
+        <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
+        <mat-datepicker #endDatePicker></mat-datepicker>
+      </mat-form-field>
+
       <div class="filter-actions">
         <button mat-raised-button color="primary" (click)="applyFilters()">
           Apply
         </button>
-        <button mat-button (click)="clearFilters()">Clear</button>
+        <button mat-icon-button (click)="clearFilters()" matTooltip="Clear all filters" color="warn">
+          <mat-icon>clear</mat-icon>
+        </button>
+        <button mat-raised-button color="accent" (click)="downloadData()" matTooltip="Download as PDF">
+          <mat-icon>download</mat-icon>
+          Download
+        </button>
       </div>
     </div>
   </mat-card>

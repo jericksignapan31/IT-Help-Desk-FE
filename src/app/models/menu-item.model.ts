@@ -48,7 +48,7 @@ export const MENU_ITEMS: MenuItem[] = [
   },
   { label: 'Assets', icon: 'devices', route: '/assets' },
   {
-    label: 'Requisitions',
+    label: 'Request Item',
     icon: 'request_page',
     roles: [UserRole.IT, UserRole.WAREHOUSE, UserRole.ADMIN],
     children: [

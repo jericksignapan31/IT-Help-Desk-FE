@@ -58,7 +58,6 @@ export class UserCredentialsComponent implements OnInit {
     'email',
     'employee_name',
     'role',
-    'password',
     'account_status',
     'actions',
   ];
