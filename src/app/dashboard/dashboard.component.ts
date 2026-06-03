@@ -12,11 +12,14 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
+import { MatTabsModule } from '@angular/material/tabs';
 import { RouterModule } from '@angular/router';
 import { DashboardService } from '../services/dashboard.service';
 import { DashboardStats } from '../models/dashboard.model';
 import { AuthService } from '../services/auth.service';
 import { Chart, registerables } from 'chart.js';
+import { OperationalDashboardComponent } from './operational-dashboard/operational-dashboard.component';
+import { TacticalDashboardComponent } from './tactical-dashboard/tactical-dashboard.component';
 
 Chart.register(...registerables);
 
@@ -29,7 +32,10 @@ Chart.register(...registerables);
     MatIconModule,
     MatButtonModule,
     MatTableModule,
+    MatTabsModule,
     RouterModule,
+    OperationalDashboardComponent,
+    TacticalDashboardComponent,
   ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
@@ -40,6 +46,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   stats: DashboardStats | null = null;
   loading = true;
+  selectedTab = 0; // 0 = Overview, 1 = Operational, 2 = Tactical
   statusChart: Chart | null = null;
   priorityChart: Chart | null = null;
   isBrowser: boolean;

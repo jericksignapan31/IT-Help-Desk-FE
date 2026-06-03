@@ -557,6 +557,10 @@ export class MessageListComponent implements OnInit, OnChanges, AfterViewChecked
    * Download attachment file
    */
   downloadAttachment(attachment: FileAttachment): void {
+    if (!attachment.file_url) {
+      alert('File URL not available');
+      return;
+    }
     this.chatApi.downloadFile(attachment.file_url).subscribe({
       next: (blob: Blob) => {
         const url = window.URL.createObjectURL(blob);
@@ -581,6 +585,10 @@ export class MessageListComponent implements OnInit, OnChanges, AfterViewChecked
       return;
     }
 
+    if (!attachment.id) {
+      alert('Attachment ID not available');
+      return;
+    }
     this.chatApi.deleteAttachment(attachment.id).subscribe({
       next: () => {
         console.log('Attachment deleted successfully');

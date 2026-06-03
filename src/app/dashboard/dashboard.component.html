@@ -1,102 +1,131 @@
 <div class="dashboard-container">
   <h1>Dashboard</h1>
 
-  <!-- Stats Cards -->
-  <div class="stats-grid">
-    <mat-card class="stat-card stat-card-primary">
-      <div class="stat-content">
-        <div class="stat-icon">
-          <mat-icon>confirmation_number</mat-icon>
-        </div>
-        <div class="stat-details">
-          <h3>Total Tickets</h3>
-          <p class="stat-value">{{ stats?.totalTickets || 0 }}</p>
-        </div>
+  <!-- Tabs for different dashboards -->
+  <mat-tab-group [(selectedIndex)]="selectedTab" class="dashboard-tabs">
+    <!-- Overview Tab -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="tab-icon">dashboard</mat-icon>
+        Overview
+      </ng-template>
+
+      <!-- Stats Cards -->
+      <div class="stats-grid">
+        <mat-card class="stat-card stat-card-primary">
+          <div class="stat-content">
+            <div class="stat-icon">
+              <mat-icon>confirmation_number</mat-icon>
+            </div>
+            <div class="stat-details">
+              <h3>Total Tickets</h3>
+              <p class="stat-value">{{ stats?.totalTickets || 0 }}</p>
+            </div>
+          </div>
+        </mat-card>
+
+        <mat-card class="stat-card stat-card-warning">
+          <div class="stat-content">
+            <div class="stat-icon">
+              <mat-icon>pending_actions</mat-icon>
+            </div>
+            <div class="stat-details">
+              <h3>Open Tickets</h3>
+              <p class="stat-value">{{ stats?.openTickets || 0 }}</p>
+            </div>
+          </div>
+        </mat-card>
+
+        <mat-card class="stat-card stat-card-danger">
+          <div class="stat-content">
+            <div class="stat-icon">
+              <mat-icon>build</mat-icon>
+            </div>
+            <div class="stat-details">
+              <h3>Pending Repairs</h3>
+              <p class="stat-value">{{ stats?.pendingRepairs || 0 }}</p>
+            </div>
+          </div>
+        </mat-card>
+
+        <mat-card class="stat-card stat-card-success">
+          <div class="stat-content">
+            <div class="stat-icon">
+              <mat-icon>devices</mat-icon>
+            </div>
+            <div class="stat-details">
+              <h3>Assets in Use</h3>
+              <p class="stat-value">{{ stats?.assetsInUse || 0 }}</p>
+            </div>
+          </div>
+        </mat-card>
       </div>
-    </mat-card>
 
-    <mat-card class="stat-card stat-card-warning">
-      <div class="stat-content">
-        <div class="stat-icon">
-          <mat-icon>pending_actions</mat-icon>
-        </div>
-        <div class="stat-details">
-          <h3>Open Tickets</h3>
-          <p class="stat-value">{{ stats?.openTickets || 0 }}</p>
-        </div>
+      <!-- Charts -->
+      <div class="charts-grid">
+        <mat-card class="chart-card">
+          <mat-card-header>
+            <mat-card-title>Tickets by Status</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="chart-container">
+              <canvas #statusChart></canvas>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="chart-card">
+          <mat-card-header>
+            <mat-card-title>Tickets by Priority</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="chart-container">
+              <canvas #priorityChart></canvas>
+            </div>
+          </mat-card-content>
+        </mat-card>
       </div>
-    </mat-card>
 
-    <mat-card class="stat-card stat-card-danger">
-      <div class="stat-content">
-        <div class="stat-icon">
-          <mat-icon>build</mat-icon>
-        </div>
-        <div class="stat-details">
-          <h3>Pending Repairs</h3>
-          <p class="stat-value">{{ stats?.pendingRepairs || 0 }}</p>
-        </div>
-      </div>
-    </mat-card>
+      <!-- Quick Actions -->
+      <mat-card class="quick-actions-card">
+        <mat-card-header>
+          <mat-card-title>Quick Actions</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="actions-grid">
+            <button mat-raised-button color="primary" routerLink="/tickets/create">
+              <mat-icon>add</mat-icon>
+              Create Ticket
+            </button>
+            <button mat-raised-button color="accent" routerLink="/assets">
+              <mat-icon>devices</mat-icon>
+              View Assets
+            </button>
+            <button mat-raised-button routerLink="/tickets/my-tickets">
+              <mat-icon>list</mat-icon>
+              My Tickets
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </mat-tab>
 
-    <mat-card class="stat-card stat-card-success">
-      <div class="stat-content">
-        <div class="stat-icon">
-          <mat-icon>devices</mat-icon>
-        </div>
-        <div class="stat-details">
-          <h3>Assets in Use</h3>
-          <p class="stat-value">{{ stats?.assetsInUse || 0 }}</p>
-        </div>
-      </div>
-    </mat-card>
-  </div>
+    <!-- Operational Dashboard Tab -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="tab-icon">assessment</mat-icon>
+        Operational
+      </ng-template>
+      <app-operational-dashboard></app-operational-dashboard>
+    </mat-tab>
 
-  <!-- Charts -->
-  <div class="charts-grid">
-    <mat-card class="chart-card">
-      <mat-card-header>
-        <mat-card-title>Tickets by Status</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <div class="chart-container">
-          <canvas #statusChart></canvas>
-        </div>
-      </mat-card-content>
-    </mat-card>
-
-    <mat-card class="chart-card">
-      <mat-card-header>
-        <mat-card-title>Tickets by Priority</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <div class="chart-container">
-          <canvas #priorityChart></canvas>
-        </div>
-      </mat-card-content>
-    </mat-card>
-  </div>
-
-  <!-- Quick Actions -->
-  <mat-card class="quick-actions-card">
-    <mat-card-header>
-      <mat-card-title>Quick Actions</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <div class="actions-grid">
-        <button mat-raised-button color="primary" routerLink="/tickets/create">
-          <mat-icon>add</mat-icon>
-          Create Ticket
-        </button>
-        <button mat-raised-button color="accent" routerLink="/assets">
-          <mat-icon>devices</mat-icon>
-          View Assets
-        </button>
-        <button mat-raised-button routerLink="/tickets/my-tickets">
-          <mat-icon>list</mat-icon>
-          My Tickets
-        </button>
-      </div>
-    </mat-card-content>
-  </mat-card>
+    <!-- Tactical Dashboard Tab -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="tab-icon">trending_up</mat-icon>
+        Tactical
+      </ng-template>
+      <app-tactical-dashboard></app-tactical-dashboard>
+    </mat-tab>
+  </mat-tab-group>
 </div>
