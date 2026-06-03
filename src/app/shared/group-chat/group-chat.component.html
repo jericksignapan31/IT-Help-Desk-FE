@@ -73,6 +73,59 @@
             </div>
             <div class="message-content">
               {{ message.content }}
+              
+              <!-- Attachments -->
+              <div *ngIf="message.attachments && message.attachments.length > 0" class="attachments">
+                <div
+                  *ngFor="let attachment of message.attachments"
+                  class="attachment-item"
+                  [matTooltip]="attachment.filename"
+                >
+                  <!-- Image preview -->
+                  <img
+                    *ngIf="attachment.preview_url"
+                    [src]="attachment.preview_url"
+                    [alt]="attachment.filename"
+                    class="attachment-image"
+                    (click)="downloadAttachment(attachment)"
+                  />
+                  <!-- File icon for non-images -->
+                  <div
+                    *ngIf="!attachment.preview_url"
+                    class="attachment-file-icon"
+                    (click)="downloadAttachment(attachment)"
+                  >
+                    <mat-icon>
+                      {{ getFileIcon(attachment.file_type) }}
+                    </mat-icon>
+                    <div class="file-name-label">
+                      {{ getFileDisplayName(attachment.filename) }}
+                    </div>
+                  </div>
+
+                  <!-- Action buttons on hover (only for own messages) -->
+                  <div class="attachment-actions" *ngIf="isOwnMessage(message)">
+                    <button
+                      type="button"
+                      mat-icon-button
+                      (click)="downloadAttachment(attachment)"
+                      matTooltip="Download"
+                      class="action-btn"
+                    >
+                      <mat-icon>download</mat-icon>
+                    </button>
+                    <button
+                      type="button"
+                      mat-icon-button
+                      (click)="deleteAttachmentFile(attachment)"
+                      matTooltip="Delete"
+                      class="action-btn delete"
+                    >
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </ng-container>
@@ -85,28 +138,11 @@
     </div>
 
     <!-- Message Input -->
-    <div *ngIf="selectedConversation" class="input-area">
-      <mat-form-field class="message-input">
-        <mat-label>Type your message...</mat-label>
-        <input
-          matInput
-          [(ngModel)]="newMessage"
-          (keyup.enter)="sendMessage()"
-          [disabled]="sendingMessage"
-          placeholder="Share your thoughts..."
-        />
-      </mat-form-field>
-      <button
-        mat-raised-button
-        color="primary"
-        (click)="sendMessage()"
-        [disabled]="!newMessage.trim() || sendingMessage"
-        class="send-button"
-      >
-        <mat-icon>send</mat-icon>
-        <span *ngIf="!sendingMessage">Send</span>
-        <span *ngIf="sendingMessage">Sending...</span>
-      </button>
-    </div>
+    <app-message-input
+      *ngIf="selectedConversation"
+      [disabled]="sendingMessage"
+      [currentConversationId]="selectedConversation ? selectedConversation.conversation_id : ''"
+      (messageSent)="onMessageSent($event)"
+    ></app-message-input>
   </div>
 </div>

@@ -7,10 +7,15 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { GroupChatService, Conversation, ChatMessage } from '../../services/group-chat.service';
 import { AuthService } from '../../services/auth.service';
+import { MessageInputComponent } from '../../chat/components/message-input/message-input.component';
+import { FileAttachment } from '../../chat/models';
+import { FileUploadService } from '../../chat/services/file-upload.service';
+import { ChatApiService } from '../../chat/services/chat-api.service';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -24,7 +29,9 @@ import Swal from 'sweetalert2';
     MatButtonModule,
     MatIconModule,
     MatFormFieldModule,
-    MatInputModule
+    MatInputModule,
+    MatTooltipModule,
+    MessageInputComponent
   ],
   templateUrl: './group-chat.component.html',
   styleUrls: ['./group-chat.component.scss']
@@ -42,7 +49,9 @@ export class GroupChatComponent implements OnInit, OnDestroy {
 
   constructor(
     private chatService: GroupChatService,
-    private authService: AuthService
+    private authService: AuthService,
+    private fileUploadService: FileUploadService,
+    private chatApiService: ChatApiService
   ) {}
 
   ngOnInit(): void {
@@ -114,19 +123,20 @@ export class GroupChatComponent implements OnInit, OnDestroy {
     setTimeout(() => this.scrollToBottom(), 100);
   }
 
-  sendMessage(): void {
-    if (!this.newMessage.trim() || !this.selectedConversation) {
+  onMessageSent(data: { text: string; attachments?: FileAttachment[] }): void {
+    if (!data.text.trim() || !this.selectedConversation) {
       return;
     }
 
     this.sendingMessage = true;
-    this.chatService.sendMessage(this.selectedConversation.conversation_id, this.newMessage)
+    this.chatService.sendMessage(this.selectedConversation.conversation_id, data.text)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (message: any) => {
           // Transform the message with current user info as sender
           const transformedMsg = {
             ...message,
+            attachments: data.attachments || [],
             sender: {
               employee_id: this.currentUserId,
               first_name: this.currentUser?.first_name || this.currentUser?.username || 'You',
@@ -137,7 +147,6 @@ export class GroupChatComponent implements OnInit, OnDestroy {
 
           this.messages.push(transformedMsg);
           this.chatService.addMessage(transformedMsg);
-          this.newMessage = '';
           this.sendingMessage = false;
           
           // Scroll to bottom
@@ -146,8 +155,22 @@ export class GroupChatComponent implements OnInit, OnDestroy {
         error: (err) => {
           console.error('Error sending message:', err);
           this.sendingMessage = false;
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: err.error?.message || 'Failed to send message. Please try again.'
+          });
         }
       });
+  }
+
+  sendMessage(): void {
+    if (!this.newMessage.trim() || !this.selectedConversation) {
+      return;
+    }
+
+    this.onMessageSent({ text: this.newMessage });
+    this.newMessage = '';
   }
 
   formatDate(date: string): string {
@@ -175,5 +198,59 @@ export class GroupChatComponent implements OnInit, OnDestroy {
 
   isOwnMessage(message: ChatMessage): boolean {
     return message?.sender?.employee_id === this.currentUserId;
+  }
+
+  downloadAttachment(attachment: FileAttachment): void {
+    if (!attachment.file_url) {
+      alert('File URL not available');
+      return;
+    }
+
+    this.chatApiService.downloadFile(attachment.file_url).subscribe({
+      next: (blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = attachment.filename;
+        link.click();
+        window.URL.revokeObjectURL(url);
+      },
+      error: (err) => {
+        console.error('Error downloading file:', err);
+        alert('Failed to download file');
+      }
+    });
+  }
+
+  deleteAttachmentFile(attachment: FileAttachment): void {
+    if (!attachment.id) {
+      alert('Cannot delete file: missing attachment ID');
+      return;
+    }
+
+    const confirmDelete = confirm(`Delete ${attachment.filename}?`);
+    if (!confirmDelete) return;
+
+    this.chatApiService.deleteAttachment(attachment.id).subscribe({
+      next: () => {
+        // Remove from local messages array
+        this.messages = this.messages.map(msg => ({
+          ...msg,
+          attachments: msg.attachments?.filter((att: FileAttachment) => att.id !== attachment.id) || []
+        }));
+      },
+      error: (err) => {
+        console.error('Error deleting attachment:', err);
+        alert('Failed to delete file');
+      }
+    });
+  }
+
+  getFileIcon(fileType: string): string {
+    return this.fileUploadService.getFileIcon(fileType);
+  }
+
+  getFileDisplayName(filename: string): string {
+    return this.fileUploadService.getFileDisplayName(filename);
   }
 }

@@ -7,6 +7,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Message, FileAttachment } from '../../models';
 import { FileUploadService } from '../../services/file-upload.service';
+import { ChatApiService } from '../../services/chat-api.service';
 
 @Component({
   selector: 'app-message-list',
@@ -69,11 +70,15 @@ import { FileUploadService } from '../../services/file-upload.service';
                     [src]="attachment.preview_url"
                     [alt]="attachment.filename"
                     class="attachment-image"
+                    (click)="downloadAttachment(attachment)"
+                    style="cursor: pointer;"
                   />
                   <!-- File icon for non-images -->
                   <div
                     *ngIf="!attachment.preview_url"
                     class="attachment-file-icon"
+                    (click)="downloadAttachment(attachment)"
+                    style="cursor: pointer;"
                   >
                     <mat-icon>
                       {{ fileUploadService.getFileIcon(attachment.file_type) }}
@@ -81,6 +86,28 @@ import { FileUploadService } from '../../services/file-upload.service';
                     <div class="file-name-label">
                       {{ fileUploadService.getFileDisplayName(attachment.filename) }}
                     </div>
+                  </div>
+
+                  <!-- Action buttons on hover (only for own messages) -->
+                  <div class="attachment-actions" *ngIf="isOwnMessage(message)">
+                    <button
+                      type="button"
+                      mat-icon-button
+                      (click)="downloadAttachment(attachment)"
+                      matTooltip="Download"
+                      class="action-btn"
+                    >
+                      <mat-icon>download</mat-icon>
+                    </button>
+                    <button
+                      type="button"
+                      mat-icon-button
+                      (click)="deleteAttachmentFile(attachment)"
+                      matTooltip="Delete"
+                      class="action-btn delete"
+                    >
+                      <mat-icon>delete</mat-icon>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -360,6 +387,45 @@ import { FileUploadService } from '../../services/file-upload.service';
         max-width: 100%;
       }
 
+      .attachment-actions {
+        position: absolute;
+        top: 0;
+        right: 0;
+        display: none;
+        background: rgba(0, 0, 0, 0.7);
+        border-radius: 4px;
+        gap: 4px;
+        padding: 4px;
+        z-index: 10;
+      }
+
+      .attachment-item:hover .attachment-actions {
+        display: flex;
+      }
+
+      .action-btn {
+        color: white;
+        width: 28px;
+        height: 28px;
+        min-width: 28px;
+        font-size: 14px;
+      }
+
+      .action-btn mat-icon {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+      }
+
+      .action-btn.delete {
+        color: #ff5252;
+      }
+
+      .action-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 4px;
+      }
+
       .message-footer {
         display: flex;
         align-items: center;
@@ -435,7 +501,8 @@ export class MessageListComponent implements OnInit, OnChanges, AfterViewChecked
 
   constructor(
     private cdr: ChangeDetectorRef,
-    public fileUploadService: FileUploadService
+    public fileUploadService: FileUploadService,
+    private chatApi: ChatApiService
   ) {}
 
   ngOnInit(): void {}
@@ -484,6 +551,45 @@ export class MessageListComponent implements OnInit, OnChanges, AfterViewChecked
     if (confirm('Delete this message?')) {
       this.deleteMessage.emit(message);
     }
+  }
+
+  /**
+   * Download attachment file
+   */
+  downloadAttachment(attachment: FileAttachment): void {
+    this.chatApi.downloadFile(attachment.file_url).subscribe({
+      next: (blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = attachment.filename;
+        link.click();
+        window.URL.revokeObjectURL(url);
+      },
+      error: (error) => {
+        console.error('Download failed:', error);
+        alert('Failed to download file: ' + error.error?.message);
+      },
+    });
+  }
+
+  /**
+   * Delete attachment
+   */
+  deleteAttachmentFile(attachment: FileAttachment): void {
+    if (!confirm(`Delete ${attachment.filename}?`)) {
+      return;
+    }
+
+    this.chatApi.deleteAttachment(attachment.id).subscribe({
+      next: () => {
+        console.log('Attachment deleted successfully');
+      },
+      error: (error) => {
+        console.error('Delete failed:', error);
+        alert('Failed to delete attachment: ' + error.error?.message);
+      },
+    });
   }
 
   private scrollToBottom(): void {

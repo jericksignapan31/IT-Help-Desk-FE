@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter, Input, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Component, Output, EventEmitter, Input, OnInit, OnDestroy, ViewChild, ElementRef, Injector } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -10,6 +10,7 @@ import { Subject, interval } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { FileAttachment } from '../../models';
 import { FileUploadService } from '../../services/file-upload.service';
+import { ChatApiService } from '../../services/chat-api.service';
 
 @Component({
   selector: 'app-message-input',
@@ -369,6 +370,7 @@ import { FileUploadService } from '../../services/file-upload.service';
 })
 export class MessageInputComponent implements OnInit, OnDestroy {
   @Input() disabled: boolean = false;
+  @Input() currentConversationId: string = '';
   @Output() messageSent = new EventEmitter<{ text: string; attachments?: FileAttachment[] }>();
   @Output() typing = new EventEmitter<void>();
   @Output() stoppedTyping = new EventEmitter<void>();
@@ -382,7 +384,10 @@ export class MessageInputComponent implements OnInit, OnDestroy {
   private typingTimeout: any;
   private isTyping: boolean = false;
 
-  constructor(public fileUploadService: FileUploadService) {}
+  constructor(
+    public fileUploadService: FileUploadService,
+    private injector: Injector
+  ) {}
 
   ngOnInit(): void {}
 
@@ -441,22 +446,100 @@ export class MessageInputComponent implements OnInit, OnDestroy {
     this.isTyping = false;
     this.stoppedTyping.emit();
 
-    // Emit message with attachments
-    this.messageSent.emit({
-      text: message,
-      attachments: this.selectedFiles.length > 0 ? this.selectedFiles : undefined,
-    });
+    // If files are selected, upload them first
+    if (this.selectedFiles.length > 0) {
+      this.uploadFilesAndSend(message);
+    } else {
+      // Send message without files
+      this.messageSent.emit({
+        text: message,
+        attachments: undefined,
+      });
+      this.resetForm();
+    }
+  }
 
-    // Reset after a short delay
+  private uploadFilesAndSend(messageText: string): void {
+    if (!this.currentConversationId) {
+      alert('Error: Conversation ID not set');
+      this.sending = false;
+      return;
+    }
+
+    // Convert FileAttachment objects to actual files
+    const filesToUpload: File[] = [];
+    let processedCount = 0;
+
+    this.selectedFiles.forEach((att) => {
+      if (att.preview_url) {
+        // Has preview (likely an image)
+        fetch(att.preview_url)
+          .then((res) => res.blob())
+          .then((blob) => {
+            const file = new File([blob], att.filename, {
+              type: att.file_type,
+            });
+            filesToUpload.push(file);
+            processedCount++;
+
+            // Once all files are converted, upload them
+            if (processedCount === this.selectedFiles.length) {
+              this.performUpload(filesToUpload, messageText);
+            }
+          })
+          .catch((error) => {
+            console.warn(`Failed to process file ${att.filename}:`, error);
+            processedCount++;
+            if (processedCount === this.selectedFiles.length && filesToUpload.length > 0) {
+              this.performUpload(filesToUpload, messageText);
+            }
+          });
+      } else {
+        // No preview, create empty file
+        const file = new File([''], att.filename, {
+          type: att.file_type,
+        });
+        filesToUpload.push(file);
+        processedCount++;
+
+        if (processedCount === this.selectedFiles.length) {
+          this.performUpload(filesToUpload, messageText);
+        }
+      }
+    });
+  }
+
+  private performUpload(files: File[], messageText: string): void {
+    const chatApi = this.injector.get(ChatApiService);
+
+    chatApi.uploadFiles(this.currentConversationId, files).subscribe({
+      next: (response) => {
+        console.log('Files uploaded successfully:', response.attachments);
+
+        // Send message with returned attachment URLs from backend
+        this.messageSent.emit({
+          text: messageText,
+          attachments: response.attachments,
+        });
+
+        this.resetForm();
+      },
+      error: (error) => {
+        console.error('File upload failed:', error);
+        const errorMsg =
+          error.error?.message || 'Failed to upload files';
+        alert(`Upload Error: ${errorMsg}`);
+        this.sending = false;
+      },
+    });
+  }
+
+  private resetForm(): void {
     setTimeout(() => {
       this.messageText = '';
       this.selectedFiles = [];
       this.sending = false;
     }, 300);
-
-    if (this.typingTimeout) {
-      clearTimeout(this.typingTimeout);
-    }
   }
 
   onFileSelected(event: Event): void {
@@ -509,94 +592,5 @@ export class MessageInputComponent implements OnInit, OnDestroy {
 
   removeFile(index: number): void {
     this.selectedFiles.splice(index, 1);
-  }
-}
-
-          height: 36px;
-          width: 36px;
-        }
-      }
-    `,
-  ],
-})
-export class MessageInputComponent implements OnInit, OnDestroy {
-  @Input() disabled: boolean = false;
-  @Output() messageSent = new EventEmitter<string>();
-  @Output() typing = new EventEmitter<void>();
-  @Output() stoppedTyping = new EventEmitter<void>();
-
-  messageText: string = '';
-  sending: boolean = false;
-  private destroy$ = new Subject<void>();
-  private typingTimeout: any;
-  private isTyping: boolean = false;
-
-  ngOnInit(): void {}
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-    if (this.typingTimeout) {
-      clearTimeout(this.typingTimeout);
-    }
-  }
-
-  onMessageInput(): void {
-    if (!this.isTyping && this.messageText.trim()) {
-      this.isTyping = true;
-      this.typing.emit();
-    }
-
-    if (this.typingTimeout) {
-      clearTimeout(this.typingTimeout);
-    }
-
-    this.typingTimeout = setTimeout(() => {
-      if (this.isTyping) {
-        this.isTyping = false;
-        this.stoppedTyping.emit();
-      }
-    }, 3000); // Stop typing indicator after 3 seconds of inactivity
-  }
-
-  onKeydownEnter(event: Event): void {
-    const keyboardEvent = event as KeyboardEvent;
-    this.onSendMessage(keyboardEvent);
-  }
-
-  onSendMessage(event?: KeyboardEvent): void {
-    if (event) {
-      // Check if it's Enter without Shift
-      if (event.key === 'Enter' && !event.shiftKey) {
-        event.preventDefault();
-      } else if (event.key === 'Enter' && event.shiftKey) {
-        // Allow Shift+Enter for new line
-        return;
-      } else {
-        return;
-      }
-    }
-
-    const message = this.messageText.trim();
-    if (!message || this.disabled) {
-      return;
-    }
-
-    this.sending = true;
-    this.isTyping = false;
-    this.stoppedTyping.emit();
-
-    // Emit message
-    this.messageSent.emit(message);
-
-    // Reset after a short delay
-    setTimeout(() => {
-      this.messageText = '';
-      this.sending = false;
-    }, 300);
-
-    if (this.typingTimeout) {
-      clearTimeout(this.typingTimeout);
-    }
   }
 }

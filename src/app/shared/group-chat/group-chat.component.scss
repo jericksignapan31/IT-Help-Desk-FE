@@ -276,6 +276,103 @@
             line-height: 1.5;
           }
 
+          .attachments {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+          }
+
+          .attachment-item {
+            position: relative;
+            cursor: pointer;
+            border-radius: 8px;
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0.05);
+            transition: all 0.2s ease;
+
+            &:hover {
+              transform: scale(1.02);
+              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+
+              .attachment-actions {
+                display: flex;
+              }
+            }
+          }
+
+          .attachment-image {
+            max-width: 200px;
+            max-height: 200px;
+            width: auto;
+            height: auto;
+            display: block;
+            border-radius: 8px;
+          }
+
+          .attachment-file-icon {
+            width: 120px;
+            height: 120px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 8px;
+
+            mat-icon {
+              font-size: 32px;
+              width: 32px;
+              height: 32px;
+              color: #667eea;
+            }
+          }
+
+          .file-name-label {
+            font-size: 10px;
+            text-align: center;
+            color: #666;
+            word-break: break-all;
+            max-width: 100%;
+          }
+
+          .attachment-actions {
+            position: absolute;
+            top: 0;
+            right: 0;
+            display: none;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 4px;
+            gap: 4px;
+            padding: 4px;
+            z-index: 10;
+          }
+
+          .action-btn {
+            color: white;
+            width: 28px;
+            height: 28px;
+            min-width: 28px;
+            font-size: 14px;
+
+            mat-icon {
+              font-size: 16px;
+              width: 16px;
+              height: 16px;
+            }
+
+            &.delete {
+              color: #ff5252;
+            }
+
+            &:hover {
+              background: rgba(255, 255, 255, 0.2);
+              border-radius: 4px;
+            }
+          }
+
           @keyframes slideIn {
             from {
               opacity: 0;

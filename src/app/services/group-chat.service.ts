@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { catchError, map } from 'rxjs/operators';
+import { FileAttachment } from '../chat/models';
 
 export interface ChatMessage {
   message_id: string;
@@ -17,6 +18,7 @@ export interface ChatMessage {
   content: string;
   is_read: boolean;
   created_at: string;
+  attachments?: FileAttachment[];
 }
 
 export interface Conversation {

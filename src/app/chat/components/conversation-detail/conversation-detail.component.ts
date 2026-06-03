@@ -62,6 +62,7 @@ import { TypingIndicatorComponent } from '../typing-indicator/typing-indicator.c
       <!-- Message Input -->
       <app-message-input
         [disabled]="disabled"
+        [currentConversationId]="conversation ? conversation.conversation_id : ''"
         (messageSent)="onSendMessage($event)"
         (typing)="onTyping()"
         (stoppedTyping)="onStoppedTyping()"

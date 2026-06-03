@@ -10,6 +10,7 @@ import {
   MessagesResponse,
   CreateMessageRequest,
   UnreadCountResponse,
+  FileAttachment,
 } from '../models';
 
 @Injectable({
@@ -112,5 +113,42 @@ export class ChatApiService {
    */
   getConversationUnreadCount(conversationId: string): Observable<{ unread_count: number }> {
     return this.http.get<{ unread_count: number }>(`${this.apiUrl}/conversations/${conversationId}/unread`);
+  }
+
+  // ============= FILE ATTACHMENT ENDPOINTS =============
+
+  /**
+   * Upload files to a conversation
+   * POST /chat/conversations/:conversationId/upload
+   */
+  uploadFiles(
+    conversationId: string,
+    files: File[]
+  ): Observable<{ attachments: FileAttachment[] }> {
+    const formData = new FormData();
+    files.forEach((file) => formData.append('files', file));
+
+    return this.http.post<{ attachments: FileAttachment[] }>
+      (`${this.apiUrl}/conversations/${conversationId}/upload`, formData);
+  }
+
+  /**
+   * Download file
+   * GET /chat/files/:fileName
+   */
+  downloadFile(fileName: string): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/files/${fileName}`, {
+      responseType: 'blob',
+    });
+  }
+
+  /**
+   * Delete attachment
+   * DELETE /chat/attachments/:attachmentId
+   */
+  deleteAttachment(attachmentId: string): Observable<void> {
+    return this.http.delete<void>(
+      `${this.apiUrl}/attachments/${attachmentId}`
+    );
   }
 }
