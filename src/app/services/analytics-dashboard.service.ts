@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 import { OperationalDashboardDto } from '../models/operational-dashboard.model';
 import { TacticalDashboardDto } from '../models/tactical-dashboard.model';
 
@@ -8,7 +9,7 @@ import { TacticalDashboardDto } from '../models/tactical-dashboard.model';
   providedIn: 'root'
 })
 export class AnalyticsDashboardService {
-  private baseUrl = '/api/dashboard';
+  private baseUrl = `${environment.apiUrl}/dashboard`;
 
   constructor(private http: HttpClient) {}
 

@@ -394,44 +394,51 @@ export class TacticalDashboardComponent implements OnInit {
   private initCharts(): void {
     if (!this.dashboardData) return;
 
+    // Filter departments with data (exclude zero-value departments)
+    const departmentsWithData = this.dashboardData.department_metrics.filter(m => m.requisition_count > 0);
+
     // Costing Chart
     if (this.costingChartRef && isPlatformBrowser(this.platformId)) {
-      const departments = this.dashboardData.department_metrics.map(m => m.department_name);
-      const costing = this.dashboardData.department_metrics.map(m => m.total_costing);
+      const departments = departmentsWithData.map(m => m.department_name);
+      const costing = departmentsWithData.map(m => m.total_costing);
 
       if (this.costingChart) {
         this.costingChart.destroy();
       }
 
-      this.costingChart = new Chart(this.costingChartRef.nativeElement, {
-        type: 'bar',
-        data: {
-          labels: departments,
-          datasets: [
-            {
-              label: 'Total Costing (PHP)',
-              data: costing,
-              backgroundColor: '#ff6b6b',
-              borderColor: '#ee5a52',
-              borderWidth: 1,
+      try {
+        this.costingChart = new Chart(this.costingChartRef.nativeElement, {
+          type: 'bar',
+          data: {
+            labels: departments,
+            datasets: [
+              {
+                label: 'Total Costing (PHP)',
+                data: costing,
+                backgroundColor: '#ff6b6b',
+                borderColor: '#ee5a52',
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+              legend: {
+                display: true,
+              },
             },
-          ],
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: true,
-          plugins: {
-            legend: {
-              display: true,
+            scales: {
+              y: {
+                beginAtZero: true,
+              },
             },
           },
-          scales: {
-            y: {
-              beginAtZero: true,
-            },
-          },
-        },
-      });
+        });
+      } catch (error) {
+        console.error('Error initializing costing chart:', error);
+      }
     }
 
     // Approval Status Chart
@@ -443,29 +450,33 @@ export class TacticalDashboardComponent implements OnInit {
         this.statusChart.destroy();
       }
 
-      this.statusChart = new Chart(this.statusChartRef.nativeElement, {
-        type: 'doughnut',
-        data: {
-          labels: ['Approved', 'Pending'],
-          datasets: [
-            {
-              data: [approved, pending],
-              backgroundColor: ['#4caf50', '#ff9800'],
-              borderColor: ['#fff', '#fff'],
-              borderWidth: 2,
-            },
-          ],
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: true,
-          plugins: {
-            legend: {
-              position: 'bottom',
+      try {
+        this.statusChart = new Chart(this.statusChartRef.nativeElement, {
+          type: 'doughnut',
+          data: {
+            labels: ['Approved', 'Pending'],
+            datasets: [
+              {
+                data: [approved, pending],
+                backgroundColor: ['#4caf50', '#ff9800'],
+                borderColor: ['#fff', '#fff'],
+                borderWidth: 2,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+              legend: {
+                position: 'bottom',
+              },
             },
           },
-        },
-      });
+        });
+      } catch (error) {
+        console.error('Error initializing status chart:', error);
+      }
     }
   }
 
