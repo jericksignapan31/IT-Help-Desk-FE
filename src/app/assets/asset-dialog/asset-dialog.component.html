@@ -234,9 +234,7 @@
                     *ngFor="let employee of employees"
                     [value]="employee.employee_id"
                   >
-                    {{ employee.first_name }} {{ employee.last_name }} ({{
-                      employee.employee_id
-                    }})
+                    {{ employee.first_name }} {{ employee.last_name }}
                   </mat-option>
                 </mat-select>
                 <mat-hint *ngIf="!assetForm.get('branch_id')?.value">

@@ -213,17 +213,18 @@ export class AssetDialogComponent implements OnInit {
     this.loadingEmployees = true;
     this.assetForm.get('employee_id')?.disable();
 
-    // Fetch employees filtered by branch_id and status=active
+    // Fetch ALL employees from the selected branch
     this.employeeService
-      .getEmployees({ branch_id: branchId, status: 'active' })
+      .getEmployees({ branch_id: branchId })
       .subscribe({
         next: (employees) => {
-          this.employees = employees;
+          // Filter to show only active employees, but load all from the branch
+          this.employees = employees.filter(emp => emp.employment_status !== false);
           this.loadingEmployees = false;
           this.assetForm.get('employee_id')?.enable();
 
        
-          if (employees.length === 0) {
+          if (this.employees.length === 0) {
             Swal.fire({
               icon: 'info',
               title: 'No Employees',
