@@ -1,0 +1,167 @@
+<div class="user-account-form-container">
+  <mat-card class="form-card">
+    <mat-card-header>
+      <mat-card-title>
+        <h1>{{ isEditMode ? 'Edit User Account' : 'Create New User Account' }}</h1>
+        <p>{{ isEditMode ? 'Update user information' : 'Add a new user with specific role and permissions' }}</p>
+      </mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div *ngIf="isLoading" class="loading-container">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p>{{ isEditMode ? 'Loading user account...' : 'Creating user account...' }}</p>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" *ngIf="!isLoading">
+        <!-- Username Field -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Username</mat-label>
+          <input
+            matInput
+            formControlName="username"
+            placeholder="Enter username (min 3 characters)"
+            [readonly]="isEditMode"
+          />
+          <mat-icon matPrefix>person</mat-icon>
+          <mat-error *ngIf="form.get('username')?.hasError('required')">
+            Username is required
+          </mat-error>
+          <mat-error *ngIf="form.get('username')?.hasError('minlength')">
+            Username must be at least 3 characters
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Email Field -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Email Address</mat-label>
+          <input
+            matInput
+            formControlName="email"
+            type="email"
+            placeholder="Enter email address"
+          />
+          <mat-icon matPrefix>email</mat-icon>
+          <mat-error *ngIf="form.get('email')?.hasError('required')">
+            Email is required
+          </mat-error>
+          <mat-error *ngIf="form.get('email')?.hasError('email')">
+            Please enter a valid email address
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Password Field -->
+        <mat-form-field appearance="outline" class="full-width" *ngIf="!isEditMode || form.get('password')?.value">
+          <mat-label>{{ isEditMode ? 'New Password (optional)' : 'Password' }}</mat-label>
+          <input
+            matInput
+            formControlName="password"
+            [type]="hidePassword ? 'password' : 'text'"
+            placeholder="Enter password (min 6 characters)"
+          />
+          <button
+            mat-icon-button
+            matSuffix
+            (click)="togglePasswordVisibility()"
+            type="button"
+            [attr.aria-label]="'Hide password'"
+            [attr.aria-pressed]="hidePassword"
+          >
+            <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          <mat-error *ngIf="form.get('password')?.hasError('required') && !isEditMode">
+            Password is required
+          </mat-error>
+          <mat-error *ngIf="form.get('password')?.hasError('minlength')">
+            Password must be at least 6 characters
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Role Selection -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Role</mat-label>
+          <mat-select formControlName="role">
+            <mat-option *ngFor="let role of roles" [value]="role.value">
+              <mat-icon class="role-icon">{{ getRoleIcon(role.value) }}</mat-icon>
+              {{ role.label }}
+            </mat-option>
+          </mat-select>
+          <mat-icon matPrefix>security</mat-icon>
+          <mat-error *ngIf="form.get('role')?.hasError('required')">
+            Role is required
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Role Description -->
+        <div class="role-description">
+          <mat-icon>info</mat-icon>
+          <div class="description-text">
+            <strong>{{ getRoleLabel(form.get('role')?.value) }}</strong>
+            <p>{{ getRoleDescription(form.get('role')?.value) }}</p>
+          </div>
+        </div>
+
+        <!-- Active Checkbox -->
+        <div class="form-checkbox">
+          <mat-checkbox formControlName="is_active">
+            <span>Account Active</span>
+          </mat-checkbox>
+          <span class="help-text">Enable or disable user login access</span>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button
+            mat-raised-button
+            type="submit"
+            color="primary"
+            [disabled]="form.invalid || isLoading"
+          >
+            <mat-icon>{{ isEditMode ? 'edit' : 'add' }}</mat-icon>
+            {{ isEditMode ? 'Update User' : 'Create User' }}
+          </button>
+          <button
+            mat-stroked-button
+            type="button"
+            (click)="onCancel()"
+            [disabled]="isLoading"
+          >
+            <mat-icon>cancel</mat-icon>
+            Cancel
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Role Guide Card -->
+  <mat-card class="role-guide-card">
+    <mat-card-header>
+      <mat-card-title>User Roles Guide</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="role-guide">
+        <div class="role-item">
+          <h4>👤 Administrator</h4>
+          <p>Full system access. Can manage users, departments, and all configurations.</p>
+        </div>
+        <div class="role-item">
+          <h4>🔑 Supervisor</h4>
+          <p>Can approve tickets, manage reports, and supervise department activities.</p>
+        </div>
+        <div class="role-item">
+          <h4>🛠️ IT Technician</h4>
+          <p>Can create, update, and resolve tickets. Access to asset management.</p>
+        </div>
+        <div class="role-item">
+          <h4>👥 Employee</h4>
+          <p>Can create and view their own tickets. Limited access to system features.</p>
+        </div>
+        <div class="role-item">
+          <h4>📦 Warehouse Staff</h4>
+          <p>Can manage inventory and warehouse operations.</p>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

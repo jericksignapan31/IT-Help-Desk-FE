@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -38,7 +38,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
   templateUrl: './brand-list.component.html',
   styleUrls: ['./brand-list.component.scss'],
 })
-export class BrandListComponent implements OnInit {
+export class BrandListComponent implements OnInit, AfterViewInit {
   brands: Brand[] = [];
   dataSource = new MatTableDataSource<Brand>();
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -56,9 +56,19 @@ export class BrandListComponent implements OnInit {
     private brandService: BrandService,
     private router: Router,
     private dialog: MatDialog,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
+    // Initialization - paginator connection happens in AfterViewInit
+  }
+
+  ngAfterViewInit(): void {
+    // Set paginator connection FIRST
+    if (this.paginator) {
+      this.dataSource.paginator = this.paginator;
+    }
+    // THEN load data and setup search
     this.loadBrands();
     this.setupSearch();
   }
@@ -81,8 +91,8 @@ export class BrandListComponent implements OnInit {
       next: (brands) => {
         this.brands = brands;
         this.dataSource.data = brands;
-        this.dataSource.paginator = this.paginator;
         this.isLoading = false;
+        this.cdr.detectChanges();
       },
       error: (error) => {
         this.isLoading = false;
@@ -96,8 +106,8 @@ export class BrandListComponent implements OnInit {
       next: (brands) => {
         this.brands = brands;
         this.dataSource.data = brands;
-        this.dataSource.paginator = this.paginator;
         this.isLoading = false;
+        this.cdr.detectChanges();
       },
       error: (error) => {
         Swal.fire({
@@ -106,6 +116,7 @@ export class BrandListComponent implements OnInit {
           text: 'Failed to load brands',
         });
         this.isLoading = false;
+        this.cdr.detectChanges();
       },
     });
   }

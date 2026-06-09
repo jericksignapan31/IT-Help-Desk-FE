@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, PLATFORM_ID, ViewChild } from '@angular/core';
+import { Component, OnInit, AfterViewInit, Inject, PLATFORM_ID, ViewChild } from '@angular/core';
 import { isPlatformBrowser, CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import {
@@ -52,7 +52,7 @@ import Swal from 'sweetalert2';
   templateUrl: './reports.component.html',
   styleUrls: ['./reports.component.scss'],
 })
-export class ReportsComponent implements OnInit {
+export class ReportsComponent implements OnInit, AfterViewInit {
   filterForm: FormGroup;
   loading = false;
   repairLogs: RepairLog[] = [];
@@ -134,7 +134,21 @@ export class ReportsComponent implements OnInit {
       startDate: this.formatDate(startDate),
       endDate: this.formatDate(endDate),
     });
+  }
 
+  ngAfterViewInit(): void {
+    // Set paginator connections FIRST
+    console.log('🔧 Connecting paginators...');
+    if (this.repairLogsPaginator) {
+      this.repairLogsDataSource.paginator = this.repairLogsPaginator;
+      console.log('✅ Repair logs paginator connected');
+    }
+    if (this.ticketsPaginator) {
+      this.ticketsDataSource.paginator = this.ticketsPaginator;
+      console.log('✅ Tickets paginator connected');
+    }
+
+    // THEN load reports
     this.loadReports();
   }
 
@@ -213,7 +227,6 @@ export class ReportsComponent implements OnInit {
             return logDate.getTime() >= start.getTime() && logDate.getTime() <= end.getTime();
           });
           this.repairLogsDataSource.data = this.filteredRepairLogs;
-          this.repairLogsDataSource.paginator = this.repairLogsPaginator;
           resolve();
         },
         error: (err) => {
@@ -240,7 +253,6 @@ export class ReportsComponent implements OnInit {
             return ticketDate.getTime() >= start.getTime() && ticketDate.getTime() <= end.getTime();
           });
           this.ticketsDataSource.data = this.filteredTickets;
-          this.ticketsDataSource.paginator = this.ticketsPaginator;
           resolve();
         },
         error: (err) => {

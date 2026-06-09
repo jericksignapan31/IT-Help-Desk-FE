@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
@@ -42,7 +42,7 @@ import { takeUntil } from 'rxjs/operators';
   templateUrl: './inventory-dashboard.component.html',
   styleUrls: ['./inventory-dashboard.component.scss'],
 })
-export class InventoryDashboardComponent implements OnInit, OnDestroy {
+export class InventoryDashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   allItems: RequisitionInventoryItem[] = [];
   filteredItems: RequisitionInventoryItem[] = [];
   dataSource = new MatTableDataSource<RequisitionInventoryItem>();
@@ -75,6 +75,20 @@ export class InventoryDashboardComponent implements OnInit, OnDestroy {
   constructor(private warehouseService: WarehouseService) {}
 
   ngOnInit(): void {
+    // Initialize only - data loads after view is ready
+  }
+
+  ngAfterViewInit(): void {
+    // Set paginator connection FIRST (important timing!)
+    console.log('🔧 Setting up paginator...');
+    if (this.paginator) {
+      this.dataSource.paginator = this.paginator;
+      console.log('✅ Paginator connected to dataSource');
+    } else {
+      console.warn('⚠️ Paginator ViewChild not found!');
+    }
+    
+    // THEN load the data
     this.loadInventory();
   }
 
@@ -167,7 +181,6 @@ export class InventoryDashboardComponent implements OnInit, OnDestroy {
 
     console.log('└─ ✅ Filtered items:', this.filteredItems.length);
     this.dataSource.data = this.filteredItems;
-    this.dataSource.paginator = this.paginator;
   }
 
   onFilterChange(): void {

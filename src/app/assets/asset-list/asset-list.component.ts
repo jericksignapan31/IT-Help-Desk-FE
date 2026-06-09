@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
@@ -48,7 +48,7 @@ import * as QRCode from 'qrcode';
   templateUrl: './asset-list.component.html',
   styleUrls: ['./asset-list.component.scss'],
 })
-export class AssetListComponent implements OnInit {
+export class AssetListComponent implements OnInit, AfterViewInit {
   assets: Asset[] = [];
   dataSource = new MatTableDataSource<Asset>();
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -76,9 +76,19 @@ export class AssetListComponent implements OnInit {
     private assetService: AssetService,
     public authService: AuthService,
     private dialog: MatDialog,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
+    // Initialization - paginator connection happens in AfterViewInit
+  }
+
+  ngAfterViewInit(): void {
+    // Set paginator connection FIRST
+    if (this.paginator) {
+      this.dataSource.paginator = this.paginator;
+    }
+    // THEN load data
     this.loadAssets();
   }
 
@@ -130,8 +140,8 @@ export class AssetListComponent implements OnInit {
 
         this.assets = data;
         this.dataSource.data = data;
-        this.dataSource.paginator = this.paginator;
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('❌ ASSETS LOAD FAILED');
@@ -166,6 +176,7 @@ export class AssetListComponent implements OnInit {
         }
 
         this.loading = false;
+        this.cdr.detectChanges();
       },
     });
   }

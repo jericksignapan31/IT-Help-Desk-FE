@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
@@ -33,7 +33,7 @@ import Swal from 'sweetalert2';
   templateUrl: './department-list.component.html',
   styleUrls: ['./department-list.component.scss'],
 })
-export class DepartmentListComponent implements OnInit {
+export class DepartmentListComponent implements OnInit, AfterViewInit {
   departments: Department[] = [];
   dataSource = new MatTableDataSource<Department>();
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -56,6 +56,15 @@ export class DepartmentListComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Initialize - paginator connection happens in AfterViewInit
+  }
+
+  ngAfterViewInit(): void {
+    // Set paginator connection FIRST
+    if (this.paginator) {
+      this.dataSource.paginator = this.paginator;
+    }
+    // THEN load data
     this.loadDepartments();
   }
 
@@ -65,7 +74,6 @@ export class DepartmentListComponent implements OnInit {
       next: (departments) => {
         this.departments = departments;
         this.dataSource.data = departments;
-        this.dataSource.paginator = this.paginator;
         this.isLoading = false;
       },
       error: (error) => {

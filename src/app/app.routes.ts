@@ -340,6 +340,20 @@ export const routes: Routes = [
                 (m) => m.UserAccountListComponent,
               ),
           },
+          {
+            path: 'create',
+            loadComponent: () =>
+              import('./user-accounts/user-account-form/user-account-form.component').then(
+                (m) => m.UserAccountFormComponent,
+              ),
+          },
+          {
+            path: 'edit/:id',
+            loadComponent: () =>
+              import('./user-accounts/user-account-form/user-account-form.component').then(
+                (m) => m.UserAccountFormComponent,
+              ),
+          },
         ],
       },
       // User Credentials Route (Admin only)

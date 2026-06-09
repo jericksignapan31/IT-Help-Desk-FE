@@ -154,7 +154,6 @@
             <tr mat-header-row *matHeaderRowDef="repairLogColumns"></tr>
             <tr mat-row *matRowDef="let row; columns: repairLogColumns"></tr>
           </table>
-          <mat-paginator #repairLogsPaginator [pageSizeOptions]="[5, 10, 25, 50]" showFirstLastButtons></mat-paginator>
         </div>
       </mat-card-content>
       <mat-card-content *ngIf="repairLogsDataSource.data.length === 0">
@@ -163,6 +162,7 @@
           <p>No repair logs found for the selected date range.</p>
         </div>
       </mat-card-content>
+      <mat-paginator #repairLogsPaginator [pageSizeOptions]="[5, 10, 25, 50]" showFirstLastButtons></mat-paginator>
     </mat-card>
 
     <!-- Tickets Tab -->
@@ -228,7 +228,6 @@
             <tr mat-header-row *matHeaderRowDef="ticketColumns"></tr>
             <tr mat-row *matRowDef="let row; columns: ticketColumns"></tr>
           </table>
-          <mat-paginator #ticketsPaginator [pageSizeOptions]="[5, 10, 25, 50]" showFirstLastButtons></mat-paginator>
         </div>
       </mat-card-content>
       <mat-card-content *ngIf="ticketsDataSource.data.length === 0">
@@ -237,6 +236,7 @@
           <p>No tickets found for the selected date range.</p>
         </div>
       </mat-card-content>
+      <mat-paginator #ticketsPaginator [pageSizeOptions]="[5, 10, 25, 50]" showFirstLastButtons></mat-paginator>
     </mat-card>
   </div>
 </div>

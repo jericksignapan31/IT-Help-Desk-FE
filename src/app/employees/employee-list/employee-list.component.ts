@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
@@ -41,7 +41,7 @@ import Swal from 'sweetalert2';
   templateUrl: './employee-list.component.html',
   styleUrls: ['./employee-list.component.scss'],
 })
-export class EmployeeListComponent implements OnInit {
+export class EmployeeListComponent implements OnInit, AfterViewInit {
   employees: Employee[] = [];
   dataSource = new MatTableDataSource<Employee>();
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -63,9 +63,19 @@ export class EmployeeListComponent implements OnInit {
   constructor(
     private employeeService: EmployeeService,
     private dialog: MatDialog,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
+    // Initialization - paginator connection happens in AfterViewInit
+  }
+
+  ngAfterViewInit(): void {
+    // Set paginator connection FIRST
+    if (this.paginator) {
+      this.dataSource.paginator = this.paginator;
+    }
+    // THEN load data
     this.loadEmployees();
   }
 
@@ -75,8 +85,8 @@ export class EmployeeListComponent implements OnInit {
       next: (data) => {
         this.employees = data;
         this.applyFilter();
-        this.dataSource.paginator = this.paginator;
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         Swal.fire({
@@ -85,6 +95,7 @@ export class EmployeeListComponent implements OnInit {
           text: 'Failed to load employees',
         });
         this.loading = false;
+        this.cdr.detectChanges();
       },
     });
   }
@@ -105,9 +116,7 @@ export class EmployeeListComponent implements OnInit {
 
     this.filteredEmployees = filtered;
     this.dataSource.data = filtered;
-    if (this.paginator) {
-      this.dataSource.paginator = this.paginator;
-    }
+    this.cdr.detectChanges();
   }
 
   createEmployee(): void {

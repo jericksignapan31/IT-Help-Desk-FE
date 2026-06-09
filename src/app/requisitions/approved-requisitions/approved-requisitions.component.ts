@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
@@ -33,7 +33,7 @@ import { takeUntil } from 'rxjs/operators';
   templateUrl: './approved-requisitions.component.html',
   styleUrls: ['./approved-requisitions.component.scss'],
 })
-export class ApprovedRequisitionsComponent implements OnInit, OnDestroy {
+export class ApprovedRequisitionsComponent implements OnInit, OnDestroy, AfterViewInit {
   requisitions: PartRequisition[] = [];
   dataSource = new MatTableDataSource<PartRequisition>();
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -53,10 +53,19 @@ export class ApprovedRequisitionsComponent implements OnInit, OnDestroy {
   constructor(
     private warehouseService: WarehouseService,
     private departmentService: DepartmentService,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
     this.loadDepartments();
+  }
+
+  ngAfterViewInit(): void {
+    // Set paginator connection FIRST
+    if (this.paginator) {
+      this.dataSource.paginator = this.paginator;
+    }
+    // THEN load data
     this.loadApprovedRequisitions();
   }
 
@@ -89,8 +98,8 @@ export class ApprovedRequisitionsComponent implements OnInit, OnDestroy {
           console.log('✅ Approved requisitions loaded:', data);
           this.requisitions = data;
           this.dataSource.data = data;
-          this.dataSource.paginator = this.paginator;
           this.isLoading = false;
+          this.cdr.detectChanges();
         },
         error: (err) => {
           console.error('❌ Error loading approved requisitions:', err);

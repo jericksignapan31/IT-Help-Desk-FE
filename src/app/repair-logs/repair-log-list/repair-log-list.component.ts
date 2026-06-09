@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
@@ -39,7 +39,7 @@ import Swal from 'sweetalert2';
   templateUrl: './repair-log-list.component.html',
   styleUrls: ['./repair-log-list.component.scss'],
 })
-export class RepairLogListComponent implements OnInit {
+export class RepairLogListComponent implements OnInit, AfterViewInit {
   repairLogs: RepairLog[] = [];
   dataSource = new MatTableDataSource<RepairLog>();
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -69,6 +69,15 @@ export class RepairLogListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    // Initialize - paginator connection happens in AfterViewInit
+  }
+
+  ngAfterViewInit(): void {
+    // Set paginator connection FIRST
+    if (this.paginator) {
+      this.dataSource.paginator = this.paginator;
+    }
+    // THEN load the data
     this.loadRepairLogs();
   }
 
@@ -78,7 +87,6 @@ export class RepairLogListComponent implements OnInit {
       next: (logs) => {
         this.repairLogs = logs;
         this.applyFilters();
-        this.dataSource.paginator = this.paginator;
         this.isLoading = false;
       },
       error: (error) => {
@@ -108,9 +116,6 @@ export class RepairLogListComponent implements OnInit {
       return matchesStatus && matchesSearch;
     });
     this.dataSource.data = this.filteredLogs;
-    if (this.paginator) {
-      this.dataSource.paginator = this.paginator;
-    }
   }
 
   onFilterChange(): void {

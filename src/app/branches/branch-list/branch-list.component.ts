@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
@@ -32,7 +32,7 @@ import Swal from 'sweetalert2';
   templateUrl: './branch-list.component.html',
   styleUrls: ['./branch-list.component.scss'],
 })
-export class BranchListComponent implements OnInit {
+export class BranchListComponent implements OnInit, AfterViewInit {
   branches: Branch[] = [];
   dataSource = new MatTableDataSource<Branch>();
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -48,9 +48,19 @@ export class BranchListComponent implements OnInit {
   constructor(
     private branchService: BranchService,
     private dialog: MatDialog,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
+    // Initialize - paginator connection happens in AfterViewInit
+  }
+
+  ngAfterViewInit(): void {
+    // Set paginator connection FIRST
+    if (this.paginator) {
+      this.dataSource.paginator = this.paginator;
+    }
+    // THEN load data
     this.loadBranches();
   }
 
@@ -60,8 +70,8 @@ export class BranchListComponent implements OnInit {
       next: (branches) => {
         this.branches = branches;
         this.dataSource.data = branches;
-        this.dataSource.paginator = this.paginator;
         this.isLoading = false;
+        this.cdr.detectChanges();
       },
       error: (error) => {
         Swal.fire({
@@ -70,6 +80,7 @@ export class BranchListComponent implements OnInit {
           text: 'Failed to load branches',
         });
         this.isLoading = false;
+        this.cdr.detectChanges();
       },
     });
   }
