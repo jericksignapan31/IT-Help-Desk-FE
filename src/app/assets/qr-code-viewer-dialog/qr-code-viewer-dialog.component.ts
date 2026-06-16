@@ -56,10 +56,54 @@ export class QrCodeViewerDialogComponent implements OnInit {
   }
 
   downloadQRCode(): void {
-    const link = document.createElement('a');
-    link.download = `QR_${this.asset.asset_tag}.png`;
-    link.href = this.qrCodeDataUrl;
-    link.click();
+    const image = new Image();
+    image.onload = () => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+
+      if (!ctx) return;
+
+      // QR code and label dimensions
+      const qrSize = 300;
+      const padding = 20;
+      const textHeight = 50;
+      const totalHeight = qrSize + textHeight;
+
+      canvas.width = qrSize + padding * 2;
+      canvas.height = totalHeight + padding * 2;
+
+      // White background
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Draw QR code
+      ctx.drawImage(image, padding, padding, qrSize, qrSize);
+
+      // Draw Asset Tag label below QR code
+      ctx.fillStyle = '#000000';
+      ctx.font = 'bold 16px Arial';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+      ctx.fillText(
+        this.asset.asset_tag,
+        canvas.width / 2,
+        qrSize + padding + 15
+      );
+
+      // Download the canvas as PNG
+      canvas.toBlob((blob) => {
+        if (blob) {
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.download = `QR_${this.asset.asset_tag}.png`;
+          link.href = url;
+          link.click();
+          URL.revokeObjectURL(url);
+        }
+      }, 'image/png');
+    };
+
+    image.src = this.qrCodeDataUrl;
   }
 
   close(): void {

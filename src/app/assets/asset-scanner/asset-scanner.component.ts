@@ -18,7 +18,8 @@ import { Asset } from '../../models/asset.model';
 import { AuthService } from '../../services/auth.service';
 import Swal from 'sweetalert2';
 import * as QRCode from 'qrcode';
-const jsQR = require('jsqr');
+// @ts-ignore - jsQR is CommonJS module
+import jsQR from 'jsqr';
 
 @Component({
   selector: 'app-asset-scanner',
@@ -167,6 +168,7 @@ export class AssetScannerComponent implements OnInit {
     });
 
     if (code) {
+      console.log('📱 QR Code Detected:', code.data);
       this.processScannedCode(code.data);
       return;
     }
@@ -178,14 +180,41 @@ export class AssetScannerComponent implements OnInit {
   }
 
   processScannedCode(qrData: string): void {
-    // Extract asset tag from QR code
-    // Expected format: "AST-001" or similar
-    const assetTag = qrData.match(/AST-\d+/) || qrData.match(/\w+-\d+/);
+    let assetTag: string | null = null;
+
+    // First, try to parse as JSON (from our QR code generator)
+    try {
+      const qrObject = JSON.parse(qrData);
+      if (qrObject.asset_tag) {
+        assetTag = qrObject.asset_tag;
+        console.log('✅ Parsed JSON QR Code - Asset Tag:', assetTag);
+      }
+    } catch (e) {
+      // Not JSON, try regex patterns
+      console.log('ℹ️ QR Code is not JSON, trying regex patterns');
+    }
+
+    // If JSON parsing failed, try regex patterns
+    if (!assetTag) {
+      const match = qrData.match(/(\w+-\d+-\d+)/); // e.g., "RT-0054-20260616"
+      if (match) {
+        assetTag = match[1];
+        console.log('✅ Matched with pattern 1:', assetTag);
+      } else {
+        const match2 = qrData.match(/AST-\d+/); // e.g., "AST-001"
+        if (match2) {
+          assetTag = match2[0];
+          console.log('✅ Matched with pattern 2:', assetTag);
+        }
+      }
+    }
 
     if (assetTag) {
+      console.log('🔍 Searching for asset:', assetTag);
       this.stopCamera();
-      this.searchAssetByTag(assetTag[0]);
+      this.searchAssetByTag(assetTag);
     } else {
+      console.log('❌ No valid asset tag found in QR code');
       Swal.fire({
         icon: 'warning',
         title: 'Invalid QR Code',
