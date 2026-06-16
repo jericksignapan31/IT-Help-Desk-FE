@@ -78,6 +78,8 @@ export class AssetDialogComponent implements OnInit {
     'tablet': 'TAB',
     'keyboard': 'KBD',
     'mouse': 'MSE',
+    'cctv': 'CV',
+    'router': 'RT',
     'other': 'OTH',
   };
 

@@ -198,9 +198,7 @@
                       "
                       [value]="asset.asset_id"
                     >
-                      {{ asset.asset_tag }} -
-                      {{ asset.brand?.brand_name || "" }}
-                      {{ asset.model }}
+                      {{ asset.asset_tag }} - {{ asset.assignedEmployee?.first_name || "Unassigned" }} {{ asset.assignedEmployee?.last_name || "" }}
                     </mat-option>
                   </mat-optgroup>
                 </ng-container>
@@ -217,8 +215,7 @@
                     *ngFor="let asset of filteredAssets"
                     [value]="asset.asset_id"
                   >
-                    {{ asset.asset_tag }} - {{ asset.brand?.brand_name || "" }}
-                    {{ asset.model }}
+                    {{ asset.asset_tag }} - {{ asset.assignedEmployee?.first_name || "Unassigned" }} {{ asset.assignedEmployee?.last_name || "" }}
                   </mat-option>
                 </ng-container>
               </mat-select>

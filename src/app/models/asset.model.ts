@@ -40,6 +40,8 @@ export enum AssetType {
   TABLET = 'tablet',
   KEYBOARD = 'keyboard',
   MOUSE = 'mouse',
+  CCTV = 'cctv',
+  ROUTER = 'router',
   OTHER = 'other',
 }
 
