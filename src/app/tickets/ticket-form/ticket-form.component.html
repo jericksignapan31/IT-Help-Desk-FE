@@ -157,7 +157,7 @@
                 authService.isUser() || loadingAssets || assets.length === 0
               "
             >
-              <mat-label>Related Asset (Required)</mat-label>
+              <mat-label>Relatmed Asset (Required)</mat-label>
               <mat-select
                 formControlName="asset_id"
                 required
@@ -215,7 +215,7 @@
                     *ngFor="let asset of filteredAssets"
                     [value]="asset.asset_id"
                   >
-                    {{ asset.asset_tag }} - {{ asset.assignedEmployee?.first_name || "Unassigned" }} {{ asset.assignedEmployee?.last_name || "" }}
+                    {{ asset.asset_tag }} - {{ asset.category || "Unknown Brand" }} 
                   </mat-option>
                 </ng-container>
               </mat-select>

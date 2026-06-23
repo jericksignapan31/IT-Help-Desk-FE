@@ -91,7 +91,6 @@ export class TicketFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log('🚀 [Ticket Form] ngOnInit started');
 
     // Debug current user
     const currentUser = this.authService.currentUserValue;
@@ -151,7 +150,6 @@ export class TicketFormComponent implements OnInit {
 
     assetRequest.subscribe({
       next: (data) => {
-        // 🔍 Console logging for debugging
         console.log('📦 [Ticket Form] Assets Loaded:', data);
         console.log('📊 Total Assets:', data.length);
         console.log('👤 Current User Role:', {
@@ -162,7 +160,6 @@ export class TicketFormComponent implements OnInit {
         });
 
         if (data.length > 0) {
-          // Log asset details
           console.log('📋 Asset Details:', data.map((a: any) => ({
             asset_tag: a.asset_tag,
             model: a.model,
