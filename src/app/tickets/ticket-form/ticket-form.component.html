@@ -208,14 +208,14 @@
                   *ngIf="
                     authService.isUser() &&
                     !loadingAssets &&
-                    filteredAssets.length > 0
+                    filteredAssets.length > 0 
                   "
                 >
                   <mat-option
                     *ngFor="let asset of filteredAssets"
                     [value]="asset.asset_id"
                   >
-                    {{ asset.asset_tag }} - {{ asset.category || "Unknown Brand" }} 
+                    {{ asset.asset_tag }} - {{ asset.category || "Unknown category" }} 
                   </mat-option>
                 </ng-container>
               </mat-select>
