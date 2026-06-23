@@ -29,6 +29,11 @@ export const MENU_ITEMS: MenuItem[] = [
         icon: 'check',
         route: '/tickets/approved',
       },
+       {
+        label: 'Rejected',
+        icon: 'close',
+        route: '/tickets/rejected',
+      },
       {
         label: 'Work in Progress',
         icon: 'autorenew',

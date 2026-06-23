@@ -81,6 +81,14 @@ export const routes: Routes = [
               ),
             data: { statusFilter: 'pending_approval' },
           },
+           {
+            path: 'rejected',
+            loadComponent: () =>
+              import('./tickets/ticket-list/ticket-list.component').then(
+                (m) => m.TicketListComponent,
+              ),
+            data: { statusFilter: 'rejected' },
+          },
           {
             path: 'approved',
             loadComponent: () =>
