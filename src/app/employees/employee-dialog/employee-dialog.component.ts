@@ -157,14 +157,63 @@ export class EmployeeDialogComponent implements OnInit {
       next: (result) => {
         this.isSaving = false;
         
-        Swal.fire({
-          icon: 'success',
-          title: 'Success!',
-          text: `Employee ${this.isEditMode ? 'updated' : 'created'} successfully`,
-          timer: 2000,
-          showConfirmButton: false,
-        });
-        this.dialogRef.close(result);
+        console.log('🎉 EMPLOYEE CREATION RESPONSE:');
+        console.log('Full Response:', result);
+        console.log('temporaryPassword:', result.temporaryPassword);
+        
+        // Show temporary password modal for new employees
+        if (!this.isEditMode) {
+          const tempPassword = result.temporaryPassword || result.temporary_password || 'N/A';
+          Swal.fire({
+            icon: 'success',
+            title: 'Employee Created Successfully! 🎉',
+            html: `
+              <div style="text-align: left; line-height: 1.8;">
+                <p style="font-size: 16px; margin-bottom: 20px;">New employee account has been created successfully!</p>
+                
+                <div style="background: #f0f4ff; border-left: 4px solid #3f51b5; padding: 15px; border-radius: 4px; margin: 15px 0;">
+                  <p style="margin: 8px 0; font-size: 14px;"><strong>📧 Email:</strong></p>
+                  <p style="margin: 8px 0; font-family: monospace; font-size: 16px; color: #3f51b5; font-weight: bold;">${result.email}</p>
+                </div>
+                
+                <div style="background: #fff3e0; border-left: 4px solid #ff9800; padding: 15px; border-radius: 4px; margin: 15px 0;">
+                  <p style="margin: 8px 0; font-size: 14px;"><strong>🔑 Temporary Password:</strong></p>
+                  <p style="margin: 8px 0; font-family: monospace; font-size: 20px; color: #ff6f00; font-weight: bold; letter-spacing: 2px;">${tempPassword}</p>
+                </div>
+                
+                <div style="background: #e8f5e9; border-left: 4px solid #4caf50; padding: 15px; border-radius: 4px; margin: 15px 0;">
+                  <p style="margin: 8px 0; font-size: 13px;">✅ <strong>Next Steps:</strong></p>
+                  <ul style="margin: 8px 0; padding-left: 20px; font-size: 13px;">
+                    <li>Save and share this temporary password with the employee</li>
+                    <li>Employee must login with this email and password</li>
+                    <li>They will be required to change their password on first login</li>
+                  </ul>
+                </div>
+              </div>
+            `,
+            confirmButtonText: 'Copy & Close',
+            didOpen: () => {
+              // Add copy to clipboard functionality
+              const copyBtn = Swal.getConfirmButton();
+              if (copyBtn && tempPassword && tempPassword !== 'N/A') {
+                copyBtn.addEventListener('click', () => {
+                  navigator.clipboard.writeText(tempPassword);
+                });
+              }
+            }
+          }).then(() => {
+            this.dialogRef.close(result);
+          });
+        } else {
+          Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: `Employee updated successfully`,
+            timer: 2000,
+            showConfirmButton: false,
+          });
+          this.dialogRef.close(result);
+        }
       },
       error: (error) => {
  

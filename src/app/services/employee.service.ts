@@ -34,7 +34,7 @@ export class EmployeeService {
   }
 
   createEmployee(employee: Partial<Employee>): Observable<Employee> {
-    return this.http.post<Employee>(`${this.API_URL}/employees`, employee);
+    return this.http.post<Employee>(`${this.API_URL}/auth/signup`, employee);
   }
 
   updateEmployee(
