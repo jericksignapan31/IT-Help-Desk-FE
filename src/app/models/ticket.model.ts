@@ -30,6 +30,7 @@ export interface Ticket {
   asset?: any;
   assignedEmployee?: any;
   approver?: any;
+  department?: any; // Department object with department_id and department_name
 }
 
 export interface TicketCompletionData {
