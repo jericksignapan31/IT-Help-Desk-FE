@@ -167,11 +167,11 @@ export class CreateRequisitionFormComponent implements OnInit, OnDestroy {
     const formData = this.form.value;
     
     // Backend will extract requested_by and requested_by_type from JWT token
-    // Send: rf_number, department, deadline, items
+    // Send: rf_number, department_id, deadline, items
     const data: CreatePartRequisitionDto = {
       rf_number: formData.rf_number,
-      department: formData.department || null,
-      deadline: formData.deadline || null,
+      department_id: formData.department || undefined,
+      deadline: formData.deadline || undefined,
       items: formData.items,
     };
 

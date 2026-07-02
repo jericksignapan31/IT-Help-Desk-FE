@@ -70,10 +70,21 @@ export class AcknowledgeRequisitionModalComponent implements OnInit, OnDestroy {
       });
   }
 
-  getDepartmentName(departmentId: string | undefined): string {
-    if (!departmentId) return 'N/A';
-    const dept = this.departments.find((d) => d.department_id === departmentId);
-    return dept ? dept.department_name : departmentId;
+  getDepartmentName(department: string | { department_id: string; department_name: string; description: string; is_active: boolean; created_at: string; updated_at: string; } | undefined): string {
+    if (!department) return 'N/A';
+    
+    // If department is an object with department_name
+    if (typeof department === 'object' && department.department_name) {
+      return department.department_name;
+    }
+    
+    // If department is a string (ID), look it up in the departments array
+    if (typeof department === 'string') {
+      const dept = this.departments.find((d) => d.department_id === department);
+      return dept ? dept.department_name : department;
+    }
+    
+    return 'N/A';
   }
 
   onCancel(): void {

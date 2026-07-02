@@ -149,6 +149,22 @@ export class MyRequisitionsListComponent implements OnInit, OnDestroy, OnChanges
     }, 0);
   }
 
+  getDepartmentName(department: string | { department_id: string; department_name: string; description: string; is_active: boolean; created_at: string; updated_at: string; } | undefined): string {
+    if (!department) return 'N/A';
+    
+    // If department is an object with department_name
+    if (typeof department === 'object' && department.department_name) {
+      return department.department_name;
+    }
+    
+    // If department is a string (ID), return as-is
+    if (typeof department === 'string') {
+      return department;
+    }
+    
+    return 'N/A';
+  }
+
   formatCurrency(value: number): string {
     return `₱${value.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
   }

@@ -61,7 +61,7 @@ export interface PartRequisition {
 
 export interface CreatePartRequisitionDto {
   rf_number: string; // NOW REQUIRED - IT must provide
-  department?: string;
+  department_id?: string; // Department ID
   deadline?: string | Date;
   items: CreateRequisitionItemDto[];
 }

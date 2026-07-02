@@ -31,7 +31,7 @@
         <!-- Department Column -->
         <ng-container matColumnDef="department">
           <th mat-header-cell *matHeaderCellDef>Department</th>
-          <td mat-cell *matCellDef="let element">{{ element.department || 'N/A' }}</td>
+          <td mat-cell *matCellDef="let element">{{ getDepartmentName(element.department) }}</td>
         </ng-container>
 
         <!-- Items Count Column -->

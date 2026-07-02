@@ -161,4 +161,20 @@ export class PendingReturnsListComponent implements OnInit, OnDestroy {
     const cost = typeof unitCost === 'string' ? parseFloat(unitCost) || 0 : unitCost || 0;
     return (qty * cost).toFixed(2);
   }
+
+  getDepartmentName(department: string | { department_id: string; department_name: string; description: string; is_active: boolean; created_at: string; updated_at: string; } | undefined): string {
+    if (!department) return 'N/A';
+    
+    // If department is an object with department_name
+    if (typeof department === 'object' && department.department_name) {
+      return department.department_name;
+    }
+    
+    // If department is a string (ID), return as-is
+    if (typeof department === 'string') {
+      return department;
+    }
+    
+    return 'N/A';
+  }
 }
