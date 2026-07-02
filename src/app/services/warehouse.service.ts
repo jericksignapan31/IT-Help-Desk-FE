@@ -7,6 +7,12 @@ import {
   CreatePartRequisitionDto,
   AcknowledgeRequisitionDto,
   ApproveRequisitionDto,
+  ReturnRequisitionDto,
+  AddCommentDto,
+  ResubmitRequisitionDto,
+  RequisitionReturn,
+  RequisitionComment,
+  RequisitionHistoryItem,
 } from '../models/requisition.model';
 
 export interface CreatePartRequestDto {
@@ -177,5 +183,56 @@ export class WarehouseService {
   // Get requisition inventory (flat list of all items)
   getRequisitionInventory(): Observable<RequisitionInventoryItem[]> {
     return this.http.get<RequisitionInventoryItem[]>(`${this.API_URL}/requisitions/inventory`);
+  }
+
+  // ===== NEW: RETURN & RESUBMIT WORKFLOW =====
+
+  // WAREHOUSE: Return requisition with notes
+  returnRequisition(
+    rfNumber: string,
+    data: ReturnRequisitionDto
+  ): Observable<RequisitionReturn> {
+    return this.http.patch<RequisitionReturn>(
+      `${this.API_URL}/requisitions/${rfNumber}/return`,
+      data
+    );
+  }
+
+  // IT: Get pending returns from warehouse
+  getPendingReturns(): Observable<PartRequisition[]> {
+    return this.http.get<PartRequisition[]>(
+      `${this.API_URL}/requisitions/warehouse/pending-returns`
+    );
+  }
+
+  // IT/WAREHOUSE: Add comment to return discussion thread
+  addComment(rfNumber: string, data: AddCommentDto): Observable<RequisitionComment> {
+    return this.http.post<RequisitionComment>(
+      `${this.API_URL}/requisitions/${rfNumber}/comments`,
+      data
+    );
+  }
+
+  // IT/WAREHOUSE: Get comment thread
+  getComments(rfNumber: string): Observable<RequisitionComment[]> {
+    return this.http.get<RequisitionComment[]>(`${this.API_URL}/requisitions/${rfNumber}/comments`);
+  }
+
+  // IT: Resubmit requisition after editing
+  resubmitRequisition(
+    rfNumber: string,
+    data: ResubmitRequisitionDto
+  ): Observable<RequisitionReturn> {
+    return this.http.patch<RequisitionReturn>(
+      `${this.API_URL}/requisitions/${rfNumber}/resubmit`,
+      data
+    );
+  }
+
+  // IT/WAREHOUSE: Get complete requisition history
+  getRequisitionHistory(rfNumber: string): Observable<RequisitionHistoryItem[]> {
+    return this.http.get<RequisitionHistoryItem[]>(
+      `${this.API_URL}/requisitions/${rfNumber}/history`
+    );
   }
 }

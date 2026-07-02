@@ -1,0 +1,227 @@
+.history-card {
+  margin: 2rem 0;
+
+  .loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 2rem;
+    gap: 1rem;
+
+    p {
+      color: #666;
+      font-size: 0.9rem;
+    }
+  }
+
+  .no-history {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 2rem;
+    color: #999;
+    gap: 1rem;
+    text-align: center;
+
+    mat-icon {
+      font-size: 3rem;
+      width: 3rem;
+      height: 3rem;
+      opacity: 0.5;
+    }
+
+    p {
+      margin: 0;
+      font-style: italic;
+    }
+  }
+
+  .history-timeline {
+    padding: 0 !important;
+
+    .history-item {
+      display: flex;
+      gap: 2rem;
+      padding: 1.5rem 0;
+      position: relative;
+
+      .timeline-marker {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        color: white;
+
+        mat-icon {
+          font-size: 24px;
+          width: 24px;
+          height: 24px;
+        }
+      }
+
+      .history-content {
+        flex: 1;
+        padding-right: 1rem;
+
+        .cycle-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 1rem;
+
+          strong {
+            font-size: 1.1rem;
+            color: #333;
+          }
+
+          .cycle-date {
+            color: #999;
+            font-size: 0.85rem;
+            font-style: italic;
+          }
+        }
+
+        .warehouse-notes {
+          background-color: #f9f9f9;
+          padding: 1rem;
+          border-radius: 4px;
+          border-left: 3px solid #FF9800;
+          margin-bottom: 1rem;
+
+          strong {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+          }
+
+          p {
+            margin: 0;
+            color: #666;
+            line-height: 1.5;
+          }
+        }
+
+        .resubmitted-info {
+          background-color: #e8f5e9;
+          padding: 0.75rem 1rem;
+          border-radius: 4px;
+          border-left: 3px solid #4CAF50;
+          margin-bottom: 1rem;
+          color: #2e7d32;
+          font-size: 0.9rem;
+        }
+
+        .comments-summary {
+          background-color: #e3f2fd;
+          padding: 1rem;
+          border-radius: 4px;
+          border-left: 3px solid #2196F3;
+
+          strong {
+            display: block;
+            color: #1565c0;
+            margin-bottom: 0.75rem;
+          }
+
+          .comments-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+
+            .comment {
+              background-color: white;
+              padding: 0.75rem;
+              border-radius: 3px;
+              border-left: 3px solid #ddd;
+
+              .role-badge {
+                color: white;
+                padding: 0.25rem 0.5rem;
+                border-radius: 3px;
+                font-size: 0.7rem;
+                font-weight: 600;
+                display: inline-block;
+                margin-bottom: 0.5rem;
+              }
+
+              p {
+                margin: 0 0 0.5rem 0;
+                color: #333;
+                line-height: 1.4;
+              }
+
+              .comment-date {
+                color: #999;
+                font-size: 0.75rem;
+                font-style: italic;
+              }
+            }
+          }
+        }
+      }
+
+      &::before {
+        content: '';
+        position: absolute;
+        left: 23px;
+        top: 48px;
+        bottom: -1.5rem;
+        width: 2px;
+        background: linear-gradient(to bottom, #2196F3, transparent);
+      }
+
+      &:last-child::before {
+        display: none;
+      }
+    }
+
+    .cycle-divider {
+      margin: 0.5rem 0;
+      margin-left: 48px;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .history-card {
+    .history-timeline {
+      .history-item {
+        gap: 1rem;
+
+        .timeline-marker {
+          width: 40px;
+          height: 40px;
+
+          mat-icon {
+            font-size: 20px;
+            width: 20px;
+            height: 20px;
+          }
+        }
+
+        &::before {
+          left: 19px;
+        }
+
+        .cycle-divider {
+          margin-left: 40px;
+        }
+
+        .history-content {
+          padding-right: 0;
+
+          .cycle-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+          }
+        }
+      }
+    }
+  }
+}

@@ -5,13 +5,40 @@
 
   <mat-card-content>
     <form [formGroup]="form" (ngSubmit)="submit()">
-      <!-- Requested By and Department -->
+      <!-- RF Number (Required) -->
       <div class="form-row">
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>RF Number *</mat-label>
+          <input 
+            matInput 
+            formControlName="rf_number" 
+            placeholder="e.g., RF2026001"
+            [maxlength]="50"
+            uppercase
+          />
+          <mat-hint>Alphanumeric (A-Z, 0-9), 3-50 characters</mat-hint>
+          <mat-error *ngIf="form.get('rf_number')?.hasError('required')">
+            RF Number is required
+          </mat-error>
+          <mat-error *ngIf="form.get('rf_number')?.hasError('minlength')">
+            Minimum 3 characters
+          </mat-error>
+          <mat-error *ngIf="form.get('rf_number')?.hasError('maxlength')">
+            Maximum 50 characters
+          </mat-error>
+          <mat-error *ngIf="form.get('rf_number')?.hasError('alphanumeric')">
+            Only letters (A-Z) and numbers (0-9) allowed
+          </mat-error>
+        </mat-form-field>
+
         <mat-form-field appearance="outline" class="half-width">
           <mat-label>Requested By</mat-label>
           <input matInput [value]="currentUserFullname" readonly />
         </mat-form-field>
+      </div>
 
+      <!-- Department and Deadline -->
+      <div class="form-row">
         <mat-form-field appearance="outline" class="half-width">
           <mat-label>Department (Optional)</mat-label>
           <mat-select formControlName="department">
@@ -21,11 +48,8 @@
             </mat-option>
           </mat-select>
         </mat-form-field>
-      </div>
 
-      <!-- Deadline -->
-      <div class="form-row">
-        <mat-form-field appearance="outline" class="full-width">
+        <mat-form-field appearance="outline" class="half-width">
           <mat-label>Deadline (Optional)</mat-label>
           <input
             matInput

@@ -1,6 +1,6 @@
 import { Component, OnDestroy, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormArray } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormArray, AbstractControl, ValidationErrors } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -13,6 +13,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { WarehouseService } from '../../services/warehouse.service';
 import { AuthService } from '../../services/auth.service';
 import { DepartmentService } from '../../services/department.service';
+import { CreatePartRequisitionDto } from '../../models/requisition.model';
 import { User } from '../../models/user.model';
 import { Department } from '../../models/department.model';
 import Swal from 'sweetalert2';
@@ -56,6 +57,12 @@ export class CreateRequisitionFormComponent implements OnInit, OnDestroy {
     private departmentService: DepartmentService,
   ) {
     this.form = this.fb.group({
+      rf_number: ['', [
+        Validators.required,
+        Validators.minLength(3),
+        Validators.maxLength(50),
+        this.alphanumericValidator(),
+      ]],
       department: [''],
       deadline: [''],
       items: this.fb.array([], Validators.required),
@@ -151,7 +158,7 @@ export class CreateRequisitionFormComponent implements OnInit, OnDestroy {
       Swal.fire({
         icon: 'warning',
         title: 'Validation Error',
-        text: 'Please fill in all required fields',
+        text: 'Please fill in all required fields correctly',
       });
       return;
     }
@@ -160,8 +167,9 @@ export class CreateRequisitionFormComponent implements OnInit, OnDestroy {
     const formData = this.form.value;
     
     // Backend will extract requested_by and requested_by_type from JWT token
-    // Only send: department, deadline, items
-    const data = {
+    // Send: rf_number, department, deadline, items
+    const data: CreatePartRequisitionDto = {
+      rf_number: formData.rf_number,
       department: formData.department || null,
       deadline: formData.deadline || null,
       items: formData.items,
@@ -206,5 +214,18 @@ export class CreateRequisitionFormComponent implements OnInit, OnDestroy {
 
   isFormInvalid(): boolean {
     return this.form.invalid || this.loading;
+  }
+
+  // Alphanumeric validator (A-Z, 0-9 only)
+  private alphanumericValidator(): (control: AbstractControl) => ValidationErrors | null {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (!control.value) {
+        return null;
+      }
+      const alphanumericRegex = /^[A-Z0-9]+$/i;
+      return alphanumericRegex.test(control.value)
+        ? null
+        : { alphanumeric: { value: control.value } };
+    };
   }
 }

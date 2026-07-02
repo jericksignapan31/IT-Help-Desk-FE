@@ -1,0 +1,60 @@
+<mat-card class="history-card">
+  <mat-card-header>
+    <mat-card-title>Requisition Return History</mat-card-title>
+    <mat-card-subtitle>{{ rfNumber }} - Complete audit trail of all return cycles</mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content>
+    <!-- Loading State -->
+    <div *ngIf="loading" class="loading-container">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Loading history...</p>
+    </div>
+
+    <!-- No History -->
+    <div *ngIf="!loading && history.length === 0" class="no-history">
+      <mat-icon>history</mat-icon>
+      <p>No return history available</p>
+    </div>
+
+    <!-- History Timeline -->
+    <mat-list *ngIf="!loading && history.length > 0" class="history-timeline">
+      <div *ngFor="let item of history; let i = index" class="history-item">
+        <div class="timeline-marker" [style.background-color]="getTimelineColor(i) === 'accent' ? '#4CAF50' : '#2196F3'">
+          <mat-icon [color]="getTimelineColor(i)">{{ getTimelineIcon(i) }}</mat-icon>
+        </div>
+
+        <div class="history-content">
+          <div class="cycle-header">
+            <strong>Return Cycle {{ item.return_cycle }}</strong>
+            <span class="cycle-date">{{ formatDate(item.created_at) }}</span>
+          </div>
+
+          <div class="warehouse-notes">
+            <strong>Warehouse Notes:</strong>
+            <p>{{ item.warehouse_notes }}</p>
+          </div>
+
+          <div *ngIf="item.resubmitted_at" class="resubmitted-info">
+            <strong>Resubmitted: </strong>{{ formatDate(item.resubmitted_at) }}
+          </div>
+
+          <div *ngIf="item.comments && item.comments.length > 0" class="comments-summary">
+            <strong>Comments ({{ item.comments.length }}):</strong>
+            <div class="comments-list">
+              <div *ngFor="let comment of item.comments" class="comment">
+                <span class="role-badge" [style.background-color]="comment.role === 'it' ? '#2196F3' : '#FF9800'">
+                  {{ comment.role | uppercase }}
+                </span>
+                <p>{{ comment.message }}</p>
+                <span class="comment-date">{{ formatDate(comment.created_at) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <mat-divider *ngIf="i < history.length - 1" [vertical]="false" class="cycle-divider"></mat-divider>
+      </div>
+    </mat-list>
+  </mat-card-content>
+</mat-card>

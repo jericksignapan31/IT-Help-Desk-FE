@@ -9,7 +9,10 @@ import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { WarehouseService } from '../../services/warehouse.service';
+import { AuthService } from '../../services/auth.service';
 import { PartRequisition } from '../../models/requisition.model';
+import { UserRole } from '../../models/user.model';
+import { ReturnRequisitionDialogComponent } from '../return-requisition-dialog/return-requisition-dialog.component';
 import Swal from 'sweetalert2';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -54,6 +57,7 @@ export class MyRequisitionsListComponent implements OnInit, OnDestroy, OnChanges
 
   constructor(
     private warehouseService: WarehouseService,
+    private authService: AuthService,
     private dialog: MatDialog,
   ) {}
 
@@ -106,6 +110,8 @@ export class MyRequisitionsListComponent implements OnInit, OnDestroy, OnChanges
         return 'accent';
       case 'approved':
         return 'primary';
+      case 'returned_by_warehouse':
+        return 'warn';
       case 'rejected':
         return '';
       default:
@@ -121,6 +127,8 @@ export class MyRequisitionsListComponent implements OnInit, OnDestroy, OnChanges
         return 'pending_actions';
       case 'approved':
         return 'check_circle';
+      case 'returned_by_warehouse':
+        return 'reply';
       case 'rejected':
         return 'cancel';
       default:
@@ -206,5 +214,28 @@ export class MyRequisitionsListComponent implements OnInit, OnDestroy, OnChanges
       width: '600px',
       confirmButtonText: 'Close',
     });
+  }
+
+  openReturnDialog(requisition: PartRequisition): void {
+    const dialogRef = this.dialog.open(ReturnRequisitionDialogComponent, {
+      width: '500px',
+      data: { rfNumber: requisition.rf_number },
+      disableClose: false,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.loadMyRequisitions();
+      }
+    });
+  }
+
+  canReturnRequisition(requisition: PartRequisition): boolean {
+    // Only warehouse staff can return requisitions, and it must be pending or pending_admin_review
+    const userRole = this.authService.currentUserValue?.role;
+    return (
+      userRole === UserRole.WAREHOUSE &&
+      (requisition.status === 'pending' || requisition.status === 'pending_admin_review')
+    );
   }
 }

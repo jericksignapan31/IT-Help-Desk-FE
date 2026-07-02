@@ -28,7 +28,7 @@ export interface PartRequisition {
   requested_by_type: 'it' | 'warehouse';
   department?: string;
   deadline?: string;
-  status: 'pending' | 'pending_admin_review' | 'approved' | 'rejected';
+  status: 'pending' | 'pending_admin_review' | 'approved' | 'rejected' | 'returned_by_warehouse';
   acknowledged_by?: string;
   acknowledged_at?: string;
   acknowledged_notes?: string;
@@ -51,9 +51,58 @@ export interface PartRequisition {
 }
 
 export interface CreatePartRequisitionDto {
+  rf_number: string; // NOW REQUIRED - IT must provide
   department?: string;
   deadline?: string | Date;
   items: CreateRequisitionItemDto[];
+}
+
+// Return & Resubmit DTOs
+export interface ReturnRequisitionDto {
+  warehouse_notes: string; // Min 10 characters
+}
+
+export interface AddCommentDto {
+  message: string; // Min 5 characters
+}
+
+export interface ResubmitRequisitionDto {
+  // Currently empty - can be extended for item modifications
+}
+
+// Return & History Models
+export interface RequisitionReturn {
+  return_id: string;
+  requisition_id: string;
+  returned_by: string;
+  warehouse_notes: string;
+  return_cycle: number;
+  resubmitted_by?: string;
+  resubmitted_at?: string;
+  comments: RequisitionComment[];
+  created_at: string;
+  updated_at: string;
+}
+
+export interface RequisitionComment {
+  comment_id: string;
+  return_id: string;
+  commented_by: string;
+  role: 'it' | 'warehouse';
+  message: string;
+  created_at: string;
+}
+
+export interface RequisitionHistoryItem {
+  return_id: string;
+  requisition_id: string;
+  returned_by: string;
+  warehouse_notes: string;
+  return_cycle: number;
+  resubmitted_by?: string;
+  resubmitted_at?: string;
+  comments: RequisitionComment[];
+  created_at: string;
 }
 
 export interface AcknowledgeRequisitionDto {

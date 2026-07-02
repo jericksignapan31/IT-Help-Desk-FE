@@ -89,6 +89,15 @@
             >
               <mat-icon>visibility</mat-icon>
             </button>
+            <button
+              *ngIf="canReturnRequisition(req)"
+              mat-icon-button
+              (click)="openReturnDialog(req)"
+              matTooltip="Return this requisition"
+              color="warn"
+            >
+              <mat-icon>reply</mat-icon>
+            </button>
           </td>
         </ng-container>
 

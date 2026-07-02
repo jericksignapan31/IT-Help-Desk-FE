@@ -23,7 +23,8 @@ export const appConfig: ApplicationConfig = {
     provideClientHydration(withEventReplay()),
     provideHttpClient(withInterceptors([authInterceptor]), withFetch()),
     provideAnimations(),
-    ...(environment.production 
+    // Service worker only in production builds where ngsw-worker.js is generated
+    ...(environment.production && typeof ngDevMode === 'undefined'
       ? [provideServiceWorker('ngsw-worker.js', {
           registrationStrategy: 'registerWhenStable:30000'
         })] 

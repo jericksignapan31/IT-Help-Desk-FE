@@ -1,0 +1,18 @@
+::ng-deep .return-requisition-dialog {
+  .mat-dialog-container {
+    padding: 0 !important;
+  }
+
+  mat-dialog-content {
+    padding: 2rem;
+
+    .full-width {
+      width: 100%;
+    }
+  }
+
+  mat-dialog-actions {
+    padding: 1rem 2rem;
+    border-top: 1px solid #e0e0e0;
+  }
+}

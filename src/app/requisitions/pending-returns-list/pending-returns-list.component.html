@@ -1,0 +1,122 @@
+<mat-card class="pending-returns-card">
+  <mat-card-header>
+    <mat-card-title>Pending Returns from Warehouse</mat-card-title>
+    <mat-card-subtitle>Requisitions awaiting your response and resubmission</mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content>
+    <!-- Loading State -->
+    <div *ngIf="loading" class="loading-container">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Loading pending returns...</p>
+    </div>
+
+    <!-- No Returns -->
+    <div *ngIf="!loading && requisitions.length === 0" class="no-returns">
+      <mat-icon>check_circle</mat-icon>
+      <p>No pending returns. All your requisitions are on track!</p>
+    </div>
+
+    <!-- Requisitions List -->
+    <div *ngIf="!loading && requisitions.length > 0" class="requisitions-list">
+      <mat-expansion-panel
+        *ngFor="let req of requisitions"
+        [expanded]="expandedRfNumber === req.rf_number"
+        (opened)="toggleExpand(req.rf_number)"
+        (closed)="toggleExpand('')"
+        class="requisition-panel"
+      >
+        <mat-expansion-panel-header>
+          <mat-panel-title class="panel-title">
+            <strong>{{ req.rf_number }}</strong>
+            <mat-chip>{{ getItemsSummary(req) }}</mat-chip>
+          </mat-panel-title>
+          <mat-panel-description>
+            <span *ngIf="req.department">{{ req.department }}</span>
+            <span class="date">Returned: {{ formatDate(req.updated_at) }}</span>
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <div class="panel-content">
+          <!-- Requisition Details -->
+          <div class="details-section">
+            <h4>Requisition Details</h4>
+            <div class="details-grid">
+              <div class="detail-item">
+                <strong>RF Number:</strong>
+                <span>{{ req.rf_number }}</span>
+              </div>
+              <div class="detail-item">
+                <strong>Department:</strong>
+                <span>{{ req.department || 'N/A' }}</span>
+              </div>
+              <div class="detail-item">
+                <strong>Status:</strong>
+                <mat-chip color="warn" selected>{{ req.status | uppercase }}</mat-chip>
+              </div>
+              <div class="detail-item">
+                <strong>Created:</strong>
+                <span>{{ formatDate(req.created_at) }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Items Section -->
+          <div class="items-section">
+            <h4>Items</h4>
+            <table>
+              <thead>
+                <tr>
+                  <th>Item Name</th>
+                  <th>Qty</th>
+                  <th>Unit</th>
+                  <th>Supplier</th>
+                  <th>Unit Cost</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of req.items">
+                  <td>{{ item.item_name }}</td>
+                  <td>{{ item.quantity }}</td>
+                  <td>{{ item.unit }}</td>
+                  <td>{{ item.supplier || '-' }}</td>
+                  <td>₱{{ item.unit_cost || 0 }}</td>
+                  <td>₱{{ calculateItemTotal(item.quantity, item.unit_cost) }}</td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="remarks-section" *ngIf="req.items && req.items[0]?.purpose_remarks">
+              <strong>Remarks:</strong>
+              <p>{{ req.items[0].purpose_remarks }}</p>
+            </div>
+          </div>
+
+          <!-- Comment Thread -->
+          <app-comment-thread [rfNumber]="req.rf_number"></app-comment-thread>
+
+          <!-- Action Buttons -->
+          <div class="actions">
+            <button
+              mat-raised-button
+              color="primary"
+              (click)="resubmitRequisition(req.rf_number)"
+              matTooltip="Resubmit this requisition after making changes"
+            >
+              <mat-icon>send</mat-icon>
+              Resubmit Requisition
+            </button>
+            <button
+              mat-button
+              (click)="viewHistory(req.rf_number)"
+              matTooltip="View complete return history"
+            >
+              <mat-icon>history</mat-icon>
+              View History
+            </button>
+          </div>
+        </div>
+      </mat-expansion-panel>
+    </div>
+  </mat-card-content>
+</mat-card>

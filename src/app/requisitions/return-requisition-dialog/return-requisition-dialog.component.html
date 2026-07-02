@@ -1,0 +1,39 @@
+<h2 mat-dialog-title>Return Requisition {{ data.rfNumber }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Return Reason *</mat-label>
+      <textarea
+        matInput
+        formControlName="warehouse_notes"
+        placeholder="Explain why this requisition is being returned..."
+        rows="5"
+      ></textarea>
+      <mat-hint align="end">Minimum 10 characters</mat-hint>
+      <mat-error *ngIf="form.get('warehouse_notes')?.hasError('required')">
+        Return reason is required
+      </mat-error>
+      <mat-error *ngIf="form.get('warehouse_notes')?.hasError('minlength')">
+        Minimum 10 characters required
+      </mat-error>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">
+    <mat-icon>close</mat-icon>
+    Cancel
+  </button>
+  <button
+    mat-raised-button
+    color="warn"
+    (click)="submit()"
+    [disabled]="isFormInvalid()"
+  >
+    <mat-icon *ngIf="!loading">reply</mat-icon>
+    <mat-icon *ngIf="loading">schedule</mat-icon>
+    {{ loading ? 'Returning...' : 'Return Requisition' }}
+  </button>
+</mat-dialog-actions>
