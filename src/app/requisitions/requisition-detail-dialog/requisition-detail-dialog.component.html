@@ -1,0 +1,131 @@
+<h2 mat-dialog-title>Requisition {{ data.requisition.rf_number }}</h2>
+
+<mat-dialog-content>
+  <!-- Requisition Details -->
+  <div class="requisition-info">
+    <div class="info-row">
+      <strong>Requested By:</strong>
+      <span>
+        {{
+          data.requisition.requester
+            ? data.requisition.requester.first_name + ' ' + data.requisition.requester.last_name
+            : 'Unknown'
+        }}
+      </span>
+    </div>
+    <div class="info-row">
+      <strong>Department:</strong>
+      <span>{{ getDepartmentName(data.requisition.department) }}</span>
+    </div>
+    <div class="info-row">
+      <strong>Created:</strong>
+      <span>{{ formatDate(data.requisition.created_at) }}</span>
+    </div>
+    <div class="info-row">
+      <strong>Deadline:</strong>
+      <span>{{ data.requisition.deadline ? formatDate(data.requisition.deadline) : 'No deadline' }}</span>
+    </div>
+  </div>
+
+  <hr />
+
+  <!-- Items Table with Return Actions -->
+  <div class="items-section">
+    <h3>Items</h3>
+    <table mat-table [dataSource]="data.requisition.items" class="items-table">
+      <!-- Item Name Column -->
+      <ng-container matColumnDef="item_name">
+        <th mat-header-cell *matHeaderCellDef>Item Name</th>
+        <td mat-cell *matCellDef="let item">{{ item.item_name }}</td>
+      </ng-container>
+
+      <!-- Quantity Column -->
+      <ng-container matColumnDef="quantity">
+        <th mat-header-cell *matHeaderCellDef>Qty</th>
+        <td mat-cell *matCellDef="let item">{{ item.quantity }}</td>
+      </ng-container>
+
+      <!-- Unit Column -->
+      <ng-container matColumnDef="unit">
+        <th mat-header-cell *matHeaderCellDef>Unit</th>
+        <td mat-cell *matCellDef="let item">{{ item.unit }}</td>
+      </ng-container>
+
+      <!-- Unit Cost Column -->
+      <ng-container matColumnDef="unit_cost">
+        <th mat-header-cell *matHeaderCellDef>Unit Cost</th>
+        <td mat-cell *matCellDef="let item">{{ formatCurrency(item.unit_cost) }}</td>
+      </ng-container>
+
+      <!-- Total Cost Column -->
+      <ng-container matColumnDef="total_cost">
+        <th mat-header-cell *matHeaderCellDef>Total</th>
+        <td mat-cell *matCellDef="let item">{{ formatCurrency(item.total_cost) }}</td>
+      </ng-container>
+
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let item">
+          <button
+            mat-icon-button
+            [matMenuTriggerFor]="itemMenu"
+            matTooltip="Item actions"
+          >
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #itemMenu="matMenu">
+            <button
+              mat-menu-item
+              (click)="onReturnItem(item)"
+              matTooltip="Return only this item"
+            >
+              <mat-icon>reply</mat-icon>
+              <span>Return Item</span>
+            </button>
+          </mat-menu>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+
+    <!-- Remarks -->
+    <div class="remarks" *ngIf="data.requisition.items && data.requisition.items[0]?.purpose_remarks">
+      <strong>Remarks:</strong>
+      <p>{{ data.requisition.items[0].purpose_remarks }}</p>
+    </div>
+
+    <!-- Total Cost -->
+    <div class="total-cost">
+      <strong>Total Cost:</strong>
+      <span>{{ formatCurrency(calculateTotalCost()) }}</span>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onClose()">
+    <mat-icon>close</mat-icon>
+    Close
+  </button>
+  <button
+    mat-raised-button
+    color="accent"
+    (click)="onAcknowledge()"
+    matTooltip="Acknowledge the entire requisition"
+  >
+    <mat-icon>check_circle</mat-icon>
+    Acknowledge
+  </button>
+  <button
+    mat-raised-button
+    color="warn"
+    (click)="onReturnFullRequisition()"
+    matTooltip="Return the entire requisition"
+  >
+    <mat-icon>reply</mat-icon>
+    Return Requisition
+  </button>
+</mat-dialog-actions>

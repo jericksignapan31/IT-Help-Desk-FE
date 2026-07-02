@@ -1,0 +1,109 @@
+<div class="resubmit-dialog">
+  <h2 mat-dialog-title>Resubmit Requisition {{ data.requisition.rf_number }}</h2>
+
+  <mat-dialog-content>
+    <form [formGroup]="form">
+      <!-- IT Response Notes -->
+      <div class="section">
+        <h3>Your Response to Warehouse</h3>
+        <mat-form-field class="full-width">
+          <mat-label>IT Response Notes</mat-label>
+          <textarea
+            matInput
+            formControlName="it_response_notes"
+            rows="4"
+            placeholder="Explain what was adjusted and why..."
+          ></textarea>
+          <mat-hint>Minimum 10 characters required</mat-hint>
+          <mat-error *ngIf="form.get('it_response_notes')?.hasError('required')">
+            Response notes are required
+          </mat-error>
+          <mat-error *ngIf="form.get('it_response_notes')?.hasError('minlength')">
+            Minimum 10 characters required
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <!-- Edited Items -->
+      <div class="section items-section">
+        <h3>Items to Resubmit</h3>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Item Name</th>
+                <th>Quantity</th>
+                <th>Unit</th>
+                <th>Supplier</th>
+                <th>Unit Cost</th>
+                <th>Total</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody formArrayName="edited_items">
+              <tr *ngFor="let item of editedItems.controls; let i = index" [formGroupName]="i">
+                <td>
+                  <mat-form-field>
+                    <mat-label>Item Name</mat-label>
+                    <input matInput formControlName="item_name" />
+                  </mat-form-field>
+                </td>
+                <td>
+                  <mat-form-field>
+                    <mat-label>Qty</mat-label>
+                    <input matInput type="number" formControlName="quantity" min="1" />
+                  </mat-form-field>
+                </td>
+                <td>
+                  <mat-form-field>
+                    <mat-label>Unit</mat-label>
+                    <input matInput formControlName="unit" />
+                  </mat-form-field>
+                </td>
+                <td>
+                  <mat-form-field>
+                    <mat-label>Supplier</mat-label>
+                    <input matInput formControlName="supplier" />
+                  </mat-form-field>
+                </td>
+                <td>
+                  <mat-form-field>
+                    <mat-label>Unit Cost</mat-label>
+                    <input matInput type="number" formControlName="unit_cost" min="0" />
+                  </mat-form-field>
+                </td>
+                <td class="total">₱{{ calculateTotal(i) }}</td>
+                <td>
+                  <button
+                    type="button"
+                    mat-icon-button
+                    color="warn"
+                    (click)="removeItem(i)"
+                    matTooltip="Remove item"
+                  >
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="onCancel()">Cancel</button>
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="submit()"
+      [disabled]="form.invalid || loading"
+    >
+      <mat-icon *ngIf="loading" class="spinner">hourglass_top</mat-icon>
+      {{ loading ? 'Resubmitting...' : 'Resubmit' }}
+    </button>
+  </mat-dialog-actions>
+</div>

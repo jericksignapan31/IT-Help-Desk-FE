@@ -17,6 +17,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { AcknowledgeRequisitionModalComponent } from '../acknowledge-requisition-modal/acknowledge-requisition-modal.component';
 import { ReturnRequisitionDialogComponent } from '../return-requisition-dialog/return-requisition-dialog.component';
+import { RequisitionDetailDialogComponent } from '../requisition-detail-dialog/requisition-detail-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 
 @Component({
@@ -183,70 +184,24 @@ export class PendingRequisitionsComponent implements OnInit, OnDestroy {
   }
 
   viewDetails(requisition: PartRequisition): void {
-    const html = `
-      <div style="text-align: left; font-size: 0.9rem;">
-        <p><strong>Requested By:</strong> ${
-          requisition.requester
-            ? `${requisition.requester.first_name} ${requisition.requester.last_name}`
-            : 'Unknown'
-        }</p>
-        <p><strong>Department:</strong> ${this.getDepartmentName(requisition.department) || 'N/A'}</p>
-        <p><strong>Created:</strong> ${this.formatDate(requisition.created_at)}</p>
-        <p><strong>Deadline:</strong> ${
-          requisition.deadline ? this.formatDate(requisition.deadline) : 'N/A'
-        }</p>
-        <hr/>
-        <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
-          <thead style="background: #f5f5f5;">
-            <tr>
-              <th style="border: 1px solid #ddd; padding: 4px;">Item</th>
-              <th style="border: 1px solid #ddd; padding: 4px;">Qty</th>
-              <th style="border: 1px solid #ddd; padding: 4px;">Unit</th>
-              <th style="border: 1px solid #ddd; padding: 4px;">Cost</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${requisition.items
-              ?.map(
-                (item) => `
-              <tr>
-                <td style="border: 1px solid #ddd; padding: 4px;">${item.item_name}</td>
-                <td style="border: 1px solid #ddd; padding: 4px;">${item.quantity}</td>
-                <td style="border: 1px solid #ddd; padding: 4px;">${item.unit}</td>
-                <td style="border: 1px solid #ddd; padding: 4px;">₱${
-                  typeof item.total_cost === 'string'
-                    ? parseFloat(item.total_cost).toFixed(2)
-                    : (item.total_cost || 0).toFixed(2)
-                }</td>
-              </tr>
-            `
-              )
-              .join('')}
-          </tbody>
-        </table>
-        <p style="margin-top: 12px;"><strong>Remarks:</strong> ${
-          requisition.items?.[0]?.purpose_remarks || 'N/A'
-        }</p>
-      </div>
-    `;
+    const dialogRef = this.dialog.open(RequisitionDetailDialogComponent, {
+      width: '800px',
+      maxHeight: '90vh',
+      data: {
+        requisition,
+        departments: this.departments,
+      },
+    });
 
-    Swal.fire({
-      title: `Requisition ${requisition.rf_number}`,
-      html,
-      icon: 'info',
-      width: '600px',
-      showDenyButton: true,
-      showCancelButton: true,
-      confirmButtonText: 'Acknowledge',
-      denyButtonText: 'Return',
-      cancelButtonText: 'Close',
-      confirmButtonColor: '#3085d6',
-      denyButtonColor: '#f87171',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.acknowledgeRequisition(requisition);
-      } else if (result.isDenied) {
-        this.openReturnDialog(requisition);
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        if (result.action === 'acknowledge') {
+          this.acknowledgeRequisition(requisition);
+        } else if (result.action === 'returnFull') {
+          this.openReturnDialog(requisition);
+        } else if (result.action === 'returnItem') {
+          this.openReturnItemDialog(result.item, result.rfNumber);
+        }
       }
     });
   }
@@ -255,6 +210,20 @@ export class PendingRequisitionsComponent implements OnInit, OnDestroy {
     const dialogRef = this.dialog.open(ReturnRequisitionDialogComponent, {
       width: '500px',
       data: { rfNumber: requisition.rf_number },
+      disableClose: false,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.loadPendingRequisitions();
+      }
+    });
+  }
+
+  openReturnItemDialog(item: any, rfNumber: string): void {
+    const dialogRef = this.dialog.open(ReturnRequisitionDialogComponent, {
+      width: '500px',
+      data: { rfNumber, item },
       disableClose: false,
     });
 

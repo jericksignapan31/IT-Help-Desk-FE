@@ -26,7 +26,6 @@ export interface PartRequisition {
   rf_number: string;
   requested_by: string;
   requested_by_type: 'it' | 'warehouse';
-  department?: string;
   deadline?: string;
   status: 'pending' | 'pending_admin_review' | 'approved' | 'rejected' | 'returned_by_warehouse';
   acknowledged_by?: string;
@@ -35,7 +34,9 @@ export interface PartRequisition {
   approved_by?: string;
   approved_at?: string;
   rejection_reason?: string;
+  warehouse_notes?: string; // Notes from warehouse when requisition was returned
   items: RequisitionItem[];
+  returns?: RequisitionReturn[];
   requester?: {
     employee_id: string;
     first_name: string;
@@ -45,6 +46,14 @@ export interface PartRequisition {
     employee_id: string;
     first_name: string;
     last_name: string;
+  };
+  department?: string | {
+    department_id: string;
+    department_name: string;
+    description: string;
+    is_active: boolean;
+    created_at: string;
+    updated_at: string;
   };
   created_at: string;
   updated_at: string;

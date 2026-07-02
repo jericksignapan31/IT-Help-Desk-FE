@@ -1,122 +1,87 @@
 <mat-card class="pending-returns-card">
   <mat-card-header>
-    <mat-card-title>Pending Returns from Warehouse</mat-card-title>
-    <mat-card-subtitle>Requisitions awaiting your response and resubmission</mat-card-subtitle>
+    <mat-card-title>Returns List</mat-card-title>
+    <mat-card-subtitle>View all returned requisitions</mat-card-subtitle>
   </mat-card-header>
 
   <mat-card-content>
     <!-- Loading State -->
     <div *ngIf="loading" class="loading-container">
       <mat-spinner diameter="40"></mat-spinner>
-      <p>Loading pending returns...</p>
+      <p>Loading returns...</p>
     </div>
 
     <!-- No Returns -->
     <div *ngIf="!loading && requisitions.length === 0" class="no-returns">
       <mat-icon>check_circle</mat-icon>
-      <p>No pending returns. All your requisitions are on track!</p>
+      <p>No returns at this time.</p>
     </div>
 
-    <!-- Requisitions List -->
-    <div *ngIf="!loading && requisitions.length > 0" class="requisitions-list">
-      <mat-expansion-panel
-        *ngFor="let req of requisitions"
-        [expanded]="expandedRfNumber === req.rf_number"
-        (opened)="toggleExpand(req.rf_number)"
-        (closed)="toggleExpand('')"
-        class="requisition-panel"
-      >
-        <mat-expansion-panel-header>
-          <mat-panel-title class="panel-title">
-            <strong>{{ req.rf_number }}</strong>
-            <mat-chip>{{ getItemsSummary(req) }}</mat-chip>
-          </mat-panel-title>
-          <mat-panel-description>
-            <span *ngIf="req.department">{{ req.department }}</span>
-            <span class="date">Returned: {{ formatDate(req.updated_at) }}</span>
-          </mat-panel-description>
-        </mat-expansion-panel-header>
+    <!-- Returns Table -->
+    <div *ngIf="!loading && requisitions.length > 0" class="table-container">
+      <table mat-table [dataSource]="requisitions" class="returns-table">
+        <!-- RF Number Column -->
+        <ng-container matColumnDef="rf_number">
+          <th mat-header-cell *matHeaderCellDef>RF Number</th>
+          <td mat-cell *matCellDef="let element">
+            <strong>{{ element.rf_number }}</strong>
+          </td>
+        </ng-container>
 
-        <div class="panel-content">
-          <!-- Requisition Details -->
-          <div class="details-section">
-            <h4>Requisition Details</h4>
-            <div class="details-grid">
-              <div class="detail-item">
-                <strong>RF Number:</strong>
-                <span>{{ req.rf_number }}</span>
-              </div>
-              <div class="detail-item">
-                <strong>Department:</strong>
-                <span>{{ req.department || 'N/A' }}</span>
-              </div>
-              <div class="detail-item">
-                <strong>Status:</strong>
-                <mat-chip color="warn" selected>{{ req.status | uppercase }}</mat-chip>
-              </div>
-              <div class="detail-item">
-                <strong>Created:</strong>
-                <span>{{ formatDate(req.created_at) }}</span>
-              </div>
-            </div>
-          </div>
+        <!-- Department Column -->
+        <ng-container matColumnDef="department">
+          <th mat-header-cell *matHeaderCellDef>Department</th>
+          <td mat-cell *matCellDef="let element">{{ element.department || 'N/A' }}</td>
+        </ng-container>
 
-          <!-- Items Section -->
-          <div class="items-section">
-            <h4>Items</h4>
-            <table>
-              <thead>
-                <tr>
-                  <th>Item Name</th>
-                  <th>Qty</th>
-                  <th>Unit</th>
-                  <th>Supplier</th>
-                  <th>Unit Cost</th>
-                  <th>Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let item of req.items">
-                  <td>{{ item.item_name }}</td>
-                  <td>{{ item.quantity }}</td>
-                  <td>{{ item.unit }}</td>
-                  <td>{{ item.supplier || '-' }}</td>
-                  <td>₱{{ item.unit_cost || 0 }}</td>
-                  <td>₱{{ calculateItemTotal(item.quantity, item.unit_cost) }}</td>
-                </tr>
-              </tbody>
-            </table>
-            <div class="remarks-section" *ngIf="req.items && req.items[0]?.purpose_remarks">
-              <strong>Remarks:</strong>
-              <p>{{ req.items[0].purpose_remarks }}</p>
-            </div>
-          </div>
+        <!-- Items Count Column -->
+        <ng-container matColumnDef="items_count">
+          <th mat-header-cell *matHeaderCellDef>Items</th>
+          <td mat-cell *matCellDef="let element">
+            <mat-chip>{{ getItemsSummary(element) }}</mat-chip>
+          </td>
+        </ng-container>
 
-          <!-- Comment Thread -->
-          <app-comment-thread [rfNumber]="req.rf_number"></app-comment-thread>
+        <!-- Return Date Column -->
+        <ng-container matColumnDef="returned_date">
+          <th mat-header-cell *matHeaderCellDef>Returned Date</th>
+          <td mat-cell *matCellDef="let element">{{ formatDate(element.updated_at) }}</td>
+        </ng-container>
 
-          <!-- Action Buttons -->
-          <div class="actions">
+        <!-- Status Column -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let element">
+            <mat-chip color="warn" selected>{{ element.status | uppercase }}</mat-chip>
+          </td>
+        </ng-container>
+
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let element">
             <button
-              mat-raised-button
+              mat-icon-button
+              matTooltip="View details"
+              (click)="viewDetails(element)"
+            >
+              <mat-icon>info</mat-icon>
+            </button>
+            <button
+              *ngIf="isIT"
+              mat-icon-button
+              matTooltip="Resubmit requisition"
+              (click)="resubmitRequisition(element)"
               color="primary"
-              (click)="resubmitRequisition(req.rf_number)"
-              matTooltip="Resubmit this requisition after making changes"
             >
-              <mat-icon>send</mat-icon>
-              Resubmit Requisition
+              <mat-icon>refresh</mat-icon>
             </button>
-            <button
-              mat-button
-              (click)="viewHistory(req.rf_number)"
-              matTooltip="View complete return history"
-            >
-              <mat-icon>history</mat-icon>
-              View History
-            </button>
-          </div>
-        </div>
-      </mat-expansion-panel>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
     </div>
   </mat-card-content>
 </mat-card>

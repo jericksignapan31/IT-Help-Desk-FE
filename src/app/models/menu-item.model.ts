@@ -55,7 +55,7 @@ export const MENU_ITEMS: MenuItem[] = [
   {
     label: 'Request Item',
     icon: 'request_page',
-    roles: [UserRole.IT, UserRole.WAREHOUSE, UserRole.ADMIN],
+    roles: [UserRole.IT, UserRole.ADMIN, UserRole.WAREHOUSE],
     children: [
       {
         label: 'Create/View',
@@ -84,6 +84,12 @@ export const MENU_ITEMS: MenuItem[] = [
         label: 'Inventory',
         icon: 'inventory_2',
         route: '/requisitions/inventory',
+      },
+      {
+        label: 'Return',
+        icon: 'reply',
+        route: '/requisitions/pending-returns',
+        roles: [UserRole.IT, UserRole.WAREHOUSE],
       },
     ],
   },

@@ -440,6 +440,15 @@ export const routes: Routes = [
                 (m) => m.InventoryDashboardComponent,
               ),
           },
+          {
+            path: 'pending-returns',
+            canActivate: [roleGuard],
+            data: { roles: [UserRole.IT, UserRole.WAREHOUSE] },
+            loadComponent: () =>
+              import('./requisitions/pending-returns-list/pending-returns-list.component').then(
+                (m) => m.PendingReturnsListComponent,
+              ),
+          },
         ],
       },
       // Warehouse Routes

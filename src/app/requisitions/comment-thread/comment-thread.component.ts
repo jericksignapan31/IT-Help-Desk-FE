@@ -6,10 +6,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
-import { MatListModule } from '@angular/material/list';
+import { MatTableModule } from '@angular/material/table';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatAvatarModule } from '@angular/material/avatar';
 import { WarehouseService } from '../../services/warehouse.service';
 import { AddCommentDto, RequisitionComment } from '../../models/requisition.model';
 import { AuthService } from '../../services/auth.service';
@@ -29,7 +28,7 @@ import { takeUntil } from 'rxjs/operators';
     MatFormFieldModule,
     MatInputModule,
     MatIconModule,
-    MatListModule,
+    MatTableModule,
     MatDividerModule,
     MatProgressSpinnerModule,
   ],
@@ -45,6 +44,7 @@ export class CommentThreadComponent implements OnInit, OnDestroy {
   loading = false;
   loadingComments = false;
   currentUserRole: 'it' | 'warehouse' | null = null;
+  displayedColumns: string[] = ['role', 'timestamp', 'message'];
   private destroy$ = new Subject<void>();
 
   constructor(

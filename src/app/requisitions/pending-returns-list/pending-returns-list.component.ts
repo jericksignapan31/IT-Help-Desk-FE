@@ -7,11 +7,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatDialogModule, MatDialog } from '@angular/material/dialog';
-import { MatExpansionModule } from '@angular/material/expansion';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { WarehouseService } from '../../services/warehouse.service';
+import { AuthService } from '../../services/auth.service';
 import { PartRequisition } from '../../models/requisition.model';
-import { CommentThreadComponent } from '../comment-thread/comment-thread.component';
+import { UserRole } from '../../models/user.model';
+import { ResubmitRequisitionDialogComponent } from '../resubmit-requisition-dialog/resubmit-requisition-dialog.component';
 import Swal from 'sweetalert2';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -29,8 +30,6 @@ import { takeUntil } from 'rxjs/operators';
     MatChipsModule,
     MatTooltipModule,
     MatDialogModule,
-    MatExpansionModule,
-    CommentThreadComponent,
   ],
   templateUrl: './pending-returns-list.component.html',
   styleUrls: ['./pending-returns-list.component.scss'],
@@ -38,15 +37,18 @@ import { takeUntil } from 'rxjs/operators';
 export class PendingReturnsListComponent implements OnInit, OnDestroy {
   requisitions: PartRequisition[] = [];
   loading = false;
-  expandedRfNumber: string | null = null;
+  isIT = false;
   private destroy$ = new Subject<void>();
 
-  displayedColumns: string[] = ['rf_number', 'department', 'created_at', 'items_count', 'actions'];
+  displayedColumns: string[] = ['rf_number', 'department', 'items_count', 'returned_date', 'status', 'actions'];
 
   constructor(
     private warehouseService: WarehouseService,
+    private authService: AuthService,
     private dialog: MatDialog
-  ) {}
+  ) {
+    this.isIT = this.authService.currentUserValue?.role === UserRole.IT;
+  }
 
   ngOnInit(): void {
     this.loadPendingReturns();
@@ -79,82 +81,67 @@ export class PendingReturnsListComponent implements OnInit, OnDestroy {
       });
   }
 
-  toggleExpand(rfNumber: string): void {
-    this.expandedRfNumber = this.expandedRfNumber === rfNumber ? null : rfNumber;
-  }
+  viewDetails(requisition: PartRequisition): void {
+    let itemsHtml = '<table style="width: 100%; border-collapse: collapse; text-align: left;"><thead><tr><th style="border: 1px solid #ddd; padding: 8px;">Item</th><th style="border: 1px solid #ddd; padding: 8px;">Qty</th><th style="border: 1px solid #ddd; padding: 8px;">Unit</th><th style="border: 1px solid #ddd; padding: 8px;">Supplier</th><th style="border: 1px solid #ddd; padding: 8px;">Cost</th></tr></thead><tbody>';
+    
+    requisition.items?.forEach((item) => {
+      itemsHtml += `
+        <tr>
+          <td style="border: 1px solid #ddd; padding: 8px;">${item.item_name}</td>
+          <td style="border: 1px solid #ddd; padding: 8px;">${item.quantity}</td>
+          <td style="border: 1px solid #ddd; padding: 8px;">${item.unit}</td>
+          <td style="border: 1px solid #ddd; padding: 8px;">${item.supplier || '-'}</td>
+          <td style="border: 1px solid #ddd; padding: 8px;">₱${this.calculateItemTotal(item.quantity, item.unit_cost)}</td>
+        </tr>
+      `;
+    });
+    
+    itemsHtml += '</tbody></table>';
 
-  resubmitRequisition(rfNumber: string): void {
+    // Get warehouse notes from returns array
+    const warehouseNotes = requisition.returns?.[0]?.warehouse_notes;
+    const departmentName = typeof requisition.department === 'object' ? requisition.department?.department_name : requisition.department;
+
+    let warehouseNotesSection = '';
+    if (this.isIT && warehouseNotes) {
+      warehouseNotesSection = `
+        <div style="background-color: #f0f7ff; padding: 1rem; border-radius: 4px; border-left: 3px solid #2196F3; margin: 1rem 0;">
+          <strong style="color: #1976d2;">Warehouse Notes:</strong>
+          <p style="margin: 0.5rem 0 0 0; color: #555;">${warehouseNotes}</p>
+        </div>
+      `;
+    }
+
     Swal.fire({
-      title: 'Confirm Resubmit',
-      text: 'Are you sure you want to resubmit this requisition? The warehouse will need to acknowledge it again.',
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, Resubmit',
-      cancelButtonText: 'Cancel',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.warehouseService.resubmitRequisition(rfNumber, {}).subscribe({
-          next: () => {
-            Swal.fire({
-              icon: 'success',
-              title: 'Resubmitted',
-              text: `Requisition ${rfNumber} has been resubmitted`,
-              timer: 2000,
-              showConfirmButton: false,
-            });
-            this.loadPendingReturns();
-          },
-          error: (err) => {
-            Swal.fire({
-              icon: 'error',
-              title: 'Error',
-              text: err.error?.message || 'Failed to resubmit requisition',
-            });
-          },
-        });
-      }
+      title: `Requisition ${requisition.rf_number}`,
+      html: `
+        <div style="text-align: left; margin: 20px 0;">
+          <p><strong>Department:</strong> ${departmentName || 'N/A'}</p>
+          <p><strong>Status:</strong> ${requisition.status}</p>
+          <p><strong>Returned:</strong> ${this.formatDate(requisition.updated_at)}</p>
+          <hr/>
+          <h4 style="margin: 15px 0 10px 0;">Items</h4>
+          ${itemsHtml}
+          ${warehouseNotesSection}
+        </div>
+      `,
+      icon: 'info',
+      width: '700px',
+      confirmButtonText: 'Close',
     });
   }
 
-  viewHistory(rfNumber: string): void {
-    this.warehouseService.getRequisitionHistory(rfNumber).subscribe({
-      next: (history) => {
-        let historyHtml = '<div style="text-align: left; max-height: 400px; overflow-y: auto;">';
-        
-        history.forEach((item, index) => {
-          historyHtml += `
-            <div style="margin-bottom: 1.5rem; padding: 1rem; border-left: 3px solid #2196F3;">
-              <strong>Return Cycle ${item.return_cycle}</strong>
-              <p><strong>Warehouse Notes:</strong> ${item.warehouse_notes}</p>
-              <p><strong>Returned:</strong> ${new Date(item.created_at).toLocaleString()}</p>
-              ${item.resubmitted_at ? `<p><strong>Resubmitted:</strong> ${new Date(item.resubmitted_at).toLocaleString()}</p>` : ''}
-              ${item.comments && item.comments.length > 0 ? `
-                <strong>Comments (${item.comments.length}):</strong>
-                <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
-                  ${item.comments.map(c => `<li>${c.role.toUpperCase()}: ${c.message}</li>`).join('')}
-                </ul>
-              ` : ''}
-            </div>
-          `;
-        });
-        
-        historyHtml += '</div>';
+  resubmitRequisition(requisition: PartRequisition): void {
+    const dialogRef = this.dialog.open(ResubmitRequisitionDialogComponent, {
+      width: '800px',
+      data: { requisition },
+      disableClose: false,
+    });
 
-        Swal.fire({
-          title: `Requisition History - ${rfNumber}`,
-          html: historyHtml,
-          icon: 'info',
-          width: '600px',
-          confirmButtonText: 'Close',
-        });
-      },
-      error: (err) => {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'Failed to load history',
-        });
-      },
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result?.success) {
+        this.loadPendingReturns();
+      }
     });
   }
 

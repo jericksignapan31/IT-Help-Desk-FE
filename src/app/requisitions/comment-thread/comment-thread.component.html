@@ -11,24 +11,38 @@
       <p>Loading comments...</p>
     </div>
 
-    <!-- Comments List -->
-    <mat-list *ngIf="!loadingComments && comments.length > 0" class="comments-list">
-      <mat-list-item *ngFor="let comment of comments; let i = index" class="comment-item">
-        <div class="comment-content">
-          <div class="comment-header">
+    <!-- Comments Table -->
+    <div *ngIf="!loadingComments && comments.length > 0" class="comments-table-container">
+      <table mat-table [dataSource]="comments" class="comments-table">
+        <!-- Role Column -->
+        <ng-container matColumnDef="role">
+          <th mat-header-cell *matHeaderCellDef>Role</th>
+          <td mat-cell *matCellDef="let comment">
             <span
               class="role-badge"
               [style.background-color]="getRoleColor(comment.role)"
             >
               {{ getRoleLabel(comment.role) }}
             </span>
-            <span class="timestamp">{{ formatDate(comment.created_at) }}</span>
-          </div>
-          <p class="comment-message">{{ comment.message }}</p>
-        </div>
-        <mat-divider *ngIf="i < comments.length - 1" [vertical]="false"></mat-divider>
-      </mat-list-item>
-    </mat-list>
+          </td>
+        </ng-container>
+
+        <!-- Timestamp Column -->
+        <ng-container matColumnDef="timestamp">
+          <th mat-header-cell *matHeaderCellDef>Date/Time</th>
+          <td mat-cell *matCellDef="let comment">{{ formatDate(comment.created_at) }}</td>
+        </ng-container>
+
+        <!-- Message Column -->
+        <ng-container matColumnDef="message">
+          <th mat-header-cell *matHeaderCellDef>Comment</th>
+          <td mat-cell *matCellDef="let comment">{{ comment.message }}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+    </div>
 
     <!-- No Comments -->
     <div *ngIf="!loadingComments && comments.length === 0" class="no-comments">

@@ -1,13 +1,48 @@
-<h2 mat-dialog-title>Return Requisition {{ data.rfNumber }}</h2>
+<h2 mat-dialog-title>
+  <span *ngIf="isItemReturn">Return Item</span>
+  <span *ngIf="!isItemReturn">Return Requisition {{ data.rfNumber }}</span>
+</h2>
 
 <mat-dialog-content>
+  <!-- Item Information Card (when returning specific item) -->
+  <mat-card *ngIf="isItemReturn && item" class="item-info-card">
+    <mat-card-header>
+      <mat-card-title>Item Details</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="item-details">
+        <p>
+          <strong>Item Name:</strong>
+          <span>{{ item.item_name }}</span>
+        </p>
+        <p>
+          <strong>Quantity:</strong>
+          <span>{{ item.quantity }} {{ item.unit }}</span>
+        </p>
+        <p>
+          <strong>Unit Cost:</strong>
+          <span>₱{{ item.unit_cost || 0 }}</span>
+        </p>
+        <p *ngIf="item.supplier">
+          <strong>Supplier:</strong>
+          <span>{{ item.supplier }}</span>
+        </p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-divider *ngIf="isItemReturn" class="divider"></mat-divider>
+
   <form [formGroup]="form">
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Return Reason *</mat-label>
+      <mat-label>
+        <span *ngIf="isItemReturn">Return Reason for Item *</span>
+        <span *ngIf="!isItemReturn">Return Reason *</span>
+      </mat-label>
       <textarea
         matInput
         formControlName="warehouse_notes"
-        placeholder="Explain why this requisition is being returned..."
+        placeholder="Explain why this is being returned..."
         rows="5"
       ></textarea>
       <mat-hint align="end">Minimum 10 characters</mat-hint>
@@ -34,6 +69,7 @@
   >
     <mat-icon *ngIf="!loading">reply</mat-icon>
     <mat-icon *ngIf="loading">schedule</mat-icon>
-    {{ loading ? 'Returning...' : 'Return Requisition' }}
+    <span *ngIf="isItemReturn">{{ loading ? 'Returning Item...' : 'Return Item' }}</span>
+    <span *ngIf="!isItemReturn">{{ loading ? 'Returning...' : 'Return Requisition' }}</span>
   </button>
 </mat-dialog-actions>

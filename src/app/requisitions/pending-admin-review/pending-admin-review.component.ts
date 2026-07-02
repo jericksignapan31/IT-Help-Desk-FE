@@ -15,6 +15,7 @@ import { DepartmentService } from '../../services/department.service';
 import { PartRequisition } from '../../models/requisition.model';
 import { Department } from '../../models/department.model';
 import { ApproveRequisitionModalComponent } from '../approve-requisition-modal/approve-requisition-modal.component';
+import { RequisitionDetailDialogComponent } from '../requisition-detail-dialog/requisition-detail-dialog.component';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
@@ -159,41 +160,20 @@ export class PendingAdminReviewComponent implements OnInit, OnDestroy {
   }
 
   viewDetails(requisition: PartRequisition): void {
-    let itemsHtml = '<table style="width: 100%; text-align: left;"><tr><th>Item</th><th>Qty</th><th>Unit</th><th>Supplier</th><th>Unit Cost</th><th>Total</th></tr>';
-    requisition.items?.forEach((item) => {
-      const unitCost = typeof item.unit_cost === 'string' ? parseFloat(item.unit_cost) : item.unit_cost;
-      const totalCost = typeof item.total_cost === 'string' ? parseFloat(item.total_cost) : item.total_cost;
-      itemsHtml += `<tr>
-        <td>${item.item_name}</td>
-        <td>${item.quantity}</td>
-        <td>${item.unit}</td>
-        <td>${item.supplier}</td>
-        <td>${this.formatCurrency(unitCost || 0)}</td>
-        <td>${this.formatCurrency(totalCost || 0)}</td>
-      </tr>`;
+    const dialogRef = this.dialog.open(RequisitionDetailDialogComponent, {
+      width: '800px',
+      maxHeight: '90vh',
+      data: {
+        requisition,
+        departments: this.departments,
+      },
     });
-    itemsHtml += '</table>';
 
-    Swal.fire({
-      title: `Requisition ${requisition.rf_number}`,
-      html: `
-        <div style="text-align: left; margin: 20px 0;">
-          <p><strong>Requester:</strong> ${this.getRequesterName(requisition)}</p>
-          <p><strong>Department:</strong> ${this.getDepartmentName(requisition.department)}</p>
-          <p><strong>Warehouse Acknowledger:</strong> ${this.getAcknowledgerName(requisition)}</p>
-          <p><strong>Acknowledged Notes:</strong> ${requisition.acknowledged_notes || 'N/A'}</p>
-          <p><strong>Items Count:</strong> ${this.getItemsCount(requisition)}</p>
-          <p><strong>Total Cost:</strong> ${this.formatCurrency(this.calculateTotalCost(requisition))}</p>
-          <p><strong>Created:</strong> ${this.formatDate(requisition.created_at)}</p>
-          <p><strong>Acknowledged:</strong> ${this.formatDate(requisition.acknowledged_at || '')}</p>
-          <p><strong>Deadline:</strong> ${requisition.deadline ? this.formatDate(requisition.deadline) : 'N/A'}</p>
-          <hr>
-          <h4>Items Details</h4>
-          ${itemsHtml}
-        </div>
-      `,
-      icon: 'info',
-      confirmButtonText: 'Close',
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result && result.action) {
+        // Handle any actions if needed
+        console.log('Dialog action:', result.action);
+      }
     });
   }
 
