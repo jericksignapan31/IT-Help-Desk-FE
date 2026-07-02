@@ -71,6 +71,7 @@
             mat-icon-button
             [matMenuTriggerFor]="itemMenu"
             matTooltip="Item actions"
+            *ngIf="isWarehouse"
           >
             <mat-icon>more_vert</mat-icon>
           </button>
@@ -124,8 +125,19 @@
     color="warn"
     (click)="onReturnFullRequisition()"
     matTooltip="Return the entire requisition"
+    *ngIf="isWarehouse"
   >
     <mat-icon>reply</mat-icon>
     Return Requisition
+  </button>
+  <button
+    mat-raised-button
+    color="warn"
+    (click)="onDecline()"
+    matTooltip="Decline this requisition"
+    *ngIf="isAdmin"
+  >
+    <mat-icon>cancel</mat-icon>
+    Decline
   </button>
 </mat-dialog-actions>

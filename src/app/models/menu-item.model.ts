@@ -81,6 +81,12 @@ export const MENU_ITEMS: MenuItem[] = [
         route: '/requisitions/approved',
       },
       {
+        label: 'Rejected',
+        icon: 'cancel',
+        route: '/requisitions/rejected',
+        roles: [UserRole.IT, UserRole.ADMIN, UserRole.WAREHOUSE],
+      },
+      {
         label: 'Inventory',
         icon: 'inventory_2',
         route: '/requisitions/inventory',

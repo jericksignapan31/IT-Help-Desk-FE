@@ -9,6 +9,10 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatChipsModule } from '@angular/material/chips';
 import { PartRequisition, RequisitionItem } from '../../models/requisition.model';
 import { Department } from '../../models/department.model';
+import { AuthService } from '../../services/auth.service';
+import { WarehouseService } from '../../services/warehouse.service';
+import { UserRole } from '../../models/user.model';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-requisition-detail-dialog',
@@ -28,15 +32,22 @@ import { Department } from '../../models/department.model';
 })
 export class RequisitionDetailDialogComponent {
   displayedColumns: string[] = ['item_name', 'quantity', 'unit', 'unit_cost', 'total_cost', 'actions'];
+  isWarehouse = false;
+  isAdmin = false;
 
   constructor(
     public dialogRef: MatDialogRef<RequisitionDetailDialogComponent>,
+    private authService: AuthService,
+    private warehouseService: WarehouseService,
     @Inject(MAT_DIALOG_DATA)
     public data: {
       requisition: PartRequisition;
       departments: Department[];
     }
-  ) {}
+  ) {
+    this.isWarehouse = this.authService.currentUserValue?.role === UserRole.WAREHOUSE;
+    this.isAdmin = this.authService.currentUserValue?.role === UserRole.ADMIN;
+  }
 
   getDepartmentName(department: string | { department_id: string; department_name: string; description: string; is_active: boolean; created_at: string; updated_at: string; } | undefined): string {
     if (!department) return 'N/A';
@@ -102,6 +113,45 @@ export class RequisitionDetailDialogComponent {
     this.dialogRef.close({
       action: 'acknowledge',
       rfNumber: this.data.requisition.rf_number,
+    });
+  }
+
+  onDecline(): void {
+    Swal.fire({
+      title: 'Decline Requisition?',
+      text: `Are you sure you want to decline requisition ${this.data.requisition.rf_number}?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d32f2f',
+      cancelButtonColor: '#757575',
+      confirmButtonText: 'Yes, Decline',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.warehouseService
+          .declineRequisition(this.data.requisition.rf_number)
+          .subscribe({
+            next: (response) => {
+              Swal.fire({
+                icon: 'success',
+                title: 'Declined',
+                text: 'Requisition declined successfully',
+              }).then(() => {
+                this.dialogRef.close({
+                  action: 'decline',
+                  rfNumber: this.data.requisition.rf_number,
+                });
+              });
+            },
+            error: (err) => {
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: err.error?.message || 'Failed to decline requisition',
+              });
+            },
+          });
+      }
     });
   }
 

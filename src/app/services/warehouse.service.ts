@@ -180,6 +180,11 @@ export class WarehouseService {
     return this.http.get<PartRequisition[]>(`${this.API_URL}/requisitions/approved`);
   }
 
+  // Get all rejected requisitions
+  getRejectedRequisitions(): Observable<PartRequisition[]> {
+    return this.http.get<PartRequisition[]>(`${this.API_URL}/requisitions/rejected`);
+  }
+
   // Get requisition inventory (flat list of all items)
   getRequisitionInventory(): Observable<RequisitionInventoryItem[]> {
     return this.http.get<RequisitionInventoryItem[]>(`${this.API_URL}/requisitions/inventory`);
@@ -233,6 +238,14 @@ export class WarehouseService {
   getRequisitionHistory(rfNumber: string): Observable<RequisitionHistoryItem[]> {
     return this.http.get<RequisitionHistoryItem[]>(
       `${this.API_URL}/requisitions/${rfNumber}/history`
+    );
+  }
+
+  // ADMIN: Decline requisition
+  declineRequisition(rfNumber: string): Observable<any> {
+    return this.http.patch<any>(
+      `${this.API_URL}/requisitions/${rfNumber}/decline`,
+      {}
     );
   }
 }

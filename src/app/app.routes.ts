@@ -434,6 +434,13 @@ export const routes: Routes = [
               ),
           },
           {
+            path: 'rejected',
+            loadComponent: () =>
+              import('./requisitions/rejected-requisitions/rejected-requisitions.component').then(
+                (m) => m.RejectedRequisitionsComponent,
+              ),
+          },
+          {
             path: 'inventory',
             loadComponent: () =>
               import('./requisitions/inventory-dashboard/inventory-dashboard.component').then(
