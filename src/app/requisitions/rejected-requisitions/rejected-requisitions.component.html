@@ -57,11 +57,11 @@
             </td>
           </ng-container>
 
-          <!-- Rejection Reason Column -->
+          <!-- Rejection/Decline Reason Column -->
           <ng-container matColumnDef="rejection_reason">
-            <th mat-header-cell *matHeaderCellDef>Rejection Reason</th>
+            <th mat-header-cell *matHeaderCellDef>Reason</th>
             <td mat-cell *matCellDef="let element">
-              {{ element.rejection_reason || 'No reason provided' }}
+              {{ element.decline_reason || element.rejection_reason || 'No reason provided' }}
             </td>
           </ng-container>
 

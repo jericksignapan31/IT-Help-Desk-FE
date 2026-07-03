@@ -12,7 +12,6 @@ import { Department } from '../../models/department.model';
 import { AuthService } from '../../services/auth.service';
 import { WarehouseService } from '../../services/warehouse.service';
 import { UserRole } from '../../models/user.model';
-import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-requisition-detail-dialog',
@@ -109,51 +108,7 @@ export class RequisitionDetailDialogComponent {
     });
   }
 
-  onAcknowledge(): void {
-    this.dialogRef.close({
-      action: 'acknowledge',
-      rfNumber: this.data.requisition.rf_number,
-    });
-  }
 
-  onDecline(): void {
-    Swal.fire({
-      title: 'Decline Requisition?',
-      text: `Are you sure you want to decline requisition ${this.data.requisition.rf_number}?`,
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#d32f2f',
-      cancelButtonColor: '#757575',
-      confirmButtonText: 'Yes, Decline',
-      cancelButtonText: 'Cancel',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.warehouseService
-          .declineRequisition(this.data.requisition.rf_number)
-          .subscribe({
-            next: (response) => {
-              Swal.fire({
-                icon: 'success',
-                title: 'Declined',
-                text: 'Requisition declined successfully',
-              }).then(() => {
-                this.dialogRef.close({
-                  action: 'decline',
-                  rfNumber: this.data.requisition.rf_number,
-                });
-              });
-            },
-            error: (err) => {
-              Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: err.error?.message || 'Failed to decline requisition',
-              });
-            },
-          });
-      }
-    });
-  }
 
   onClose(): void {
     this.dialogRef.close();

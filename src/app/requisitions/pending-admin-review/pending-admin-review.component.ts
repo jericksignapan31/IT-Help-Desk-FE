@@ -209,11 +209,59 @@ export class PendingAdminReviewComponent implements OnInit, OnDestroy {
               this.loadPendingAdminReview();
             },
             error: (err) => {
-              console.error('Error processing requisition:', err);
               Swal.fire({
                 icon: 'error',
                 title: 'Error',
-                text: 'Failed to process requisition',
+                text: err.error?.message || 'Failed to update requisition',
+              });
+            },
+          });
+      }
+    });
+  }
+
+  declineRequisition(requisition: PartRequisition): void {
+    Swal.fire({
+      title: 'Decline Requisition?',
+      text: `Are you sure you want to decline requisition ${requisition.rf_number}?`,
+      icon: 'warning',
+      input: 'textarea',
+      inputLabel: 'Decline Reason',
+      inputPlaceholder: 'Enter the reason for declining this requisition...',
+      inputAttributes: {
+        'aria-label': 'Decline reason'
+      },
+      inputValidator: (value) => {
+        if (!value || value.trim().length === 0) {
+          return 'Please provide a decline reason';
+        }
+        return null;
+      },
+      showCancelButton: true,
+      confirmButtonColor: '#d32f2f',
+      cancelButtonColor: '#757575',
+      confirmButtonText: 'Yes, Decline',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed && result.value) {
+        this.warehouseService
+          .declineRequisition(requisition.rf_number, result.value)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe({
+            next: () => {
+              Swal.fire({
+                icon: 'success',
+                title: 'Declined',
+                text: 'Requisition declined successfully',
+              }).then(() => {
+                this.loadPendingAdminReview();
+              });
+            },
+            error: (err) => {
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: err.error?.message || 'Failed to decline requisition',
               });
             },
           });

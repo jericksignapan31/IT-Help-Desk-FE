@@ -25,6 +25,10 @@
       <strong>Deadline:</strong>
       <span>{{ data.requisition.deadline ? formatDate(data.requisition.deadline) : 'No deadline' }}</span>
     </div>
+    <div class="info-row" *ngIf="data.requisition.decline_reason">
+      <strong>Decline Reason:</strong>
+      <span style="color: #d32f2f;">{{ data.requisition.decline_reason }}</span>
+    </div>
   </div>
 
   <hr />
@@ -71,7 +75,7 @@
             mat-icon-button
             [matMenuTriggerFor]="itemMenu"
             matTooltip="Item actions"
-            *ngIf="isWarehouse"
+            *ngIf="isWarehouse && data.requisition.status !== 'declined_by_admin'"
           >
             <mat-icon>more_vert</mat-icon>
           </button>
@@ -113,31 +117,12 @@
   </button>
   <button
     mat-raised-button
-    color="accent"
-    (click)="onAcknowledge()"
-    matTooltip="Acknowledge the entire requisition"
-  >
-    <mat-icon>check_circle</mat-icon>
-    Acknowledge
-  </button>
-  <button
-    mat-raised-button
     color="warn"
     (click)="onReturnFullRequisition()"
     matTooltip="Return the entire requisition"
-    *ngIf="isWarehouse"
+    *ngIf="isWarehouse && data.requisition.status !== 'declined_by_admin'"
   >
     <mat-icon>reply</mat-icon>
     Return Requisition
-  </button>
-  <button
-    mat-raised-button
-    color="warn"
-    (click)="onDecline()"
-    matTooltip="Decline this requisition"
-    *ngIf="isAdmin"
-  >
-    <mat-icon>cancel</mat-icon>
-    Decline
   </button>
 </mat-dialog-actions>

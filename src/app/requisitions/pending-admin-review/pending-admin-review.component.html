@@ -82,11 +82,19 @@
               </button>
               <button 
                 mat-icon-button 
-                matTooltip="Approve/Reject" 
+                matTooltip="Approve" 
                 (click)="approveRequisition(element)"
                 color="primary"
               >
                 <mat-icon>check_circle</mat-icon>
+              </button>
+              <button 
+                mat-icon-button 
+                matTooltip="Decline" 
+                (click)="declineRequisition(element)"
+                color="warn"
+              >
+                <mat-icon>cancel</mat-icon>
               </button>
             </td>
           </ng-container>

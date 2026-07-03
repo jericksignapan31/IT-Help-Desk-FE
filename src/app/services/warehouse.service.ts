@@ -182,7 +182,7 @@ export class WarehouseService {
 
   // Get all rejected requisitions
   getRejectedRequisitions(): Observable<PartRequisition[]> {
-    return this.http.get<PartRequisition[]>(`${this.API_URL}/requisitions/rejected`);
+    return this.http.get<PartRequisition[]>(`${this.API_URL}/requisitions/declined`);
   }
 
   // Get requisition inventory (flat list of all items)
@@ -242,10 +242,10 @@ export class WarehouseService {
   }
 
   // ADMIN: Decline requisition
-  declineRequisition(rfNumber: string): Observable<any> {
+  declineRequisition(rfNumber: string, declineReason: string): Observable<any> {
     return this.http.patch<any>(
       `${this.API_URL}/requisitions/${rfNumber}/decline`,
-      {}
+      { decline_reason: declineReason }
     );
   }
 }
