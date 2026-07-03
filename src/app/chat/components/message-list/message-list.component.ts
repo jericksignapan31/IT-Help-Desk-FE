@@ -152,7 +152,7 @@ import { ChatApiService } from '../../services/chat-api.service';
       .message-list-container {
         display: flex;
         flex-direction: column;
-        height: 100%;
+        flex: 1;
         width: 100%;
         background: linear-gradient(180deg, #fff 0%, #f8f9fa 100%);
         overflow: hidden;

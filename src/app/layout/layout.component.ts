@@ -63,7 +63,7 @@ export class LayoutComponent {
   }
 
   get visibleMenuItems(): MenuItem[] {
-    return this.menuItems.filter((item) => this.canAccessMenuItem(item));
+    return this.menuItems.filter((item) => this.canAccessMenuItem(item) && item.label !== 'Chat');
   }
 
   getVisibleChildren(item: MenuItem): MenuItem[] {

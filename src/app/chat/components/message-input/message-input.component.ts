@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { TextFieldModule } from '@angular/cdk/text-field';
 import { Subject, interval } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { FileAttachment } from '../../models';
@@ -23,6 +24,7 @@ import { ChatApiService } from '../../services/chat-api.service';
     MatInputModule,
     MatFormFieldModule,
     MatTooltipModule,
+    TextFieldModule,
   ],
   template: `
     <div class="message-input-wrapper">
@@ -137,12 +139,14 @@ import { ChatApiService } from '../../services/chat-api.service';
       :host {
         display: block;
         width: 100%;
+        flex-shrink: 0;
       }
 
       .message-input-wrapper {
         display: flex;
         flex-direction: column;
         width: 100%;
+        flex-shrink: 0;
       }
 
       .file-preview-section {
@@ -247,6 +251,7 @@ import { ChatApiService } from '../../services/chat-api.service';
         box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.04);
         flex-shrink: 0;
         transition: all 0.2s ease;
+        min-height: 50px;
       }
 
       .message-input-container.drag-over {
@@ -269,6 +274,7 @@ import { ChatApiService } from '../../services/chat-api.service';
 
       .message-field {
         flex: 1;
+        min-width: 0;
       }
 
       .message-field ::ng-deep {
