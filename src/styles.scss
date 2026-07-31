@@ -1,6 +1,83 @@
 /* You can add global styles to this file, and also import other style files */
 @import "@angular/material/prebuilt-themes/indigo-pink.css";
 
+:root {
+  /* Text */
+  --color-text-primary: #333;
+  --color-text-secondary: #666;
+  --color-text-muted: #999;
+  --color-text-subtle: #555;
+  --color-text-dark: #2c3e50;
+  --color-text-strong: #424242;
+  --color-gray-600: #616161;
+
+  /* Brand gradient */
+  --color-brand-start: #667eea;
+  --color-brand-end: #764ba2;
+
+  /* Primary / info (blue) */
+  --color-primary: #1976d2;
+  --color-primary-dark: #1565c0;
+  --color-info: #2196f3;
+  --color-info-bg: #e3f2fd;
+  --color-info-bg-alt: #e1f5fe;
+  --color-info-light: #bbdefb;
+  --color-info-dark: #0277bd;
+
+  /* Success (green) */
+  --color-success: #4caf50;
+  --color-success-dark: #388e3c;
+  --color-success-darker: #2e7d32;
+  --color-success-darkest: #1b5e20;
+  --color-success-bg: #e8f5e9;
+  --color-success-bg-alt: #c8e6c9;
+
+  /* Danger (red) */
+  --color-danger: #f44336;
+  --color-danger-dark: #d32f2f;
+  --color-danger-darker: #c62828;
+  --color-danger-bg: #ffebee;
+  --color-danger-hover: #da190b;
+
+  /* Warning (orange/amber) */
+  --color-warning: #ff9800;
+  --color-warning-dark: #f57c00;
+  --color-warning-darker: #e65100;
+  --color-warning-bg: #fff3e0;
+  --color-warning-yellow-bg: #fff9c4;
+  --color-warning-yellow-dark: #f57f17;
+  --color-amber: #ffc107;
+
+  /* Accent */
+  --color-accent-pink: #c2185b;
+  --color-accent-pink-bg: #fce4ec;
+  --color-accent-rose: #f5576c;
+  --color-accent-teal: #11998e;
+
+  /* Backgrounds */
+  --color-bg-page: #f5f5f5;
+  --color-bg-subtle: #fafafa;
+  --color-bg-muted: #f9f9f9;
+  --color-bg-hover: #f0f0f0;
+  --color-bg-panel: #f5f7fa;
+  --color-bg-panel-alt: #f8fafc;
+  --color-tint-blue-50: #fafbff;
+  --color-tint-blue-100: #f8f9ff;
+  --color-tint-blue-200: #f0f2ff;
+  --color-tint-blue-300: #f0f4ff;
+  --color-white: #ffffff;
+  --color-black: #000;
+  --color-scrollbar-track: #f1f1f1;
+
+  /* Borders */
+  --color-border: #e0e0e0;
+  --color-border-light: #eee;
+  --color-border-muted: #ccc;
+  --color-border-subtle: #ddd;
+  --color-border-faint: #bbb;
+  --color-border-hover: #e9ecef;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -15,7 +92,7 @@ body {
 body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
-  background-color: #f5f5f5;
+  background-color: var(--color-bg-page);
 }
 
 .full-width {
@@ -62,7 +139,7 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: var(--color-scrollbar-track);
 }
 
 ::-webkit-scrollbar-thumb {
@@ -71,5 +148,5 @@ body {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: var(--color-text-subtle);
 }

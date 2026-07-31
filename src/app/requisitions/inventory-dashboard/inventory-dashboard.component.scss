@@ -18,7 +18,7 @@
         font-size: 32px;
         width: 32px;
         height: 32px;
-        color: #f5576c;
+        color: var(--color-accent-rose);
       }
 
       mat-card-title {
@@ -32,7 +32,7 @@
 
       mat-card-subtitle {
         margin: 0;
-        color: #666;
+        color: var(--color-text-secondary);
         font-size: 14px;
       }
     }
@@ -85,12 +85,12 @@
       gap: 15px;
 
       .stat-item {
-        background: #f5f5f5;
-        color: #333;
+        background: var(--color-bg-page);
+        color: var(--color-text-primary);
         padding: 20px;
         border-radius: 8px;
         text-align: center;
-        border-left: 4px solid #11998e;
+        border-left: 4px solid var(--color-accent-teal);
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 
         .stat-label {
@@ -126,7 +126,7 @@
     gap: 20px;
 
     p {
-      color: #666;
+      color: var(--color-text-secondary);
       font-size: 16px;
     }
   }
@@ -138,7 +138,7 @@
     justify-content: center;
     padding: 60px 20px;
     gap: 15px;
-    color: #999;
+    color: var(--color-text-muted);
 
     mat-icon {
       font-size: 64px;
@@ -160,24 +160,24 @@
       border-collapse: collapse;
 
       th {
-        background-color: #f5f5f5;
+        background-color: var(--color-bg-page);
         font-weight: 600;
         text-align: left;
         padding: 16px;
-        border-bottom: 2px solid #e0e0e0;
+        border-bottom: 2px solid var(--color-border);
       }
 
       td {
         padding: 16px;
-        border-bottom: 1px solid #eee;
+        border-bottom: 1px solid var(--color-border-light);
       }
 
       tr:hover {
-        background-color: #fafafa;
+        background-color: var(--color-bg-subtle);
       }
 
       .quantity-chip {
-        background-color: #f5576c;
+        background-color: var(--color-accent-rose);
         color: white;
         font-weight: 600;
       }
@@ -187,19 +187,19 @@
         font-weight: 600;
 
         &.status-pending {
-          background-color: #ff9800;
+          background-color: var(--color-warning);
         }
 
         &.status-pending_admin_review {
-          background-color: #2196f3;
+          background-color: var(--color-info);
         }
 
         &.status-approved {
-          background-color: #4caf50;
+          background-color: var(--color-success);
         }
 
         &.status-rejected {
-          background-color: #f44336;
+          background-color: var(--color-danger);
         }
       }
     }

@@ -37,19 +37,19 @@
     justify-content: center;
     padding: 3rem;
     text-align: center;
-    color: #666;
+    color: var(--color-text-secondary);
 
     mat-icon {
       font-size: 4rem;
       width: 4rem;
       height: 4rem;
       margin-bottom: 1rem;
-      color: #ccc;
+      color: var(--color-border-muted);
     }
 
     h2 {
       margin: 0.5rem 0;
-      color: #333;
+      color: var(--color-text-primary);
     }
 
     p {
@@ -66,19 +66,19 @@
 
     th {
       font-weight: 600;
-      color: #333;
-      background-color: #f5f5f5;
+      color: var(--color-text-primary);
+      background-color: var(--color-bg-page);
     }
 
     td {
-      color: #666;
+      color: var(--color-text-secondary);
 
       strong {
-        color: #333;
+        color: var(--color-text-primary);
       }
 
       a {
-        color: #667eea;
+        color: var(--color-brand-start);
         text-decoration: none;
 
         &:hover {
@@ -93,37 +93,37 @@
       padding: 0 8px;
 
       &.status-active {
-        background-color: #4caf50;
+        background-color: var(--color-success);
         color: white;
       }
 
       &.status-inactive {
-        background-color: #f44336;
+        background-color: var(--color-danger);
         color: white;
       }
 
       &.status-verified {
-        background-color: #4caf50;
+        background-color: var(--color-success);
         color: white;
       }
 
       &.status-pending {
-        background-color: #ff9800;
+        background-color: var(--color-warning);
         color: white;
       }
 
       &.role-admin {
-        background-color: #f44336;
+        background-color: var(--color-danger);
         color: white;
       }
 
       &.role-technician {
-        background-color: #ff9800;
+        background-color: var(--color-warning);
         color: white;
       }
 
       &.role-user {
-        background-color: #2196f3;
+        background-color: var(--color-info);
         color: white;
       }
     }

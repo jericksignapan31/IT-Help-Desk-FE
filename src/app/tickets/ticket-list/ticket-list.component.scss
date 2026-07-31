@@ -19,14 +19,14 @@
       display: flex;
       gap: 0.5rem;
       padding: 0.25rem;
-      background-color: #f5f5f5;
+      background-color: var(--color-bg-page);
       border-radius: 8px;
 
       button {
         border-radius: 6px;
 
         &.active {
-          background-color: #1976d2;
+          background-color: var(--color-primary);
           color: white;
         }
 
@@ -133,15 +133,15 @@
       font-size: 1rem;
       width: 1rem;
       height: 1rem;
-      color: #1976d2;
+      color: var(--color-primary);
     }
   }
 
   .category-badge {
     display: inline-block;
     padding: 0.25rem 0.75rem;
-    background-color: #e3f2fd;
-    color: #1976d2;
+    background-color: var(--color-info-bg);
+    color: var(--color-primary);
     border-radius: 12px;
     font-size: 0.85rem;
     font-weight: 500;
@@ -152,79 +152,79 @@
     min-height: 24px;
 
     &.priority-low {
-      background-color: #e8f5e9;
-      color: #2e7d32;
+      background-color: var(--color-success-bg);
+      color: var(--color-success-darker);
     }
 
     &.priority-medium {
-      background-color: #fff3e0;
-      color: #e65100;
+      background-color: var(--color-warning-bg);
+      color: var(--color-warning-darker);
     }
 
     &.priority-high {
-      background-color: #fce4ec;
-      color: #c2185b;
+      background-color: var(--color-accent-pink-bg);
+      color: var(--color-accent-pink);
     }
 
     &.priority-critical {
-      background-color: #ffebee;
-      color: #c62828;
+      background-color: var(--color-danger-bg);
+      color: var(--color-danger-darker);
     }
 
     &.status-pending-approval {
-      background-color: #fff9c4;
-      color: #f57f17;
+      background-color: var(--color-warning-yellow-bg);
+      color: var(--color-warning-yellow-dark);
     }
 
     &.status-approved {
-      background-color: #e1f5fe;
-      color: #0277bd;
+      background-color: var(--color-info-bg-alt);
+      color: var(--color-info-dark);
     }
 
     &.status-assigned {
-      background-color: #e3f2fd;
-      color: #1976d2;
+      background-color: var(--color-info-bg);
+      color: var(--color-primary);
     }
 
     &.status-in-progress {
-      background-color: #fff3e0;
-      color: #f57c00;
+      background-color: var(--color-warning-bg);
+      color: var(--color-warning-dark);
     }
 
     &.status-resolved {
-      background-color: #e8f5e9;
-      color: #388e3c;
+      background-color: var(--color-success-bg);
+      color: var(--color-success-dark);
     }
 
     &.status-closed {
-      background-color: #f5f5f5;
-      color: #616161;
+      background-color: var(--color-bg-page);
+      color: var(--color-gray-600);
     }
 
     &.status-cancelled {
-      background-color: #ffebee;
-      color: #d32f2f;
+      background-color: var(--color-danger-bg);
+      color: var(--color-danger-dark);
     }
 
     &.status-rejected {
-      background-color: #ffebee;
-      color: #c62828;
+      background-color: var(--color-danger-bg);
+      color: var(--color-danger-darker);
     }
 
     // Approval status chips
     &.approval-pending {
-      background-color: #fff9c4;
-      color: #f57f17;
+      background-color: var(--color-warning-yellow-bg);
+      color: var(--color-warning-yellow-dark);
     }
 
     &.approval-approved {
-      background-color: #e8f5e9;
-      color: #388e3c;
+      background-color: var(--color-success-bg);
+      color: var(--color-success-dark);
     }
 
     &.approval-rejected {
-      background-color: #ffebee;
-      color: #c62828;
+      background-color: var(--color-danger-bg);
+      color: var(--color-danger-darker);
     }
   }
 
@@ -233,7 +233,7 @@
     transition: background-color 0.2s;
 
     &:hover {
-      background-color: #f5f5f5;
+      background-color: var(--color-bg-page);
     }
   }
 
@@ -260,7 +260,7 @@
 .no-data {
   text-align: center;
   padding: 3rem;
-  color: #999;
+  color: var(--color-text-muted);
 
   mat-icon {
     font-size: 4rem;
@@ -287,7 +287,7 @@
     border-radius: 4px;
     cursor: pointer;
     transition: transform 0.2s, box-shadow 0.2s;
-    border: 1px solid #e0e0e0;
+    border: 1px solid var(--color-border);
     object-fit: cover;
 
     &:hover {
@@ -297,7 +297,7 @@
   }
 
   .no-image {
-    color: #ccc;
+    color: var(--color-border-muted);
     font-size: 1.2rem;
     font-weight: 300;
   }
@@ -306,15 +306,15 @@
 .duration-cell {
   display: inline-block;
   padding: 0.5rem 1rem;
-  background-color: #e3f2fd;
-  color: #1565c0;
+  background-color: var(--color-info-bg);
+  color: var(--color-primary-dark);
   border-radius: 4px;
   font-weight: 600;
   font-family: monospace;
   cursor: help;
 
   &:hover {
-    background-color: #bbdefb;
+    background-color: var(--color-info-light);
   }
 }
 

@@ -8,7 +8,7 @@
 
     h1 {
       margin: 0;
-      color: #333;
+      color: var(--color-text-primary);
     }
   }
 }
@@ -19,7 +19,7 @@
   align-items: center;
   justify-content: center;
   padding: 3rem;
-  color: #666;
+  color: var(--color-text-secondary);
 
   mat-spinner {
     margin-bottom: 1rem;
@@ -31,13 +31,13 @@
   align-items: center;
   gap: 0.5rem;
   padding: 1rem;
-  background-color: #ffebee;
-  color: #c62828;
+  background-color: var(--color-danger-bg);
+  color: var(--color-danger-darker);
   border-radius: 4px;
   margin-bottom: 1.5rem;
 
   mat-icon {
-    color: #c62828;
+    color: var(--color-danger-darker);
   }
 }
 
@@ -56,13 +56,13 @@
       height: 40px;
       font-size: 40px;
       background: transparent;
-      color: #1976d2;
+      color: var(--color-primary);
     }
 
     mat-card-title {
       font-size: 1.25rem;
       font-weight: 500;
-      color: #333;
+      color: var(--color-text-primary);
     }
   }
 
@@ -82,46 +82,46 @@
     display: block;
     font-size: 0.875rem;
     font-weight: 500;
-    color: #666;
+    color: var(--color-text-secondary);
     margin-bottom: 0.5rem;
   }
 
   p {
     margin: 0;
     font-size: 1rem;
-    color: #333;
+    color: var(--color-text-primary);
     word-break: break-word;
 
     &.user-id {
       font-family: monospace;
       font-size: 0.875rem;
-      color: #666;
+      color: var(--color-text-secondary);
     }
   }
 }
 
 .active-chip {
-  background-color: #4caf50 !important;
+  background-color: var(--color-success) !important;
   color: white !important;
 }
 
 .inactive-chip {
-  background-color: #f44336 !important;
+  background-color: var(--color-danger) !important;
   color: white !important;
 }
 
 .role-admin {
-  background-color: #f44336 !important;
+  background-color: var(--color-danger) !important;
   color: white !important;
 }
 
 .role-technician {
-  background-color: #ff9800 !important;
+  background-color: var(--color-warning) !important;
   color: white !important;
 }
 
 .role-user {
-  background-color: #2196f3 !important;
+  background-color: var(--color-info) !important;
   color: white !important;
 }
 

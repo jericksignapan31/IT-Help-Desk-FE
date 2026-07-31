@@ -12,8 +12,8 @@
 
     .item-info-card {
       margin-bottom: 20px;
-      background: #f5f5f5;
-      border-left: 4px solid #1976d2;
+      background: var(--color-bg-page);
+      border-left: 4px solid var(--color-primary);
 
       .item-details {
         p {
@@ -47,7 +47,7 @@
 
   mat-dialog-actions {
     padding: 1rem 2rem;
-    border-top: 1px solid #e0e0e0;
+    border-top: 1px solid var(--color-border);
   }
 }
 

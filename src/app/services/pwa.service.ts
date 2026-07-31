@@ -8,7 +8,7 @@ import { PLATFORM_ID } from '@angular/core';
   providedIn: 'root',
 })
 export class PwaService {
-  @Optional() private swUpdate = inject(SwUpdate, { optional: true });
+  @Optional() private swUpdate?: SwUpdate | null;
   private platformId = inject(PLATFORM_ID);
   private isBrowser = isPlatformBrowser(this.platformId);
 
@@ -25,6 +25,7 @@ export class PwaService {
   public updateAvailable$ = this.updateAvailableSubject.asObservable();
 
   constructor() {
+    this.swUpdate = inject(SwUpdate, { optional: true });
     this.initialize();
   }
 
@@ -127,7 +128,7 @@ export class PwaService {
         // Ignore
       });
 
-      this.swUpdate.versionUpdates.subscribe((event) => {
+      this.swUpdate.versionUpdates.subscribe((event: any) => {
         if (event.type === 'VERSION_READY') {
           this.updateAvailableSubject.next(true);
         }

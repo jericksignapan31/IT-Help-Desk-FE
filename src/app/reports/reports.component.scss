@@ -17,12 +17,12 @@
       font-size: 2rem;
       width: 2rem;
       height: 2rem;
-      color: #1976d2;
+      color: var(--color-primary);
     }
 
     h2 {
       margin: 0;
-      color: #333;
+      color: var(--color-text-primary);
     }
   }
 }
@@ -75,7 +75,7 @@
 
   p {
     font-size: 1rem;
-    color: #666;
+    color: var(--color-text-secondary);
   }
 }
 
@@ -94,7 +94,7 @@
     gap: 1rem;
 
     mat-icon {
-      color: #1976d2;
+      color: var(--color-primary);
     }
 
     h3 {
@@ -103,8 +103,8 @@
     }
 
     .record-count {
-      background: #e3f2fd;
-      color: #1976d2;
+      background: var(--color-info-bg);
+      color: var(--color-primary);
       padding: 0.25rem 0.75rem;
       border-radius: 20px;
       font-size: 0.875rem;
@@ -116,57 +116,57 @@
 .table-container {
   overflow-x: auto;
   border-radius: 4px;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--color-border);
 
   .data-table {
     width: 100%;
     border-collapse: collapse;
 
     th {
-      background: #f5f5f5;
+      background: var(--color-bg-page);
       font-weight: 600;
       padding: 1rem;
       text-align: left;
-      border-bottom: 2px solid #e0e0e0;
-      color: #424242;
+      border-bottom: 2px solid var(--color-border);
+      color: var(--color-text-strong);
     }
 
     td {
       padding: 0.75rem 1rem;
-      border-bottom: 1px solid #f0f0f0;
+      border-bottom: 1px solid var(--color-bg-hover);
     }
 
     tr:hover {
-      background: #fafafa;
+      background: var(--color-bg-subtle);
     }
 
     .priority-critical {
-      color: #d32f2f;
-      background: #ffebee;
+      color: var(--color-danger-dark);
+      background: var(--color-danger-bg);
       padding: 0.25rem 0.75rem;
       border-radius: 4px;
       font-weight: 600;
     }
 
     .priority-high {
-      color: #f57c00;
-      background: #fff3e0;
+      color: var(--color-warning-dark);
+      background: var(--color-warning-bg);
       padding: 0.25rem 0.75rem;
       border-radius: 4px;
       font-weight: 600;
     }
 
     .priority-medium {
-      color: #1976d2;
-      background: #e3f2fd;
+      color: var(--color-primary);
+      background: var(--color-info-bg);
       padding: 0.25rem 0.75rem;
       border-radius: 4px;
       font-weight: 600;
     }
 
     .priority-low {
-      color: #388e3c;
-      background: #e8f5e9;
+      color: var(--color-success-dark);
+      background: var(--color-success-bg);
       padding: 0.25rem 0.75rem;
       border-radius: 4px;
       font-weight: 600;
@@ -180,7 +180,7 @@
   align-items: center;
   justify-content: center;
   padding: 3rem;
-  color: #999;
+  color: var(--color-text-muted);
 
   mat-icon {
     font-size: 3rem;

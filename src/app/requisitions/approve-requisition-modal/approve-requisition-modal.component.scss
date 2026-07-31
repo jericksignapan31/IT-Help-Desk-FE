@@ -7,15 +7,15 @@
   overflow-y: auto;
 
   .summary-card {
-    background: #f9f9f9;
-    border-left: 4px solid #667eea;
+    background: var(--color-bg-muted);
+    border-left: 4px solid var(--color-brand-start);
 
     mat-card-header {
       margin-bottom: 16px;
       padding-bottom: 0;
 
       mat-card-title {
-        color: #667eea;
+        color: var(--color-brand-start);
         font-size: 18px;
       }
     }
@@ -33,16 +33,16 @@
 
         strong {
           font-size: 12px;
-          color: #666;
+          color: var(--color-text-secondary);
           text-transform: uppercase;
         }
 
         span {
           font-size: 14px;
-          color: #333;
+          color: var(--color-text-primary);
 
           &.total-cost {
-            color: #667eea;
+            color: var(--color-brand-start);
             font-weight: 600;
           }
         }
@@ -54,17 +54,17 @@
       padding: 12px;
       border-radius: 4px;
       margin-top: 12px;
-      border-left: 3px solid #ffc107;
+      border-left: 3px solid var(--color-amber);
 
       strong {
         display: block;
         margin-bottom: 6px;
-        color: #333;
+        color: var(--color-text-primary);
       }
 
       p {
         margin: 0;
-        color: #666;
+        color: var(--color-text-secondary);
         font-size: 13px;
       }
     }
@@ -74,7 +74,7 @@
 
       h4 {
         margin: 0 0 12px 0;
-        color: #333;
+        color: var(--color-text-primary);
         font-size: 14px;
       }
 
@@ -87,7 +87,7 @@
         overflow: hidden;
 
         thead {
-          background-color: #667eea;
+          background-color: var(--color-brand-start);
           color: white;
 
           th {
@@ -99,10 +99,10 @@
 
         tbody {
           tr {
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid var(--color-border-light);
 
             &:hover {
-              background-color: #f5f5f5;
+              background-color: var(--color-bg-page);
             }
 
             td {
@@ -116,14 +116,14 @@
 
   .action-card {
     background: white;
-    border: 2px solid #e0e0e0;
+    border: 2px solid var(--color-border);
 
     mat-card-header {
       margin-bottom: 16px;
       padding-bottom: 0;
 
       mat-card-title {
-        color: #333;
+        color: var(--color-text-primary);
         font-size: 16px;
       }
     }
@@ -136,7 +136,7 @@
 
       .info-text {
         margin: 0;
-        color: #666;
+        color: var(--color-text-secondary);
         font-size: 14px;
       }
 
@@ -162,7 +162,7 @@
         }
 
         .approve-btn {
-          background: #4caf50;
+          background: var(--color-success);
           color: white;
 
           &:hover {
@@ -171,25 +171,25 @@
         }
 
         .reject-btn-init {
-          background: #f44336;
+          background: var(--color-danger);
           color: white;
 
           &:hover {
-            background: #da190b;
+            background: var(--color-danger-hover);
           }
         }
 
         .confirm-reject-btn {
-          background: #f44336;
+          background: var(--color-danger);
           color: white;
 
           &:hover {
-            background: #da190b;
+            background: var(--color-danger-hover);
           }
 
           &:disabled {
-            background: #ccc;
-            color: #999;
+            background: var(--color-border-muted);
+            color: var(--color-text-muted);
             cursor: not-allowed;
           }
         }
@@ -224,7 +224,7 @@
     margin-top: 10px;
 
     .close-btn {
-      color: #667eea;
+      color: var(--color-brand-start);
       font-weight: 500;
 
       &:hover {

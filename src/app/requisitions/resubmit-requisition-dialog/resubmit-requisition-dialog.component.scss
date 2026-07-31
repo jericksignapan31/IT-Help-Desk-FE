@@ -3,7 +3,7 @@
 
   h3 {
     margin: 1rem 0 0.75rem 0;
-    color: #333;
+    color: var(--color-text-primary);
     font-size: 1rem;
   }
 
@@ -21,7 +21,7 @@
 
   .table-container {
     overflow-x: auto;
-    border: 1px solid #e0e0e0;
+    border: 1px solid var(--color-border);
     border-radius: 4px;
     margin-top: 1rem;
 
@@ -30,20 +30,20 @@
       border-collapse: collapse;
 
       th {
-        background-color: #f5f5f5;
+        background-color: var(--color-bg-page);
         padding: 12px;
         text-align: left;
         font-weight: 600;
-        border-bottom: 2px solid #ddd;
+        border-bottom: 2px solid var(--color-border-subtle);
         font-size: 0.85rem;
-        color: #333;
+        color: var(--color-text-primary);
       }
 
       tbody tr {
-        border-bottom: 1px solid #e0e0e0;
+        border-bottom: 1px solid var(--color-border);
 
         &:hover {
-          background-color: #fafafa;
+          background-color: var(--color-bg-subtle);
         }
 
         &:last-child {
@@ -61,7 +61,7 @@
 
         &.total {
           font-weight: 600;
-          color: #2196F3;
+          color: var(--color-info);
           padding: 12px 8px;
         }
       }

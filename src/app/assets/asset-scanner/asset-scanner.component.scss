@@ -5,7 +5,7 @@
 
   .header-card {
     margin-bottom: 2rem;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, var(--color-brand-start) 0%, var(--color-brand-end) 100%);
     color: white;
 
     .header {
@@ -58,7 +58,7 @@
           margin-bottom: 1rem;
           border-radius: 8px;
           overflow: hidden;
-          background: #000;
+          background: var(--color-black);
           aspect-ratio: 16 / 9;
           display: flex;
           align-items: center;
@@ -105,20 +105,20 @@
       .no-camera {
         text-align: center;
         padding: 3rem 1rem;
-        background-color: #f5f5f5;
+        background-color: var(--color-bg-page);
         border-radius: 8px;
 
         .large-icon {
           font-size: 4rem;
           width: 4rem;
           height: 4rem;
-          color: #999;
+          color: var(--color-text-muted);
           margin: 0 auto 1rem;
           display: block;
         }
 
         p {
-          color: #666;
+          color: var(--color-text-secondary);
           margin-bottom: 1.5rem;
         }
       }
@@ -138,7 +138,7 @@
           position: relative;
           background: white;
           padding: 0 1rem;
-          color: #999;
+          color: var(--color-text-muted);
           font-weight: 500;
           z-index: 1;
         }
@@ -191,14 +191,14 @@
 
             label {
               font-weight: 600;
-              color: #666;
+              color: var(--color-text-secondary);
               font-size: 0.875rem;
               text-transform: uppercase;
               letter-spacing: 0.5px;
             }
 
             span {
-              color: #333;
+              color: var(--color-text-primary);
               font-size: 1rem;
               word-break: break-all;
             }
@@ -211,14 +211,14 @@
         }
 
         .specifications {
-          background-color: #f9f9f9;
+          background-color: var(--color-bg-muted);
           padding: 1.5rem;
           border-radius: 8px;
           margin-top: 2rem;
 
           h3 {
             margin: 0 0 1rem 0;
-            color: #333;
+            color: var(--color-text-primary);
           }
 
           .specs-grid {
@@ -227,11 +227,11 @@
             gap: 1rem;
 
             .spec-item {
-              color: #555;
+              color: var(--color-text-subtle);
               word-break: break-word;
 
               strong {
-                color: #333;
+                color: var(--color-text-primary);
               }
             }
           }
@@ -243,7 +243,7 @@
         gap: 0.5rem;
         margin-top: 1.5rem;
         padding-top: 1.5rem;
-        border-top: 1px solid #e0e0e0;
+        border-top: 1px solid var(--color-border);
 
         button {
           flex: 1;
@@ -285,18 +285,18 @@
 
             .history-title {
               font-weight: 500;
-              color: #333;
+              color: var(--color-text-primary);
             }
 
             .history-details {
               display: flex;
               gap: 0.5rem;
-              color: #999;
+              color: var(--color-text-muted);
               font-size: 0.85rem;
             }
 
             &:not(.last-item) {
-              border-bottom: 1px solid #e0e0e0;
+              border-bottom: 1px solid var(--color-border);
             }
           }
         }

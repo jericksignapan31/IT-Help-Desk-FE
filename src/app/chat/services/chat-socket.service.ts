@@ -73,7 +73,7 @@ export class ChatSocketService {
           });
         });
 
-        this.socket.on('connect_error', (error) => {
+        this.socket.on('connect_error', (error: Error) => {
           this.ngZone.run(() => {
             this.errorSubject.next(`Connection error: ${error.message}`);
             console.error('Socket connection error:', error);

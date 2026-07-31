@@ -1,7 +1,7 @@
 .acknowledge-form {
   .requisition-summary {
     margin-bottom: 1.5rem;
-    background: #f9f9f9;
+    background: var(--color-bg-muted);
 
     mat-card-content {
       padding: 1.5rem;
@@ -19,13 +19,13 @@
           label {
             font-weight: 600;
             font-size: 0.85rem;
-            color: #666;
+            color: var(--color-text-secondary);
             margin-bottom: 0.25rem;
           }
 
           span {
             font-size: 0.95rem;
-            color: #333;
+            color: var(--color-text-primary);
           }
         }
       }
@@ -44,19 +44,19 @@
           font-size: 0.85rem;
 
           thead {
-            background: #f0f0f0;
+            background: var(--color-bg-hover);
 
             th {
               padding: 0.5rem;
               text-align: left;
               font-weight: 600;
-              border-bottom: 2px solid #ddd;
+              border-bottom: 2px solid var(--color-border-subtle);
             }
           }
 
           tbody {
             tr {
-              border-bottom: 1px solid #eee;
+              border-bottom: 1px solid var(--color-border-light);
 
               &:last-child {
                 border-bottom: none;
@@ -83,7 +83,7 @@
 
 mat-dialog-actions {
   padding: 1rem 0 0 0;
-  border-top: 1px solid #eee;
+  border-top: 1px solid var(--color-border-light);
 
   button {
     margin-left: 0.5rem;

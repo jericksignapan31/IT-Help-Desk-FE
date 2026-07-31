@@ -13,7 +13,7 @@
 
     .subtitle {
       margin: 0.25rem 0 0 0;
-      color: #666;
+      color: var(--color-text-secondary);
       font-size: 0.875rem;
     }
   }
@@ -49,19 +49,19 @@
     justify-content: center;
     padding: 3rem;
     text-align: center;
-    color: #666;
+    color: var(--color-text-secondary);
 
     mat-icon {
       font-size: 4rem;
       width: 4rem;
       height: 4rem;
       margin-bottom: 1rem;
-      color: #ccc;
+      color: var(--color-border-muted);
     }
 
     h2 {
       margin: 0.5rem 0;
-      color: #333;
+      color: var(--color-text-primary);
     }
 
     p {
@@ -78,23 +78,23 @@
 
     th {
       font-weight: 600;
-      color: #333;
-      background-color: #f5f5f5;
+      color: var(--color-text-primary);
+      background-color: var(--color-bg-page);
     }
 
     td {
-      color: #666;
+      color: var(--color-text-secondary);
 
       strong {
-        color: #333;
+        color: var(--color-text-primary);
       }
     }
 
     .duration-badge {
       display: inline-block;
       padding: 4px 8px;
-      background-color: #e3f2fd;
-      color: #1976d2;
+      background-color: var(--color-info-bg);
+      color: var(--color-primary);
       border-radius: 12px;
       font-size: 0.75rem;
       font-weight: 500;
@@ -107,22 +107,22 @@
 
       &.status-pending,
       &.status-pending-approval {
-        background-color: #ff9800;
+        background-color: var(--color-warning);
         color: white;
       }
 
       &.status-approved {
-        background-color: #4caf50;
+        background-color: var(--color-success);
         color: white;
       }
 
       &.status-assigned {
-        background-color: #2196f3;
+        background-color: var(--color-info);
         color: white;
       }
 
       &.status-in-progress {
-        background-color: #f57c00;
+        background-color: var(--color-warning-dark);
         color: white;
       }
 
@@ -139,7 +139,7 @@
       &.status-rejected,
       &.status-rejected,
       &.status-cancelled {
-        background-color: #f44336;
+        background-color: var(--color-danger);
         color: white;
       }
     }

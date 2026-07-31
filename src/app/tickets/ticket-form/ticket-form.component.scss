@@ -11,7 +11,7 @@ mat-card {
 }
 
 mat-card-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--color-brand-start) 0%, var(--color-brand-end) 100%);
   padding: 1.5rem;
   margin: -16px -16px 0 -16px;
 
@@ -55,9 +55,9 @@ mat-card-header {
 .image-upload-section {
   margin-bottom: 0.5rem;
   padding: 1.5rem;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  background: linear-gradient(135deg, var(--color-bg-panel) 0%, #c3cfe2 100%);
   border-radius: 8px;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--color-border);
 
   .upload-label {
     display: block;
@@ -113,7 +113,7 @@ mat-card-header {
       height: 48px;
       border-radius: 8px;
       background: white;
-      color: #667eea;
+      color: var(--color-brand-start);
       box-shadow: 0 2px 8px rgba(102, 126, 234, 0.15);
       transition: all 0.3s ease;
       display: flex;
@@ -130,7 +130,7 @@ mat-card-header {
       }
 
       &:hover {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, var(--color-brand-start) 0%, var(--color-brand-end) 100%);
         color: white;
         box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
         transform: translateY(-2px);
@@ -149,7 +149,7 @@ mat-card-header {
     margin: 0 auto;
     border-radius: 12px;
     overflow: hidden;
-    background: #000;
+    background: var(--color-black);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 
     video {
@@ -181,7 +181,7 @@ mat-card-header {
           font-size: 32px;
           width: 32px;
           height: 32px;
-          color: #667eea;
+          color: var(--color-brand-start);
         }
 
         &:hover {
@@ -198,7 +198,7 @@ mat-card-header {
         padding: 10px 20px;
         border-radius: 8px;
         background: rgba(255, 255, 255, 0.9);
-        color: #333;
+        color: var(--color-text-primary);
         font-weight: 500;
         border: none;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
@@ -219,7 +219,7 @@ mat-card-header {
   gap: 1rem;
   margin-top: 2.5rem;
   padding-top: 1.5rem;
-  border-top: 1px solid #e0e0e0;
+  border-top: 1px solid var(--color-border);
 
   button {
     min-width: 140px;
@@ -267,11 +267,11 @@ mat-card-header {
   border: 1px solid rgba(102, 126, 234, 0.2);
 
   mat-icon {
-    color: #667eea;
+    color: var(--color-brand-start);
   }
 
   mat-hint {
-    color: #667eea;
+    color: var(--color-brand-start);
     font-weight: 600;
     font-size: 11px;
   }
@@ -283,7 +283,7 @@ mat-card-header {
 
 // Asset selection field emphasis
 .asset-select-field {
-  background: linear-gradient(135deg, #ffffff 0%, #fafbff 100%);
+  background: linear-gradient(135deg, var(--color-white) 0%, var(--color-tint-blue-50) 100%);
   border-radius: 8px;
   padding: 8px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
@@ -328,7 +328,7 @@ mat-card-header {
           .mdc-notched-outline__leading,
           .mdc-notched-outline__notch,
           .mdc-notched-outline__trailing {
-            border-color: #667eea;
+            border-color: var(--color-brand-start);
             border-width: 2px;
           }
         }
@@ -342,7 +342,7 @@ mat-card-header {
     // Subject field emphasis
     mat-form-field:has(input[formcontrolname="subject"]) {
       .mat-mdc-text-field-wrapper {
-        background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+        background: linear-gradient(135deg, var(--color-white) 0%, #f9fafb 100%);
       }
     }
 
@@ -428,10 +428,10 @@ mat-card-header {
   .mat-mdc-optgroup-label {
     font-weight: 700 !important;
     font-size: 14px !important;
-    color: #667eea !important;
-    background: linear-gradient(135deg, #f8f9ff 0%, #f0f2ff 100%) !important;
+    color: var(--color-brand-start) !important;
+    background: linear-gradient(135deg, var(--color-tint-blue-100) 0%, var(--color-tint-blue-200) 100%) !important;
     padding: 12px 16px !important;
-    border-bottom: 2px solid #667eea !important;
+    border-bottom: 2px solid var(--color-brand-start) !important;
     letter-spacing: 0.5px !important;
     text-transform: uppercase !important;
   }
@@ -442,7 +442,7 @@ mat-card-header {
       font-size: 14px !important;
 
       &:hover {
-        background-color: #f0f4ff !important;
+        background-color: var(--color-tint-blue-300) !important;
       }
     }
   }

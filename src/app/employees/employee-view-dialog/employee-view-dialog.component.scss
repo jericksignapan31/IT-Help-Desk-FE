@@ -2,13 +2,13 @@ h2[mat-dialog-title] {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: #333;
+  color: var(--color-text-primary);
   margin: 0;
   padding: 1rem 1.5rem;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid var(--color-border);
 
   mat-icon {
-    color: #1976d2;
+    color: var(--color-primary);
   }
 }
 
@@ -25,7 +25,7 @@ mat-dialog-content {
   align-items: center;
   justify-content: center;
   padding: 3rem;
-  color: #666;
+  color: var(--color-text-secondary);
 
   mat-spinner {
     margin-bottom: 1rem;
@@ -37,12 +37,12 @@ mat-dialog-content {
   align-items: center;
   gap: 0.5rem;
   padding: 1rem;
-  background-color: #ffebee;
-  color: #c62828;
+  background-color: var(--color-danger-bg);
+  color: var(--color-danger-darker);
   border-radius: 4px;
 
   mat-icon {
-    color: #c62828;
+    color: var(--color-danger-darker);
   }
 }
 
@@ -59,16 +59,16 @@ mat-dialog-content {
     gap: 0.5rem;
     font-size: 1rem;
     font-weight: 500;
-    color: #555;
+    color: var(--color-text-subtle);
     margin: 0 0 1rem 0;
     padding-bottom: 0.5rem;
-    border-bottom: 2px solid #e0e0e0;
+    border-bottom: 2px solid var(--color-border);
 
     mat-icon {
       font-size: 1.25rem;
       width: 1.25rem;
       height: 1.25rem;
-      color: #1976d2;
+      color: var(--color-primary);
     }
   }
 }
@@ -84,56 +84,56 @@ mat-dialog-content {
     display: block;
     font-size: 0.875rem;
     font-weight: 500;
-    color: #666;
+    color: var(--color-text-secondary);
     margin-bottom: 0.25rem;
   }
 
   p {
     margin: 0;
     font-size: 1rem;
-    color: #333;
+    color: var(--color-text-primary);
     word-break: break-word;
   }
 }
 
 .active-chip {
-  background-color: #4caf50 !important;
+  background-color: var(--color-success) !important;
   color: white !important;
 }
 
 .inactive-chip {
-  background-color: #f44336 !important;
+  background-color: var(--color-danger) !important;
   color: white !important;
 }
 
 .status-verified {
-  background-color: #4caf50 !important;
+  background-color: var(--color-success) !important;
   color: white !important;
 }
 
 .status-pending {
-  background-color: #ff9800 !important;
+  background-color: var(--color-warning) !important;
   color: white !important;
 }
 
 .role-admin {
-  background-color: #f44336 !important;
+  background-color: var(--color-danger) !important;
   color: white !important;
 }
 
 .role-technician {
-  background-color: #ff9800 !important;
+  background-color: var(--color-warning) !important;
   color: white !important;
 }
 
 .role-user {
-  background-color: #2196f3 !important;
+  background-color: var(--color-info) !important;
   color: white !important;
 }
 
 mat-dialog-actions {
   padding: 1rem 1.5rem;
-  border-top: 1px solid #e0e0e0;
+  border-top: 1px solid var(--color-border);
 
   .toggle-button {
     mat-icon {

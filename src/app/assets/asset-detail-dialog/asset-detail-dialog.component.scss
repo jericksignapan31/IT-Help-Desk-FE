@@ -9,8 +9,8 @@
   justify-content: space-between;
   align-items: flex-start;
   padding: 24px 24px 16px;
-  border-bottom: 1px solid #e0e0e0;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-bottom: 1px solid var(--color-border);
+  background: linear-gradient(135deg, var(--color-brand-start) 0%, var(--color-brand-end) 100%);
   color: white;
   margin: -24px -24px 0 -24px;
 
@@ -54,7 +54,7 @@
 mat-dialog-content {
   padding: 24px;
   overflow-y: auto;
-  background: #f5f7fa;
+  background: var(--color-bg-panel);
 }
 
 .details-grid {
@@ -66,7 +66,7 @@ mat-dialog-content {
 .info-card {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
   border-radius: 12px !important;
-  border: 1px solid #e0e0e0 !important;
+  border: 1px solid var(--color-border) !important;
   transition: all 0.3s ease;
   background: white !important;
 
@@ -82,7 +82,7 @@ mat-dialog-content {
   mat-card-header {
     margin-bottom: 16px;
     padding: 16px 16px 0 16px !important;
-    background: linear-gradient(135deg, #f8f9ff 0%, #f0f2ff 100%);
+    background: linear-gradient(135deg, var(--color-tint-blue-100) 0%, var(--color-tint-blue-200) 100%);
     border-radius: 12px 12px 0 0;
     margin: -16px -16px 16px -16px;
     padding-bottom: 12px !important;
@@ -91,7 +91,7 @@ mat-dialog-content {
       display: flex;
       align-items: center;
       gap: 8px;
-      color: #667eea;
+      color: var(--color-brand-start);
       font-size: 18px;
       font-weight: 700;
 
@@ -99,7 +99,7 @@ mat-dialog-content {
         font-size: 24px;
         width: 24px;
         height: 24px;
-        background: #667eea;
+        background: var(--color-brand-start);
         color: white;
         border-radius: 6px;
         padding: 4px;
@@ -129,7 +129,7 @@ mat-dialog-content {
 
   .label {
     font-weight: 700;
-    color: #555;
+    color: var(--color-text-subtle);
     flex-shrink: 0;
     margin-right: 16px;
     font-size: 14px;
@@ -151,7 +151,7 @@ mat-dialog-content {
   align-items: center;
   gap: 24px;
   padding: 24px;
-  background: linear-gradient(135deg, #fafbff 0%, #f0f4ff 100%);
+  background: linear-gradient(135deg, var(--color-tint-blue-50) 0%, var(--color-tint-blue-300) 100%);
   border-radius: 12px;
 
   .asset-tag-display {
@@ -161,7 +161,7 @@ mat-dialog-content {
       margin: 0;
       font-size: 40px;
       font-weight: 800;
-      color: #667eea;
+      color: var(--color-brand-start);
       letter-spacing: 3px;
       text-shadow: 2px 2px 4px rgba(102, 126, 234, 0.2);
     }
@@ -173,7 +173,7 @@ mat-dialog-content {
     align-items: center;
     padding: 16px;
     background: white;
-    border: 3px solid #667eea;
+    border: 3px solid var(--color-brand-start);
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
 
@@ -208,18 +208,18 @@ mat-dialog-content {
   align-items: center;
   gap: 12px;
   padding: 20px;
-  background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+  background: linear-gradient(135deg, var(--color-success-bg) 0%, var(--color-success-bg-alt) 100%);
   border-radius: 12px;
-  color: #2e7d32;
+  color: var(--color-success-darker);
   font-weight: 600;
-  border: 2px solid #4caf50;
+  border: 2px solid var(--color-success);
   box-shadow: 0 2px 8px rgba(76, 175, 80, 0.2);
 
   mat-icon {
     font-size: 36px;
     width: 36px;
     height: 36px;
-    color: #4caf50;
+    color: var(--color-success);
   }
 }
 
@@ -234,20 +234,20 @@ mat-dialog-content {
 .notes-text {
   margin: 0;
   padding: 20px;
-  background: linear-gradient(to right, #f9f9ff 0%, #ffffff 100%);
-  border-left: 5px solid #667eea;
+  background: linear-gradient(to right, #f9f9ff 0%, var(--color-white) 100%);
+  border-left: 5px solid var(--color-brand-start);
   border-radius: 8px;
   white-space: pre-wrap;
   word-break: break-word;
   line-height: 1.8;
-  color: #333;
+  color: var(--color-text-primary);
   font-size: 14px;
   box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
 }
 
 mat-dialog-actions {
   padding: 16px 24px;
-  border-top: 1px solid #e0e0e0;
+  border-top: 1px solid var(--color-border);
   margin: 0 -24px -24px;
 
   button {

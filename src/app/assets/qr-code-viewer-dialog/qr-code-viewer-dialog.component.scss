@@ -11,7 +11,7 @@
   align-items: center;
   width: 100%;
   padding: 1rem 1.5rem;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid var(--color-border);
 
   h2 {
     margin: 0;
@@ -44,7 +44,7 @@
       font-size: 2rem;
       width: 2rem;
       height: 2rem;
-      color: #1976d2;
+      color: var(--color-primary);
     }
 
     @keyframes spin {
@@ -57,7 +57,7 @@
     }
 
     p {
-      color: #666;
+      color: var(--color-text-secondary);
       margin: 0;
     }
   }
@@ -67,7 +67,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background: #f5f5f5;
+    background: var(--color-bg-page);
     padding: 1.5rem;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -81,7 +81,7 @@
 
   .asset-info {
     width: 100%;
-    background: #fafafa;
+    background: var(--color-bg-subtle);
     padding: 1rem;
     border-radius: 8px;
     margin-top: 1rem;
@@ -93,12 +93,12 @@
       gap: 1rem;
 
       strong {
-        color: #424242;
+        color: var(--color-text-strong);
         min-width: 100px;
       }
 
       span {
-        color: #666;
+        color: var(--color-text-secondary);
         text-align: right;
       }
     }
@@ -110,7 +110,7 @@
   justify-content: flex-end;
   gap: 1rem;
   padding: 1rem 1.5rem;
-  border-top: 1px solid #e0e0e0;
+  border-top: 1px solid var(--color-border);
   width: 100%;
 
   button {
