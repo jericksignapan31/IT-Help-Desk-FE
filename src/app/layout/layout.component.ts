@@ -13,9 +13,12 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatBadgeModule } from '@angular/material/badge';
 import { AuthService } from '../services/auth.service';
 import { ChatStoreService } from '../chat/store/chat-store.service';
+import { TicketService } from '../services/ticket.service';
+import { WarehouseService } from '../services/warehouse.service';
 import { User, UserRole } from '../models/user.model';
 import { MenuItem, MENU_ITEMS } from '../models/menu-item.model';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { catchError, map, shareReplay } from 'rxjs/operators';
 
 @Component({
   selector: 'app-layout',
@@ -43,13 +46,54 @@ export class LayoutComponent {
   menuItems: MenuItem[] = MENU_ITEMS;
   expandedMenus: { [key: string]: boolean } = {};
   unreadChatCount$: Observable<number>;
+  pendingTicketsCount$: Observable<number>;
+  approvedTicketsCount$: Observable<number>;
+  inProgressTicketsCount$: Observable<number>;
+  pendingReviewCount$: Observable<number>;
+  adminApprovalCount$: Observable<number>;
+  approvedRequisitionsCount$: Observable<number>;
 
   constructor(
     public authService: AuthService,
     private chatStore: ChatStoreService,
+    private ticketService: TicketService,
+    private warehouseService: WarehouseService,
     private router: Router,
   ) {
     this.unreadChatCount$ = this.chatStore.unreadCount$;
+    this.pendingTicketsCount$ = this.ticketService.getPendingTickets().pipe(
+      map((tickets) => tickets.length),
+      catchError(() => of(0)),
+      shareReplay(1),
+    );
+    this.approvedTicketsCount$ = this.ticketService.getApprovedTickets().pipe(
+      map((tickets) => tickets.length),
+      catchError(() => of(0)),
+      shareReplay(1),
+    );
+    this.inProgressTicketsCount$ = this.ticketService.getInProgressTickets().pipe(
+      map((tickets) => tickets.length),
+      catchError(() => of(0)),
+      shareReplay(1),
+    );
+    this.pendingReviewCount$ = this.warehouseService.getPendingRequisitions().pipe(
+      map((requisitions) => requisitions.length),
+      catchError(() => of(0)),
+      shareReplay(1),
+    );
+    this.adminApprovalCount$ = this.warehouseService.getPendingAdminReview().pipe(
+      map(
+        (requisitions) =>
+          requisitions.filter((req) => req.status === 'pending_admin_review').length,
+      ),
+      catchError(() => of(0)),
+      shareReplay(1),
+    );
+    this.approvedRequisitionsCount$ = this.warehouseService.getApprovedRequisitions().pipe(
+      map((requisitions) => requisitions.length),
+      catchError(() => of(0)),
+      shareReplay(1),
+    );
     this.authService.currentUser.subscribe((user) => {
       this.currentUser = user;
     });
@@ -75,6 +119,49 @@ export class LayoutComponent {
 
   hasVisibleChildren(item: MenuItem): boolean {
     return this.getVisibleChildren(item).length > 0;
+  }
+
+  isChildVisible(item: MenuItem, childLabel: string): boolean {
+    return this.getVisibleChildren(item).some((child) => child.label === childLabel);
+  }
+
+  getChildBadgeCount$(parentLabel: string, childLabel: string): Observable<number> | null {
+    if (parentLabel === 'Tickets') {
+      switch (childLabel) {
+        case 'Pending':
+          return this.pendingTicketsCount$;
+        case 'Approved':
+          return this.approvedTicketsCount$;
+        case 'Work in Progress':
+          return this.inProgressTicketsCount$;
+      }
+    }
+    if (parentLabel === 'Request Item') {
+      switch (childLabel) {
+        case 'Pending Review':
+          return this.pendingReviewCount$;
+        case 'Admin Approval':
+          return this.adminApprovalCount$;
+        case 'Approved':
+          return this.approvedRequisitionsCount$;
+      }
+    }
+    return null;
+  }
+
+  getChildBadgeClass(childLabel: string): string {
+    switch (childLabel) {
+      case 'Pending':
+      case 'Pending Review':
+        return 'badge-pending';
+      case 'Approved':
+        return 'badge-approved';
+      case 'Work in Progress':
+      case 'Admin Approval':
+        return 'badge-progress';
+      default:
+        return '';
+    }
   }
 
   navigateToProfile(): void {

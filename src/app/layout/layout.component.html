@@ -18,7 +18,49 @@
           <mat-expansion-panel-header class="menu-header">
             <mat-panel-title class="menu-title">
               <mat-icon class="menu-icon">{{ item.icon }}</mat-icon>
-              <span class="menu-label">{{ item.label }}</span>
+              <span class="menu-label-group">
+                <span class="menu-label">{{ item.label }}</span>
+                <span class="header-badges" *ngIf="item.label === 'Tickets'">
+                  <span
+                    class="menu-count-badge badge-pending"
+                    matTooltip="Pending"
+                    *ngIf="isChildVisible(item, 'Pending') && (pendingTicketsCount$ | async) as count"
+                    >{{ count }}</span
+                  >
+                  <span
+                    class="menu-count-badge badge-approved"
+                    matTooltip="Approved"
+                    *ngIf="isChildVisible(item, 'Approved') && (approvedTicketsCount$ | async) as count"
+                    >{{ count }}</span
+                  >
+                  <span
+                    class="menu-count-badge badge-progress"
+                    matTooltip="Work in Progress"
+                    *ngIf="isChildVisible(item, 'Work in Progress') && (inProgressTicketsCount$ | async) as count"
+                    >{{ count }}</span
+                  >
+                </span>
+                <span class="header-badges" *ngIf="item.label === 'Request Item'">
+                  <span
+                    class="menu-count-badge badge-pending"
+                    matTooltip="Pending Review"
+                    *ngIf="isChildVisible(item, 'Pending Review') && (pendingReviewCount$ | async) as count"
+                    >{{ count }}</span
+                  >
+                  <span
+                    class="menu-count-badge badge-progress"
+                    matTooltip="Admin Approval"
+                    *ngIf="isChildVisible(item, 'Admin Approval') && (adminApprovalCount$ | async) as count"
+                    >{{ count }}</span
+                  >
+                  <span
+                    class="menu-count-badge badge-approved"
+                    matTooltip="Approved"
+                    *ngIf="isChildVisible(item, 'Approved') && (approvedRequisitionsCount$ | async) as count"
+                    >{{ count }}</span
+                  >
+                </span>
+              </span>
             </mat-panel-title>
           </mat-expansion-panel-header>
 
@@ -30,7 +72,15 @@
             routerLinkActive="active-link"
           >
             <mat-icon matListItemIcon>{{ child.icon }}</mat-icon>
-            <span matListItemTitle>{{ child.label }}</span>
+            <span matListItemTitle class="nested-item-title">
+              <span class="nested-item-label">{{ child.label }}</span>
+              <span
+                class="menu-count-badge"
+                [ngClass]="getChildBadgeClass(child.label)"
+                *ngIf="(getChildBadgeCount$(item.label, child.label) | async) as count"
+                >{{ count }}</span
+              >
+            </span>
           </a>
         </mat-expansion-panel>
 

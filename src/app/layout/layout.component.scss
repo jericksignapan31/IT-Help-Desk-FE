@@ -117,8 +117,25 @@
             color: white;
           }
 
+          .menu-label-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            overflow: hidden;
+          }
+
           .menu-label {
             color: white;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+
+          .header-badges {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            flex-shrink: 0;
           }
         }
 
@@ -157,6 +174,49 @@
 
         span[matlistitemtitle] {
           color: white !important;
+        }
+
+        .nested-item-title {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 0.5rem;
+          overflow: hidden;
+        }
+
+        .nested-item-label {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+      }
+
+      // Shared by the parent header badges and the nested-item badges
+      .menu-count-badge {
+        flex-shrink: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 18px;
+        height: 18px;
+        padding: 0 5px;
+        border-radius: 9px;
+        background-color: var(--color-danger);
+        color: var(--color-white) !important;
+        font-size: 11px;
+        font-weight: 600;
+        line-height: 1;
+
+        &.badge-pending {
+          background-color: var(--color-warning);
+        }
+
+        &.badge-approved {
+          background-color: var(--color-success);
+        }
+
+        &.badge-progress {
+          background-color: var(--color-info);
         }
       }
     }
