@@ -8,6 +8,7 @@ export interface Ticket {
   priority: TicketPriority;
   status: TicketStatus;
   approval_status: ApprovalStatus;
+  require_approval?: boolean; // Whether ticket requires supervisor approval
   subject: string;
   description: string;
   image_url?: string;

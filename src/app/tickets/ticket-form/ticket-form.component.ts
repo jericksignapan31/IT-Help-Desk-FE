@@ -15,6 +15,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { TicketService } from '../../services/ticket.service';
 import { AssetService } from '../../services/asset.service';
 import { AuthService } from '../../services/auth.service';
@@ -37,6 +38,7 @@ import Swal from 'sweetalert2';
     MatSelectModule,
     MatButtonModule,
     MatIconModule,
+    MatCheckboxModule,
   ],
   templateUrl: './ticket-form.component.html',
   styleUrls: ['./ticket-form.component.scss'],
@@ -55,6 +57,32 @@ export class TicketFormComponent implements OnInit {
 
   categoryOptions = Object.values(TicketCategory);
   priorityOptions = Object.values(TicketPriority);
+
+  // Subject and Description dropdown options
+  subjectOptions = [
+    'Hardware Issue',
+    'Software Issue',
+    'Network Problem',
+    'Printer Problem',
+    'Monitor Issue',
+    'Keyboard/Mouse Problem',
+    'Laptop/Computer Problem',
+    'Peripheral Device Problem',
+    'Other',
+  ];
+
+  descriptionOptions = [
+    'Device Not Working',
+    'Slow Performance',
+    'Connectivity Issues',
+    'Driver/Software Update Needed',
+    'Device Not Detected',
+    'Display/Screen Problem',
+    'Input Device Malfunction',
+    'System Crash/Error',
+    'Permission Issues',
+    'Other',
+  ];
 
   assets: Asset[] = [];
   assetsByBranch: { [branchName: string]: Asset[] } = {};
@@ -87,6 +115,7 @@ export class TicketFormComponent implements OnInit {
       priority: ['', Validators.required],
       asset_id: [null, Validators.required],
       image_url: [''],
+      require_approval: [true], // Default to true (checked)
     });
   }
 
@@ -296,6 +325,7 @@ export class TicketFormComponent implements OnInit {
           priority: ticket.priority,
           asset_id: ticket.asset_id,
           image_url: ticket.image_url,
+          require_approval: ticket.require_approval !== false, // Default to true if not specified
         });
         if (ticket.image_url) {
           this.imagePreview = ticket.image_url;
@@ -586,12 +616,37 @@ export class TicketFormComponent implements OnInit {
         : this.ticketService.createTicket(formData);
 
     operation.subscribe({
-      next: () => {
+      next: (response) => {
+        // Handle different approval statuses
+        const requiresApproval = response.require_approval !== false;
+        const isApproved = response.status === 'approved' || response.approval_status === 'approved';
+
+        let successMessage = '';
+        if (!requiresApproval || isApproved) {
+          successMessage = '✅ Ticket created and immediately assigned to IT!';
+        } else {
+          successMessage = '✅ Ticket created. Waiting for supervisor approval.';
+        }
+
+        Swal.fire({
+          icon: 'success',
+          title: 'Success',
+          text: successMessage,
+          timer: 2000,
+          showConfirmButton: false,
+        });
+
         this.router.navigate(['/tickets/my-tickets']);
       },
       error: (err) => {
         console.error('Failed to save ticket:', err);
         this.loading = false;
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Failed to create ticket. Please try again.',
+          confirmButtonColor: '#3f51b5',
+        });
       },
     });
   }

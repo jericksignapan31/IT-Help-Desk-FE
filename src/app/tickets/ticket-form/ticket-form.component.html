@@ -101,12 +101,13 @@
           <!-- Subject -->
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Subject</mat-label>
-            <input
-              matInput
-              formControlName="subject"
-              placeholder="Brief summary of the issue"
-            />
-            <mat-icon matSuffix>title</mat-icon>
+            <mat-select formControlName="subject" required>
+              <mat-option value="">Select an issue type</mat-option>
+              <mat-option *ngFor="let subject of subjectOptions" [value]="subject">
+                {{ subject }}
+              </mat-option>
+            </mat-select>
+            <mat-icon matSuffix>category</mat-icon>
             <mat-error *ngIf="ticketForm.get('subject')?.hasError('required')">
               Subject is required
             </mat-error>
@@ -301,16 +302,24 @@
             </mat-form-field>
           </div>
 
+          <!-- Approval Checkbox -->
+          <div class="approval-checkbox-section full-width">
+            <mat-checkbox formControlName="require_approval" color="primary">
+              <span class="checkbox-label">Requires Supervisor Approval</span>
+            </mat-checkbox>
+            <p class="checkbox-hint">Uncheck for urgent tickets to skip supervisor review</p>
+          </div>
+
           <!-- Description -->
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Description</mat-label>
-            <textarea
-              matInput
-              formControlName="description"
-              rows="4"
-              placeholder="Detailed description of the issue"
-            ></textarea>
-            <mat-icon matSuffix>description</mat-icon>
+            <mat-select formControlName="description" required>
+              <mat-option value="">Select issue description</mat-option>
+              <mat-option *ngFor="let desc of descriptionOptions" [value]="desc">
+                {{ desc }}
+              </mat-option>
+            </mat-select>
+            <mat-icon matSuffix>info</mat-icon>
             <mat-error
               *ngIf="ticketForm.get('description')?.hasError('required')"
             >
