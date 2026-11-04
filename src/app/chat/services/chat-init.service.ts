@@ -34,12 +34,15 @@ export class ChatInitService {
         return;
       }
 
-      // Get token from localStorage (stored by auth service)
-      const token = localStorage.getItem('token');
+      // Try both 'token' and 'access_token' keys (support both naming conventions)
+      const token = localStorage.getItem('access_token') || localStorage.getItem('token');
       
       if (!token) {
-        console.log('[ChatInit] No auth token found, skipping Socket.io initialization');
-        resolve();
+        console.log('[ChatInit] No auth token found, will retry in 1 second');
+        // Retry after 1 second if token not immediately available
+        setTimeout(() => {
+          this.initializeSocket().then(resolve);
+        }, 1000);
         return;
       }
 

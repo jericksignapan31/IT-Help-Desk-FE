@@ -88,6 +88,19 @@
       }
     },
     {
+      "name": "chat-api",
+      "urls": [
+        "/api/chat/**",
+        "/chat/**"
+      ],
+      "cacheConfig": {
+        "strategy": "network-first",
+        "maxAge": "1h",
+        "maxSize": 50,
+        "timeout": "10s"
+      }
+    },
+    {
       "name": "api-other",
       "urls": [
         "/api/**"

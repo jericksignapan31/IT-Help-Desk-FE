@@ -1,0 +1,210 @@
+<div class="knowledge-base-container">
+  <mat-card class="kb-card">
+    <mat-card-header>
+      <mat-card-title>
+        <div class="header">
+          <mat-icon>library_books</mat-icon>
+          <h2>Knowledge Base</h2>
+        </div>
+      </mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <!-- Search Section -->
+      <div class="search-section">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Search FAQ</mat-label>
+          <input
+            matInput
+            [(ngModel)]="searchQuery"
+            (ngModelChange)="onSearchInput(searchQuery)"
+            placeholder="Search for answers..."
+            maxlength="200"
+          />
+          <mat-icon matPrefix>search</mat-icon>
+          <button
+            *ngIf="searchQuery"
+            mat-icon-button
+            matSuffix
+            (click)="clearSearch()"
+            matTooltip="Clear search"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+
+      <!-- Search Progress Bar -->
+      <mat-progress-bar
+        *ngIf="isSearching"
+        mode="indeterminate"
+        class="search-progress"
+      ></mat-progress-bar>
+
+      <!-- Categories Section -->
+      <div class="categories-section">
+        <h3>Categories</h3>
+        <div class="category-chips">
+          <mat-chip
+            *ngFor="let category of categories"
+            (click)="toggleCategory(category)"
+            class="category-chip"
+            [class.active]="isCategorySelected(category)"
+          >
+            {{ category }}
+            <mat-icon *ngIf="isCategorySelected(category)" matChipRemove>check</mat-icon>
+          </mat-chip>
+        </div>
+      </div>
+
+      <!-- Popular Section -->
+      <div
+        class="popular-section"
+        *ngIf="!searchQuery.trim() && selectedCategories.size === 0 && searchResults.length === 0"
+      >
+        <h3>Popular This Week</h3>
+        <div class="results-list">
+          <div class="result-card" *ngFor="let entry of getDisplayResults()">
+            <div class="result-header" (click)="toggleResult(entry)">
+              <div class="result-info">
+                <h4>{{ entry.question }}</h4>
+                <span class="category-tag">{{ entry.category }}</span>
+              </div>
+              <div class="result-stats">
+                <span class="usage" [matTooltip]="entry.usage_count + ' views'">
+                  <mat-icon>visibility</mat-icon>
+                  {{ entry.usage_count }}
+                </span>
+                <mat-icon class="expand-icon">
+                  {{ expandedResult?.knowledge_id === entry.knowledge_id ? 'expand_less' : 'expand_more' }}
+                </mat-icon>
+              </div>
+            </div>
+            <div class="result-answer" *ngIf="expandedResult?.knowledge_id === entry.knowledge_id">
+              <p>{{ entry.answer }}</p>
+              <div class="answer-actions">
+                <button
+                  mat-button
+                  (click)="$event.stopPropagation(); markHelpful(entry)"
+                  [disabled]="isRated(entry)"
+                  [class.rated]="getRatingStatus(entry) === 'helpful'"
+                >
+                  <mat-icon>thumb_up</mat-icon>
+                  <span>Helpful</span>
+                </button>
+                <button
+                  mat-button
+                  (click)="$event.stopPropagation(); markNotHelpful(entry)"
+                  [disabled]="isRated(entry)"
+                  [class.rated]="getRatingStatus(entry) === 'not_helpful'"
+                >
+                  <mat-icon>thumb_down</mat-icon>
+                  <span>Not Helpful</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Search Results Section -->
+      <div
+        class="results-section"
+        *ngIf="(searchQuery.trim() || selectedCategories.size > 0) && !isSearching"
+      >
+        <div class="results-header">
+          <h3>
+            {{ selectedCategories.size > 0
+              ? Array.from(selectedCategories).join(', ') + ' Results'
+              : 'Search Results' }}
+          </h3>
+          <p class="result-count" *ngIf="getTotalCount() > 0">
+            Found {{ getTotalCount() }} result(s)
+          </p>
+        </div>
+
+        <!-- Results List -->
+        <div class="results-list" *ngIf="getDisplayResults().length > 0">
+          <div class="result-card" *ngFor="let result of getDisplayResults()">
+            <div class="result-header" (click)="toggleResult(result)">
+              <div class="result-info">
+                <h4>{{ result.question }}</h4>
+                <span class="category-tag">{{ result.category }}</span>
+              </div>
+              <div class="result-stats">
+                <span class="usage" [matTooltip]="result.usage_count + ' views'">
+                  <mat-icon>visibility</mat-icon>
+                  {{ result.usage_count }}
+                </span>
+                <mat-icon class="expand-icon">
+                  {{ expandedResult?.knowledge_id === result.knowledge_id ? 'expand_less' : 'expand_more' }}
+                </mat-icon>
+              </div>
+            </div>
+            <div class="result-answer" *ngIf="expandedResult?.knowledge_id === result.knowledge_id">
+              <p>{{ result.answer }}</p>
+              <div class="answer-actions">
+                <button
+                  mat-button
+                  (click)="$event.stopPropagation(); markHelpful(result)"
+                  [disabled]="isRated(result)"
+                  [class.rated]="getRatingStatus(result) === 'helpful'"
+                >
+                  <mat-icon>thumb_up</mat-icon>
+                  <span>Helpful</span>
+                </button>
+                <button
+                  mat-button
+                  (click)="$event.stopPropagation(); markNotHelpful(result)"
+                  [disabled]="isRated(result)"
+                  [class.rated]="getRatingStatus(result) === 'not_helpful'"
+                >
+                  <mat-icon>thumb_down</mat-icon>
+                  <span>Not Helpful</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pagination -->
+        <mat-paginator
+          *ngIf="getTotalCount() > pageSize"
+          [length]="getTotalCount()"
+          [pageSize]="pageSize"
+          [pageSizeOptions]="[5, 10, 20]"
+          (page)="onPageChange($event)"
+          class="results-paginator"
+        ></mat-paginator>
+      </div>
+
+      <!-- Loading State -->
+      <div class="loading-state" *ngIf="isSearching">
+        <div class="spinner-wrapper">
+          <div class="spinner"></div>
+        </div>
+        <p>Searching knowledge base...</p>
+      </div>
+
+      <!-- No Results Empty State -->
+      <div
+        class="empty-state no-results"
+        *ngIf="!isSearching && searchQuery.trim() && searchResults.length === 0"
+      >
+        <mat-icon>search_off</mat-icon>
+        <h3>No results found</h3>
+        <p>Try searching with different keywords or browse by category</p>
+      </div>
+
+      <!-- No Category Results Empty State -->
+      <div
+        class="empty-state no-results"
+        *ngIf="!isSearching && selectedCategories.size > 0 && displayedResults.length === 0"
+      >
+        <mat-icon>filter_alt_off</mat-icon>
+        <h3>No articles in selected categories</h3>
+        <p>Try selecting different categories or search for specific topics</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

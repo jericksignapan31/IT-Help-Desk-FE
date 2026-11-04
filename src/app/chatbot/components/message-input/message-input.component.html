@@ -1,0 +1,38 @@
+<div class="message-input-container">
+  <mat-form-field appearance="fill" class="message-input-field">
+    <mat-label>{{ placeholder }}</mat-label>
+    <input
+      matInput
+      [(ngModel)]="userMessage"
+      (keyup.enter)="onKeyEnter()"
+      [disabled]="disabled"
+      [placeholder]="placeholder"
+      [maxlength]="maxLength"
+    />
+    <mat-hint align="end">{{ userMessage.length }}/{{ maxLength }}</mat-hint>
+  </mat-form-field>
+  
+  <!-- Voice Input Button -->
+  <button
+    mat-icon-button
+    (click)="toggleVoiceInput()"
+    class="voice-button"
+    *ngIf="voiceSupported"
+    [class.listening]="isListening"
+    matTooltip="Click to speak"
+  >
+    <mat-icon>{{ isListening ? 'mic' : 'mic_none' }}</mat-icon>
+  </button>
+
+  <!-- Send Button -->
+  <button
+    mat-fab
+    color="primary"
+    (click)="onSend()"
+    [disabled]="disabled || !userMessage.trim()"
+    class="send-button"
+    matTooltip="Send message"
+  >
+    <mat-icon>send</mat-icon>
+  </button>
+</div>

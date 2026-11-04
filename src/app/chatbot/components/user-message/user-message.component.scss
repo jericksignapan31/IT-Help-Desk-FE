@@ -1,0 +1,59 @@
+.user-message-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+  animation: slideIn 0.3s ease-out;
+
+  .bubble {
+    max-width: 70%;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    color: white;
+    padding: 12px 16px;
+    border-radius: 12px 12px 4px 12px;
+    word-wrap: break-word;
+    line-height: 1.5;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all var(--transition-normal);
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+
+    &:hover {
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .checkmark {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+      opacity: 0.9;
+      flex-shrink: 0;
+    }
+  }
+
+  .timestamp {
+    font-size: 12px;
+    color: #9ca3af;
+    padding-right: 0.5rem;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .user-message-container .bubble {
+    max-width: 85%;
+  }
+}

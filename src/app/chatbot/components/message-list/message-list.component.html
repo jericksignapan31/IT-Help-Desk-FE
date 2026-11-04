@@ -1,0 +1,42 @@
+<div class="message-list-container" #messagesContainer>
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="messages.length === 0 && !loading">
+    <mat-icon class="empty-icon">waves</mat-icon>
+    <h3>Welcome to IT Help Desk!</h3>
+    <p>How can I help you today?</p>
+  </div>
+
+  <!-- Message List -->
+  <div class="message-list">
+    <ng-container *ngFor="let message of messages; trackBy: trackByMessageId">
+      <!-- User Message -->
+      <app-user-message
+        *ngIf="message.type === 'user'"
+        [message]="message"
+      ></app-user-message>
+
+      <!-- Bot Message -->
+      <app-bot-message
+        *ngIf="message.type === 'assistant'"
+        [message]="message"
+        (actionClick)="onActionClick($event)"
+        (feedbackClick)="onFeedbackClick(message)"
+      ></app-bot-message>
+
+      <!-- System Message -->
+      <div class="system-message" *ngIf="message.type === 'system'">
+        <p>{{ message.content }}</p>
+      </div>
+    </ng-container>
+
+    <!-- Loading Indicator -->
+    <div class="message bot-message" *ngIf="loading">
+      <mat-icon class="avatar">smart_toy</mat-icon>
+      <div class="bubble-wrapper">
+        <div class="bubble">
+          <app-typing-indicator></app-typing-indicator>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

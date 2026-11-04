@@ -1,0 +1,100 @@
+<div class="chatbot-container">
+  <mat-card class="chat-window">
+    <!-- Minimal Header -->
+    <mat-card-header class="chat-header">
+      <div class="header-content">
+        <div class="status-indicator">
+          <span class="dot"></span>
+          <span class="status-text">Online</span>
+        </div>
+      </div>
+    </mat-card-header>
+
+    <!-- Messages Container -->
+    <app-message-list
+      [messages]="messages"
+      [loading]="loading"
+      (actionClick)="handleAction($event)"
+      (feedbackClick)="handleFeedbackClick($event)"
+    ></app-message-list>
+
+    <!-- Error Display -->
+    <div class="error-display" *ngIf="error">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{ error }}</span>
+      <button mat-icon-button (click)="chatService.setError(null)">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <!-- Quick Suggestions -->
+    <app-quick-suggestions
+      (suggestionSelected)="sendMessage($event)"
+    ></app-quick-suggestions>
+
+    <!-- Input Area -->
+    <app-message-input
+      [disabled]="loading || !conversation"
+      (sendMessage)="sendMessage($event)"
+    ></app-message-input>
+
+    <!-- Quick Access Panel -->
+    <div class="quick-access">
+      <button
+        mat-button
+        (click)="handleAction('SEARCH')"
+        class="quick-btn"
+        matTooltip="Search knowledge base"
+      >
+        <mat-icon>search</mat-icon>
+        <span>Search FAQ</span>
+      </button>
+      <button
+        mat-button
+        (click)="handleAction('TICKET')"
+        class="quick-btn"
+        matTooltip="Create a support ticket"
+      >
+        <mat-icon>add_circle_outline</mat-icon>
+        <span>Create Ticket</span>
+      </button>
+      <button
+        mat-button
+        (click)="handleAction('CONTACT')"
+        class="quick-btn"
+        matTooltip="Contact IT support"
+      >
+        <mat-icon>phone</mat-icon>
+        <span>Contact IT</span>
+      </button>
+    </div>
+
+    <!-- Footer Actions -->
+    <div class="chat-footer">
+      <button
+        mat-icon-button
+        (click)="toggleDarkMode()"
+        [matTooltip]="darkMode ? 'Light mode' : 'Dark mode'"
+        class="theme-btn"
+      >
+        <mat-icon>{{ darkMode ? 'light_mode' : 'dark_mode' }}</mat-icon>
+      </button>
+      <button
+        mat-icon-button
+        (click)="clearChat()"
+        matTooltip="Clear chat"
+        class="clear-btn"
+      >
+        <mat-icon>refresh</mat-icon>
+      </button>
+      <button
+        mat-icon-button
+        (click)="handleAction('CLOSE')"
+        matTooltip="Close"
+        class="close-btn"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </mat-card>
+</div>

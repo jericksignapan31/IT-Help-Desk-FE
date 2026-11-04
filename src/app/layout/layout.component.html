@@ -151,5 +151,15 @@
     <div class="content">
       <router-outlet></router-outlet>
     </div>
+
+    <!-- Floating Chat Button -->
+    <button
+      class="floating-chat-button"
+      mat-fab
+      (click)="openChatbot()"
+      matTooltip="Open Chatbot"
+    >
+      <mat-icon>chat</mat-icon>
+    </button>
   </mat-sidenav-content>
 </mat-sidenav-container>

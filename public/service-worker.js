@@ -140,6 +140,20 @@ function handleApiRequest(request) {
   const url = new URL(request.url);
   const pathname = url.pathname;
 
+  // NEVER cache chat endpoints - they have dynamic content
+  if (pathname.includes('/chat/') || pathname.includes('/chatbot/')) {
+    console.log('🚀 Skipping cache for chat endpoint:', pathname);
+    return fetch(request).catch(() => {
+      return new Response('Offline - Chat unavailable', {
+        status: 503,
+        statusText: 'Service Unavailable',
+        headers: new Headers({
+          'Content-Type': 'application/json',
+        }),
+      });
+    });
+  }
+
   // Find matching cache config
   let config = null;
   for (const [pattern, cfg] of Object.entries(apiCacheConfig)) {
@@ -168,37 +182,29 @@ function handleApiRequest(request) {
  */
 function cacheThenNetwork(request, config) {
   return caches.open(API_CACHE).then((cache) => {
-    return cache.match(request).then((response) => {
-      if (response) {
-        // Check if cached response is still fresh
-        const cacheDate = new Date(response.headers.get('sw-fetch-time'));
-        const now = new Date();
-        if (now - cacheDate < config.maxAge) {
-          return response;
-        }
+    return cache.match(request).then((cachedResponse) => {
+      if (cachedResponse) {
+        return cachedResponse;
       }
 
       // Fetch from network
       return fetch(request)
-        .then((response) => {
-          if (response.status === 200) {
-            // Clone response and add fetch time
-            const responseToCache = response.clone();
-            const headers = new Headers(responseToCache.headers);
-            headers.set('sw-fetch-time', new Date().toISOString());
-
-            cache.put(request, new Response(responseToCache.body, {
-              status: responseToCache.status,
-              statusText: responseToCache.statusText,
-              headers: headers,
-            }));
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            // Clone BEFORE returning to avoid body consumption
+            const clonedForCache = networkResponse.clone();
+            cache.put(request, clonedForCache).catch((cacheError) => {
+              console.error('Failed to cache response:', cacheError);
+            });
           }
-          return response;
+          return networkResponse;
         })
-        .catch(() => {
-          // Return cached response even if stale
-          return response || new Response('Offline - Data not available', {
+        .catch((error) => {
+          return cachedResponse || new Response(JSON.stringify({ 
+            error: 'Offline - Data not available' 
+          }), {
             status: 503,
+            headers: new Headers({ 'Content-Type': 'application/json' }),
           });
         });
     });
@@ -212,15 +218,16 @@ function networkThenCache(request, config) {
   return fetch(request)
     .then((response) => {
       if (response.status === 200) {
-        // Cache successful response
+        // Clone response ONCE before doing anything else
+        const clonedForCache = response.clone();
+        
+        // Cache successful response in background (don't block)
         caches.open(API_CACHE).then((cache) => {
-          const headers = new Headers(response.headers);
-          headers.set('sw-fetch-time', new Date().toISOString());
-          cache.put(request, new Response(response.clone().body, {
-            status: response.status,
-            statusText: response.statusText,
-            headers: headers,
-          }));
+          cache.put(request, clonedForCache).catch((cacheError) => {
+            console.error('Failed to cache response:', cacheError);
+          });
+        }).catch((cacheError) => {
+          console.error('Failed to open cache:', cacheError);
         });
       }
       return response;
@@ -228,8 +235,11 @@ function networkThenCache(request, config) {
     .catch(() => {
       // Try cache on network failure
       return caches.open(API_CACHE).then((cache) => {
-        return cache.match(request) || new Response('Offline - Data not available', {
+        return cache.match(request) || new Response(JSON.stringify({ 
+          error: 'Offline - Data not available' 
+        }), {
           status: 503,
+          headers: new Headers({ 'Content-Type': 'application/json' }),
         });
       });
     });

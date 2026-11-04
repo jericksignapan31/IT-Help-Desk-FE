@@ -1,0 +1,35 @@
+<div class="bot-message-container">
+  <mat-icon class="avatar">smart_toy</mat-icon>
+  <div class="bubble-wrapper">
+    <div class="bubble">
+      {{ message.content }}
+    </div>
+    <div class="metadata" *ngIf="message.metadata">
+      <span class="confidence" *ngIf="message.confidence">
+        Confidence: {{ (message.confidence * 100) | number: '1.0-0' }}%
+      </span>
+    </div>
+    <div class="actions" *ngIf="message.metadata && message.metadata.suggestedActions && message.metadata.suggestedActions.length > 0">
+      <button
+        class="action-button"
+        *ngFor="let action of message.metadata.suggestedActions"
+        (click)="handleAction(action.type)"
+      >
+        {{ action.label }}
+        <mat-icon>arrow_forward</mat-icon>
+      </button>
+    </div>
+    <div class="feedback-section">
+      <button
+        mat-button
+        class="feedback-button"
+        (click)="handleFeedback()"
+        matTooltip="Rate this response"
+      >
+        <mat-icon>rate_review</mat-icon>
+        <span>Rate Response</span>
+      </button>
+    </div>
+  </div>
+  <span class="timestamp">{{ formatTime(message.timestamp) }}</span>
+</div>

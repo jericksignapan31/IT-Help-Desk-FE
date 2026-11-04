@@ -11,6 +11,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatBadgeModule } from '@angular/material/badge';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { AuthService } from '../services/auth.service';
 import { ChatStoreService } from '../chat/store/chat-store.service';
 import { TicketService } from '../services/ticket.service';
@@ -36,6 +37,7 @@ import { catchError, map, shareReplay } from 'rxjs/operators';
     MatExpansionModule,
     MatDividerModule,
     MatBadgeModule,
+    MatDialogModule,
   ],
   templateUrl: './layout.component.html',
   styleUrls: ['./layout.component.scss'],
@@ -59,6 +61,7 @@ export class LayoutComponent {
     private ticketService: TicketService,
     private warehouseService: WarehouseService,
     private router: Router,
+    private dialog: MatDialog,
   ) {
     this.unreadChatCount$ = this.chatStore.unreadCount$;
     this.pendingTicketsCount$ = this.ticketService.getPendingTickets().pipe(
@@ -107,7 +110,7 @@ export class LayoutComponent {
   }
 
   get visibleMenuItems(): MenuItem[] {
-    return this.menuItems.filter((item) => this.canAccessMenuItem(item) && item.label !== 'Chat');
+    return this.menuItems.filter((item) => this.canAccessMenuItem(item));
   }
 
   getVisibleChildren(item: MenuItem): MenuItem[] {
@@ -123,6 +126,19 @@ export class LayoutComponent {
 
   isChildVisible(item: MenuItem, childLabel: string): boolean {
     return this.getVisibleChildren(item).some((child) => child.label === childLabel);
+  }
+
+  openChatbot(): void {
+    import('../chatbot/chatbot-window/chatbot-window.component').then((module) => {
+      this.dialog.open(module.ChatbotWindowComponent, {
+        width: '360px',
+        height: '480px',
+        position: { bottom: '80px', right: '20px' },
+        maxWidth: '90vw',
+        maxHeight: '90vh',
+        panelClass: 'floating-chatbot-dialog',
+      });
+    });
   }
 
   getChildBadgeCount$(parentLabel: string, childLabel: string): Observable<number> | null {

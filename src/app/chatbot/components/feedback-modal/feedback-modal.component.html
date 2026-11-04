@@ -1,0 +1,105 @@
+<div class="feedback-modal-wrapper">
+  <!-- Dialog Header -->
+  <div class="modal-header">
+    <h2 mat-dialog-title>Rate Your Experience</h2>
+    <p class="modal-subtitle" *ngIf="data.subject">
+      {{ data.subject }}
+    </p>
+  </div>
+
+  <!-- Dialog Content -->
+  <mat-dialog-content class="modal-content">
+    <!-- Star Rating Section -->
+    <div class="rating-section">
+      <p class="section-label">How would you rate this?</p>
+      <div class="star-rating">
+        <button
+          *ngFor="let i of [1, 2, 3, 4, 5]"
+          type="button"
+          class="star-button"
+          [class.active]="rating >= i"
+          (click)="setRating(i)"
+          (mouseenter)="setHovered(i)"
+          (mouseleave)="clearHovered()"
+          [matTooltip]="rating === i ? getRatingText() : ''"
+        >
+          <mat-icon class="star-icon" [class.filled]="getDisplayRating() >= i">
+            {{ getStarIcon(i) }}
+          </mat-icon>
+        </button>
+      </div>
+      <div class="rating-text">
+        <span *ngIf="rating > 0" class="rating-display">{{ getRatingText() }}</span>
+        <span *ngIf="rating === 0" class="rating-placeholder">Select a rating</span>
+      </div>
+    </div>
+
+    <!-- Helpful Toggle Section -->
+    <div class="helpful-section">
+      <p class="section-label">Was this helpful?</p>
+      <div class="helpful-toggle">
+        <button
+          type="button"
+          class="toggle-button helpful"
+          [class.active]="isHelpful"
+          (click)="toggleHelpful()"
+          matTooltip="Mark as helpful"
+        >
+          <mat-icon>thumb_up</mat-icon>
+          <span>Yes, Helpful</span>
+        </button>
+        <button
+          type="button"
+          class="toggle-button not-helpful"
+          [class.active]="!isHelpful"
+          (click)="toggleHelpful()"
+          matTooltip="Mark as not helpful"
+        >
+          <mat-icon>thumb_down</mat-icon>
+          <span>No, Not Helpful</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Comment Section -->
+    <div class="comment-section">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Additional feedback (optional)</mat-label>
+        <textarea
+          matInput
+          [(ngModel)]="comment"
+          placeholder="Tell us what we can improve..."
+          rows="4"
+          maxlength="500"
+        ></textarea>
+        <mat-hint align="end">{{ comment.length }}/500</mat-hint>
+      </mat-form-field>
+    </div>
+
+    <!-- Error Message -->
+    <div class="error-message" *ngIf="error">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{ error }}</span>
+    </div>
+
+    <!-- Loading State -->
+    <div class="loading-overlay" *ngIf="isSubmitting">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+  </mat-dialog-content>
+
+  <!-- Dialog Actions -->
+  <mat-dialog-actions align="end" class="modal-actions">
+    <button mat-button (click)="cancel()" [disabled]="isSubmitting">Cancel</button>
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="submit()"
+      [disabled]="isSubmitting || rating === 0"
+      class="submit-button"
+    >
+      <span *ngIf="!isSubmitting">Submit Feedback</span>
+      <mat-spinner *ngIf="isSubmitting" diameter="20"></mat-spinner>
+    </button>
+  </mat-dialog-actions>
+</div>

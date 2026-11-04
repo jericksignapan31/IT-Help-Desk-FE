@@ -162,6 +162,20 @@ function handleApiRequest(request: Request): Promise<Response> {
   const url = new URL(request.url);
   const pathname = url.pathname;
 
+  // NEVER cache chat endpoints - they have dynamic content
+  if (pathname.includes('/chat/') || pathname.includes('/chatbot/')) {
+    console.log('🚀 Skipping cache for chat endpoint:', pathname);
+    return fetch(request).catch(() => {
+      return new Response('Offline - Chat unavailable', {
+        status: 503,
+        statusText: 'Service Unavailable',
+        headers: new Headers({
+          'Content-Type': 'application/json',
+        }),
+      });
+    });
+  }
+
   // Find matching cache config
   let config: any = null;
   for (const [pattern, cfg] of Object.entries(apiCacheConfig)) {

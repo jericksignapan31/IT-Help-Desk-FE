@@ -130,11 +130,6 @@ export const MENU_ITEMS: MenuItem[] = [
     roles: [UserRole.ADMIN, UserRole.IT],
   },
   {
-    label: 'Chat',
-    icon: 'chat',
-    route: '/chat',
-  },
-  {
     label: 'Reports',
     icon: 'bar_chart',
     route: '/reports',

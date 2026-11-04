@@ -1,0 +1,95 @@
+<h2 mat-dialog-title>Create Support Ticket</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="ticket-form">
+    <!-- Error Message -->
+    <div class="error-message" *ngIf="error">
+      <mat-icon>error</mat-icon>
+      <span>{{ error }}</span>
+    </div>
+
+    <!-- Subject Field -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Subject *</mat-label>
+      <input
+        matInput
+        formControlName="subject"
+        placeholder="Brief description of your issue"
+        [disabled]="loading"
+      />
+      <mat-icon matSuffix>subject</mat-icon>
+      <mat-hint align="end">{{ getSubjectCharCount() }}/{{ maxSubjectLength }}</mat-hint>
+      <mat-error *ngIf="form.get('subject')?.invalid">
+        {{ getErrorMessage('subject') }}
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Description Field -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Description *</mat-label>
+      <textarea
+        matInput
+        formControlName="description"
+        placeholder="Detailed description of your issue"
+        rows="5"
+        [disabled]="loading"
+      ></textarea>
+      <mat-icon matSuffix>description</mat-icon>
+      <mat-hint align="end">{{ getDescriptionCharCount() }}/{{ maxDescriptionLength }}</mat-hint>
+      <mat-error *ngIf="form.get('description')?.invalid">
+        {{ getErrorMessage('description') }}
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Category Field -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Category *</mat-label>
+      <mat-select formControlName="category" [disabled]="loading">
+        <mat-option *ngFor="let cat of categories" [value]="cat">
+          {{ cat | titlecase }}
+        </mat-option>
+      </mat-select>
+      <mat-icon matSuffix>category</mat-icon>
+      <mat-error *ngIf="form.get('category')?.invalid">
+        {{ getErrorMessage('category') }}
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Priority Field -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Priority *</mat-label>
+      <mat-select formControlName="priority" [disabled]="loading">
+        <mat-option *ngFor="let pri of priorities" [value]="pri.value">
+          {{ pri.label }}
+        </mat-option>
+      </mat-select>
+      <mat-icon matSuffix>flag</mat-icon>
+      <mat-error *ngIf="form.get('priority')?.invalid">
+        {{ getErrorMessage('priority') }}
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Info Note -->
+    <div class="info-note">
+      <mat-icon>info</mat-icon>
+      <span>Your ticket will be created with the above details and assigned to the IT support team.</span>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()" [disabled]="loading">
+    <mat-icon>close</mat-icon>
+    Cancel
+  </button>
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="submit()"
+    [disabled]="!isFormValid()"
+  >
+    <mat-icon *ngIf="!loading">send</mat-icon>
+    <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+    {{ loading ? 'Creating...' : 'Create Ticket' }}
+  </button>
+</mat-dialog-actions>

@@ -480,6 +480,33 @@ export const routes: Routes = [
           },
         ],
       },
+      // Chatbot Routes
+      {
+        path: 'chatbot',
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./chatbot/chatbot-page/chatbot-page.component').then(
+                (m) => m.ChatbotPageComponent,
+              ),
+          },
+          {
+            path: 'chat',
+            loadComponent: () =>
+              import('./chatbot/chatbot-window/chatbot-window.component').then(
+                (m) => m.ChatbotWindowComponent,
+              ),
+          },
+          {
+            path: 'knowledge-base',
+            loadComponent: () =>
+              import('./chatbot/knowledge-base/knowledge-base.component').then(
+                (m) => m.KnowledgeBaseComponent,
+              ),
+          },
+        ],
+      },
     ],
   },
   {
