@@ -27,8 +27,11 @@ export class ChatService {
    * Create or get conversation
    */
   startConversation(): Observable<Conversation> {
-    // Send minimal payload - backend should handle conversation creation
-    const payload = {};
+    // Send required payload for backend
+    const payload = {
+      type: 'DIRECT',
+      name: 'Chatbot Support Chat'
+    };
     return this.http.post<Conversation>(`${this.apiUrl}/conversations`, payload);
   }
 
