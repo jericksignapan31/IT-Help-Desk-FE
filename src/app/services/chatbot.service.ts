@@ -8,7 +8,7 @@ import { environment } from '../../environments/environment';
   providedIn: 'root',
 })
 export class ChatbotService {
-  private apiUrl = `${environment.apiUrl}/chat/chatbot`;
+  private apiUrl = `${environment.apiUrl}/chat`;
 
   // State
   private statsSubject = new BehaviorSubject<ChatbotStats | null>(null);
@@ -27,17 +27,17 @@ export class ChatbotService {
    * Send message to chatbot and get response
    */
   sendMessage(conversationId: string, message: string): Observable<ChatbotResponse> {
-    return this.http.post<ChatbotResponse>(`${this.apiUrl}/message`, {
-      conversation_id: conversationId,
-      message,
-    });
+    return this.http.post<ChatbotResponse>(
+      `${this.apiUrl}/chatbot/message`,
+      { conversation_id: conversationId, message }
+    );
   }
 
   /**
    * Load chatbot statistics with fallback
    */
   loadStats(): void {
-    this.http.get<ChatbotStats>(`${this.apiUrl}/stats`).subscribe({
+    this.http.get<ChatbotStats>(`${this.apiUrl}/chatbot/stats`).subscribe({
       next: (stats) => {
         console.log('✅ Chatbot stats loaded:', stats);
         this.statsSubject.next(stats);

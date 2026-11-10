@@ -82,7 +82,8 @@ export class ChatbotWindowComponent implements OnInit, OnDestroy {
     console.log('🔄 Initializing chatbot conversation...');
     this.chatService.startConversation().subscribe({
       next: (conv) => {
-        console.log('✅ Conversation started:', conv.id);
+        console.log('✅ Conversation started with ID:', conv.id);
+        console.log('✅ Full conversation object:', JSON.stringify(conv, null, 2));
         this.conversation = conv;
         this.loadConversationHistory(conv.id);
       },

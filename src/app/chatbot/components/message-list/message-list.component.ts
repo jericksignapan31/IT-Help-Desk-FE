@@ -33,7 +33,16 @@ import { TypingIndicatorComponent } from '../typing-indicator/typing-indicator.c
 export class MessageListComponent implements AfterViewChecked {
   @ViewChild('messagesContainer') private messagesContainer!: ElementRef;
 
-  @Input() messages: Message[] = [];
+  private messageItems: Message[] = [];
+
+  @Input()
+  set messages(value: Message[] | null | undefined) {
+    this.messageItems = Array.isArray(value) ? value : [];
+  }
+
+  get messages(): Message[] {
+    return this.messageItems;
+  }
   @Input() loading: boolean = false;
   @Output() actionClick = new EventEmitter<string>();
   @Output() feedbackClick = new EventEmitter<Message>();

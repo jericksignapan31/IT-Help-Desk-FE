@@ -1,5 +1,5 @@
 export const environment = {
-  production: true,
-  apiUrl: 'https://ticketing-web-app.onrender.com',
+  production: false,
+  apiUrl: 'http://localhost:3000',
+  disableServiceWorker: true  // ← Add this
 };
-    

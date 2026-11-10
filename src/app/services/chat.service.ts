@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { Conversation, Message, ChatbotResponse } from '../models/chat.model';
 import { environment } from '../../environments/environment';
 
@@ -32,15 +33,45 @@ export class ChatService {
       type: 'DIRECT',
       name: 'Chatbot Support Chat'
     };
-    return this.http.post<Conversation>(`${this.apiUrl}/conversations`, payload);
+    return this.http.post<Conversation>(`${this.apiUrl}/conversations`, payload).pipe(
+      map(response => this.normalizeConversation(response))
+    );
+  }
+
+  /**
+   * Normalize conversation response to ensure ID field exists
+   */
+  private normalizeConversation(conv: any): Conversation {
+    // Handle different ID field names from backend
+    const id = conv.id || conv._id || conv.conversation_id || conv.conversationId;
+    
+    return {
+      ...conv,
+      id: id || 'unknown'
+    } as Conversation;
   }
 
   /**
    * Get conversation history
    */
   getConversationHistory(conversationId: string): Observable<{ messages: Message[] }> {
-    return this.http.get<{ messages: Message[] }>(
+    return this.http.get<unknown>(
       `${this.apiUrl}/conversations/${conversationId}/messages`
+    ).pipe(
+      map((response) => {
+        if (Array.isArray(response)) {
+          return { messages: response as Message[] };
+        }
+
+        const result = response as { messages?: unknown; data?: unknown } | null;
+        const messages = Array.isArray(result?.messages)
+          ? result.messages
+          : Array.isArray(result?.data)
+            ? result.data
+            : [];
+
+        return { messages: messages as Message[] };
+      })
     );
   }
 
@@ -48,7 +79,7 @@ export class ChatService {
    * Load messages into state
    */
   setMessages(messages: Message[]): void {
-    this.messagesSubject.next(messages);
+    this.messagesSubject.next(Array.isArray(messages) ? messages : []);
   }
 
   /**
@@ -77,7 +108,7 @@ export class ChatService {
    */
   addMessage(message: Message): void {
     const current = this.messagesSubject.value;
-    this.messagesSubject.next([...current, message]);
+    this.messagesSubject.next([...(Array.isArray(current) ? current : []), message]);
   }
 
   /**
