@@ -1,6 +1,17 @@
+:host {
+  display: flex;
+  flex: 1 1 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
 .message-list-container {
-  flex: 1;
+  flex: 1 1 0;
+  min-height: 0;
+  width: 100%;
   overflow-y: auto;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
   padding: 1.5rem;
   background: #ffffff;
   display: flex;

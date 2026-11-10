@@ -48,23 +48,31 @@ import { QuickReplyService, QuickReply } from '../../../services/quick-reply.ser
 
         .suggestions-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+          grid-template-columns: repeat(2, minmax(0, 1fr));
           gap: 0.5rem;
 
           .suggestion-button {
             display: flex;
             align-items: center;
+            justify-content: flex-start;
             gap: 0.5rem;
             padding: 6px 10px;
             font-size: 12px;
-            height: 36px;
+            height: auto;
+            min-height: 40px;
             border: 1px solid #d1d5db;
             border-radius: 6px;
             color: #374151;
             transition: all 0.2s ease;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            text-align: left;
+            white-space: normal;
+
+            span {
+              flex: 1;
+              min-width: 0;
+              overflow-wrap: anywhere;
+              line-height: 1.3;
+            }
 
             mat-icon {
               font-size: 16px;

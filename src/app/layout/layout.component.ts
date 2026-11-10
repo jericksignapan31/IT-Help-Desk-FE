@@ -129,13 +129,15 @@ export class LayoutComponent {
   }
 
   openChatbot(): void {
+    const isMobile = window.innerWidth <= 768;
+
     import('../chatbot/chatbot-window/chatbot-window.component').then((module) => {
       this.dialog.open(module.ChatbotWindowComponent, {
-        width: '360px',
-        height: '480px',
-        position: { bottom: '80px', right: '20px' },
-        maxWidth: '90vw',
-        maxHeight: '90vh',
+        width: isMobile ? '100vw' : 'min(420px, calc(100vw - 32px))',
+        height: isMobile ? '100dvh' : 'min(680px, calc(100dvh - 40px))',
+        position: isMobile ? undefined : { bottom: '20px', right: '20px' },
+        maxWidth: isMobile ? '100vw' : 'calc(100vw - 32px)',
+        maxHeight: '100dvh',
         panelClass: 'floating-chatbot-dialog',
       });
     });
